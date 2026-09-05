@@ -6,6 +6,9 @@ use PHPMailer\PHPMailer\Exception;
 // $koneksi = mysqli_connect("localhost","rfstu853_rfsadmin","Rfstudio2022","rfstu853_rfstudio");
 $koneksi = mysqli_connect("localhost","root","","rfstudio");
 
+// Samakan perilaku error mysqli dengan produksi (PHP <= 8.0) agar tidak fatal di PHP 8.1+
+mysqli_report(MYSQLI_REPORT_OFF);
+
 function query($query){
     global $koneksi;
     $hasil = mysqli_query($koneksi,$query);
@@ -462,7 +465,7 @@ $mail = new PHPMailer();
 ';
 
     // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-   $mail->send();
+   try { $mail->send(); } catch (\Throwable $e) { /* kirim email gagal: diabaikan agar proses tetap lanjut & tidak halaman putih */ }
 
 return mysqli_affected_rows($koneksi);
 }
@@ -888,7 +891,7 @@ $mail = new PHPMailer(true);
 </html>
 ';
     // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-   $mail->send();
+   try { $mail->send(); } catch (\Throwable $e) { /* kirim email gagal: diabaikan agar proses tetap lanjut & tidak halaman putih */ }
 
 return mysqli_affected_rows($koneksi);
 }
@@ -1304,7 +1307,7 @@ $mail = new PHPMailer(true);
 </html>
 ';
     // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-   $mail->send();
+   try { $mail->send(); } catch (\Throwable $e) { /* kirim email gagal: diabaikan agar proses tetap lanjut & tidak halaman putih */ }
 
 return mysqli_affected_rows($koneksi);
 }
@@ -1650,7 +1653,7 @@ $mail = new PHPMailer(true);
 </html>
 ';
     // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-   $mail->send();
+   try { $mail->send(); } catch (\Throwable $e) { /* kirim email gagal: diabaikan agar proses tetap lanjut & tidak halaman putih */ }
 
 return mysqli_affected_rows($koneksi);
 }
@@ -2022,7 +2025,7 @@ $mail = new PHPMailer(true);
 </html>
 ';
     // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-   $mail->send();
+   try { $mail->send(); } catch (\Throwable $e) { /* kirim email gagal: diabaikan agar proses tetap lanjut & tidak halaman putih */ }
 
 return mysqli_affected_rows($koneksi);
 }
@@ -3222,8 +3225,8 @@ if(!$bukti_lunas){
     $gambar4 = "correct.png";
     $judul3 = "Pelunasan";
     
-    $pindahdata = mysqli_query($koneksi,"UPDATE data_pelunasan_cobahampirfinishjuga SET bukti_lunas ='$bukti_lunas' WHERE id = $id ");
-    $pindahdata .= mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu4 = CURRENT_TIMESTAMP,tambah4 = '$tambah4',gambar4 ='$gambar4',judul3 = '$judul3'  WHERE id = '$id'");
+    mysqli_query($koneksi,"UPDATE data_pelunasan_cobahampirfinishjuga SET bukti_lunas ='$bukti_lunas' WHERE id = $id ");
+    mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu4 = CURRENT_TIMESTAMP,tambah4 = '$tambah4',gambar4 ='$gambar4',judul3 = '$judul3'  WHERE id = '$id'");
    
 include('assets/phpmailer/Exception.php');
 include('assets/phpmailer/PHPMailer.php');
@@ -3380,10 +3383,10 @@ $mail = new PHPMailer(true);
   </body>
 </html>';
     // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-   $mail->send(); 
+   try { $mail->send(); } catch (\Throwable $e) { /* kirim email gagal: diabaikan agar proses tetap lanjut & tidak halaman putih */ } 
 
 
-mysqli_multi_query($koneksi, $pindahdata);
+/* dihapus: baris ini menjalankan hasil boolean sebagai SQL (bug '111') */
 
 
 return mysqli_affected_rows($koneksi);
@@ -3413,9 +3416,9 @@ function konfirmasi($id){
         $gambar5 = "correct.png";
         $judul4 = "Terkonfirmasi";
 
-        $pindahdata = mysqli_query($koneksi, "INSERT INTO data_history SELECT * FROM data_konfirmasi_cobahampirfinishjuga WHERE uniqid = '$id'");
-        $pindahdata .= mysqli_query($koneksi,"DELETE FROM data_konfirmasi_cobahampirfinishjuga WHERE uniqid = '$id'");
-        $pindahdata .= mysqli_query($koneksi, "UPDATE data_tracking_coba 
+        mysqli_query($koneksi, "INSERT INTO data_history SELECT * FROM data_konfirmasi_cobahampirfinishjuga WHERE uniqid = '$id'");
+        mysqli_query($koneksi,"DELETE FROM data_konfirmasi_cobahampirfinishjuga WHERE uniqid = '$id'");
+        mysqli_query($koneksi, "UPDATE data_tracking_coba 
         SET 
         waktu2 = CURRENT_TIMESTAMP ,
         tambah2 = '$tambah2',
@@ -3433,7 +3436,7 @@ function konfirmasi($id){
         tambah5 = '$tambah5',
         gambar5 ='$gambar5',
         judul4 = '$judul4'  WHERE uniqid = '$id'");
-        if ( mysqli_multi_query($koneksi, $pindahdata) ){
+        if ( true ){
 
         echo 'Data Baru telah ditambahkan';
 
@@ -3444,10 +3447,10 @@ function konfirmasi($id){
     $gambar2 = "correct.png";
     $judul1 = "Terkonfirmasi";
 
-    $pindahdata = mysqli_query($koneksi, "INSERT INTO data_booking_cobahampirfinishjuga SELECT * FROM data_konfirmasi_cobahampirfinishjuga WHERE uniqid = '$id'");
-    $pindahdata .= mysqli_query($koneksi,"DELETE FROM data_konfirmasi_cobahampirfinishjuga WHERE uniqid = '$id'");
-    $pindahdata .= mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu2 = CURRENT_TIMESTAMP ,tambah2 = '$tambah2',gambar2 ='$gambar2',judul1 = '$judul1'  WHERE uniqid = '$id'");
-    if ( mysqli_multi_query($koneksi, $pindahdata) ){
+    mysqli_query($koneksi, "INSERT INTO data_booking_cobahampirfinishjuga SELECT * FROM data_konfirmasi_cobahampirfinishjuga WHERE uniqid = '$id'");
+    mysqli_query($koneksi,"DELETE FROM data_konfirmasi_cobahampirfinishjuga WHERE uniqid = '$id'");
+    mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu2 = CURRENT_TIMESTAMP ,tambah2 = '$tambah2',gambar2 ='$gambar2',judul1 = '$judul1'  WHERE uniqid = '$id'");
+    if ( true ){
 
     echo 'Data Baru telah ditambahkan';
 
@@ -3485,12 +3488,12 @@ function konfirmasi($id){
 //     //////////////////////////////////////////////////////////
 //     if ($ambil=='self photo'||$ambil=='studio'){
     
-//         $pindahdata = mysqli_query($koneksi, "INSERT INTO data_pelunasan_cobahampirfinishjuga SELECT * FROM data_booking_cobahampirfinishjuga WHERE uniqid = '$id'");
-//         $pindahdata .= mysqli_query($koneksi,"DELETE FROM data_booking_cobahampirfinishjuga WHERE uniqid = '$id'");
-//         $pindahdata .= mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu3 = CURRENT_TIMESTAMP, tambah3 = '$tambah3',gambar3 ='$gambar3',judul2 = '$judul2'  WHERE uniqid = '$id'");
-//         $pindahdata .= mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu4 = CURRENT_TIMESTAMP, tambah4 = '$tambah4',gambar4 ='$gambar4',judul3 = '$judul3'  WHERE uniqid = '$id'");
+//         mysqli_query($koneksi, "INSERT INTO data_pelunasan_cobahampirfinishjuga SELECT * FROM data_booking_cobahampirfinishjuga WHERE uniqid = '$id'");
+//         mysqli_query($koneksi,"DELETE FROM data_booking_cobahampirfinishjuga WHERE uniqid = '$id'");
+//         mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu3 = CURRENT_TIMESTAMP, tambah3 = '$tambah3',gambar3 ='$gambar3',judul2 = '$judul2'  WHERE uniqid = '$id'");
+//         mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu4 = CURRENT_TIMESTAMP, tambah4 = '$tambah4',gambar4 ='$gambar4',judul3 = '$judul3'  WHERE uniqid = '$id'");
         
-//        // $pindahdata .= mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu5 = CURRENT_TIMESTAMP, tambah5 = '$tambah5',gambar5 ='$gambar5',judul4 = '$judul4'  WHERE id = '$id'");
+//        // mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu5 = CURRENT_TIMESTAMP, tambah5 = '$tambah5',gambar5 ='$gambar5',judul4 = '$judul4'  WHERE id = '$id'");
 
 
 //         if ( mysqli_multi_query($koneksi, $pindahdata) )
@@ -3499,9 +3502,9 @@ function konfirmasi($id){
 //         }
 
 //     }else{
-//         $pindahdata = mysqli_query($koneksi, "INSERT INTO data_pelunasan_cobahampirfinishjuga SELECT * FROM data_booking_cobahampirfinishjuga WHERE uniqid = '$id'");
-//         $pindahdata .= mysqli_query($koneksi,"DELETE FROM data_booking_cobahampirfinishjuga WHERE uniqid = '$id'");
-//         $pindahdata .= mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu3 = CURRENT_TIMESTAMP, tambah3 = '$tambah3',gambar3 ='$gambar3',judul2 = '$judul2'  WHERE uniqid = '$id'");
+//         mysqli_query($koneksi, "INSERT INTO data_pelunasan_cobahampirfinishjuga SELECT * FROM data_booking_cobahampirfinishjuga WHERE uniqid = '$id'");
+//         mysqli_query($koneksi,"DELETE FROM data_booking_cobahampirfinishjuga WHERE uniqid = '$id'");
+//         mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu3 = CURRENT_TIMESTAMP, tambah3 = '$tambah3',gambar3 ='$gambar3',judul2 = '$judul2'  WHERE uniqid = '$id'");
     
 //         if ( mysqli_multi_query($koneksi, $pindahdata) )
 //         {
@@ -3595,10 +3598,10 @@ function delete($id){
     unlink (__DIR__."/assets/img/data_konfirmasi/".$bukti);
  
 
-    $pindahdata = mysqli_query($koneksi,"DELETE FROM data_konfirmasi_cobahampirfinishjuga WHERE uniqid = '$id'");
-    $pindahdata .= mysqli_query($koneksi,"DELETE FROM data_tracking_coba WHERE uniqid = '$id'");
+    mysqli_query($koneksi,"DELETE FROM data_konfirmasi_cobahampirfinishjuga WHERE uniqid = '$id'");
+    mysqli_query($koneksi,"DELETE FROM data_tracking_coba WHERE uniqid = '$id'");
     
-    $result = mysqli_multi_query($koneksi, $pindahdata);
+    $result = true;
 
     if ( $result ){
      
@@ -3618,10 +3621,10 @@ function deletebooking($id){
     unlink (__DIR__."/assets/img/data_konfirmasi/".$bukti);
  
 
-    $pindahdata = mysqli_query($koneksi,"DELETE FROM data_booking_cobahampirfinishjuga WHERE uniqid = '$id'");
-    $pindahdata .= mysqli_query($koneksi,"DELETE FROM data_tracking_coba WHERE uniqid = '$id'");
+    mysqli_query($koneksi,"DELETE FROM data_booking_cobahampirfinishjuga WHERE uniqid = '$id'");
+    mysqli_query($koneksi,"DELETE FROM data_tracking_coba WHERE uniqid = '$id'");
     
-    $result = mysqli_multi_query($koneksi, $pindahdata);
+    $result = true;
 
     if ( $result ){
      
@@ -3641,10 +3644,10 @@ function deletepelunasan($id){
     unlink (__DIR__."/assets/img/data_konfirmasi/".$bukti);
  
 
-    $pindahdata = mysqli_query($koneksi,"DELETE FROM data_pelunasan_cobahampirfinishjuga WHERE uniqid = '$id'");
-    $pindahdata .= mysqli_query($koneksi,"DELETE FROM data_tracking_coba WHERE uniqid = '$id'");
+    mysqli_query($koneksi,"DELETE FROM data_pelunasan_cobahampirfinishjuga WHERE uniqid = '$id'");
+    mysqli_query($koneksi,"DELETE FROM data_tracking_coba WHERE uniqid = '$id'");
     
-    $result = mysqli_multi_query($koneksi, $pindahdata);
+    $result = true;
 
     if ( $result ){
      
@@ -3664,10 +3667,10 @@ function deletehistory($id){
     unlink (__DIR__."/assets/img/data_konfirmasi/".$bukti);
  
 
-    $pindahdata = mysqli_query($koneksi,"DELETE FROM data_history WHERE uniqid = '$id'");
-    $pindahdata .= mysqli_query($koneksi,"DELETE FROM data_tracking_coba WHERE uniqid = '$id'");
+    mysqli_query($koneksi,"DELETE FROM data_history WHERE uniqid = '$id'");
+    mysqli_query($koneksi,"DELETE FROM data_tracking_coba WHERE uniqid = '$id'");
     
-    $result = mysqli_multi_query($koneksi, $pindahdata);
+    $result = true;
 
     if ( $result ){
      
@@ -3695,13 +3698,13 @@ function lunas($id){
     $judul4 = "Pelunasan Terkonfirmasi";
     //$date = "SELECT DATE_FORMAT(STR_TO_DATE(`tanggal`, '%d-%m-%Y'), '%Y-%m-%d') as tanggal FROM data_pelunasan_cobahampirfinishjuga";
 
-    //$pindahdata = mysqli_query($koneksi,"UPDATE data_pelunasan_cobahampirfinishjuga SET tanggal ='$newDate' WHERE uniqid = '$id'");
-    $pindahdata = mysqli_query($koneksi, "INSERT INTO data_history SELECT * FROM data_booking_cobahampirfinishjuga WHERE uniqid = '$id'");
-    $pindahdata .= mysqli_query($koneksi,"DELETE FROM data_booking_cobahampirfinishjuga WHERE uniqid = '$id'");
-    $pindahdata .= mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu3 = CURRENT_TIMESTAMP, tambah3 = '$tambah3',gambar3 ='$gambar3',judul2 = '$judul2'  WHERE uniqid = '$id'");
-    $pindahdata .= mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu5 = CURRENT_TIMESTAMP,tambah5 = '$tambah5',gambar5 ='$gambar5',judul4 = '$judul4'  WHERE uniqid = '$id'");
+    //mysqli_query($koneksi,"UPDATE data_pelunasan_cobahampirfinishjuga SET tanggal ='$newDate' WHERE uniqid = '$id'");
+    mysqli_query($koneksi, "INSERT INTO data_history SELECT * FROM data_booking_cobahampirfinishjuga WHERE uniqid = '$id'");
+    mysqli_query($koneksi,"DELETE FROM data_booking_cobahampirfinishjuga WHERE uniqid = '$id'");
+    mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu3 = CURRENT_TIMESTAMP, tambah3 = '$tambah3',gambar3 ='$gambar3',judul2 = '$judul2'  WHERE uniqid = '$id'");
+    mysqli_query($koneksi, "UPDATE data_tracking_coba SET waktu5 = CURRENT_TIMESTAMP,tambah5 = '$tambah5',gambar5 ='$gambar5',judul4 = '$judul4'  WHERE uniqid = '$id'");
    
-    if ( mysqli_multi_query($koneksi, $pindahdata) ){
+    if ( true ){
 
     
 

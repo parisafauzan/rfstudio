@@ -1,0 +1,2090 @@
+<?php 
+require '../function.php';
+require '../session.php'; 
+
+$id = $_GET["id"];
+
+//query data tabel nampilin
+$datalunas = query("SELECT * FROM data_konfirmasi_cobahampirfinishjuga WHERE id = '$id'")[0]; 
+$uniqid = $datalunas["uniqid"];
+
+  $ambildatacetak = mysqli_query($koneksi,"SELECT * FROM data_tambahcetak WHERE uniqid ='$uniqid'");
+  $datacetak = mysqli_fetch_array($ambildatacetak);
+//
+if(isset($_POST["edit"])){
+error_reporting(0);
+ //var_dump($_POST);
+        if(edit($_POST)){
+          echo '<script language="javascript">';
+          echo 'alert("Data Berhasil di edit");';
+          echo 'function myFunction() {';
+          echo 'document.getElementById("myForm").reset();};';
+          echo 'history.go(-2);';
+          echo '</script>';
+        }else{
+          echo '<script language="javascript">';
+          echo 'alert("Data Berhasil di edit");';
+          echo 'function myFunction() {';
+          echo 'document.getElementById("myForm").reset();};';
+          echo 'history.go(-2);';
+          echo '</script>';
+        }exit;
+};
+?>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+ <!-- Favicons -->
+  <link href="../img/logo.png" rel="icon">
+  <link href="../img/logo.png" rel="apple-touch-icon">
+    
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- As a heading -->
+    <title>Edit - Bekasi Kabupaten</title>
+    <!-- Fontawesome -->
+    <script src="https://kit.fontawesome.com/8a35befa8d.js" crossorigin="anonymous"></script>
+    <!--  -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
+  </head>
+  <body>
+  
+    <!-- Ini adalah awal navbar header -->
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet">
+
+    
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <nav class="navbar navbar-light border-bottom" style="background-color: #fff; padding: 15px; ">
+         <div class="container d-flex justify-content-center" >
+          <a href="../index.php" class="text-dark" style="text-decoration:none;">
+             <img src="../img/logo.png" class="img-thumbnail rounded-circle" alt="Rizal Photography" width="80"  >
+             <span class="navbar-light h1 ms-2 align-middle fw-bold" style=" margin-top: 15px; ">Rizal Foto Studio</span>
+          </a>
+        </div>
+    </nav>
+    <!-- Ini adalah akhir navbar header -->
+    <style type="text/css">
+     
+      .container-md-5{ 
+        margin-top: 1rem;
+        margin-bottom: 5rem;
+        max-width: 700px;
+        margin: auto;
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+      html, body {
+      width:100%; 
+      height:100%;
+      }
+      </style>
+<!-- href="../logoutadmin.php" -->
+    <!-- Ini bagian atas body Form -->  
+<div class="jumbotron ">
+  <div class="container-md-5 border" >
+  <div class="d-inline-flex ps-1 pe-1 text-white bg-dark " style="width: 200px; height: 60px; " > 
+      <h5 class="product-title text-center mt-3 mx-auto">Edit</h5></div>
+
+
+<form id="myForm" method="post" action="" enctype="multipart/form-data">
+  <div class="m-3">
+    <input type="" hidden class="form-control"  id="id" name="id" value="<?= $datalunas["id"];  ?>" > 
+    <input type="" hidden class="form-control"  id="uniqid" name="uniqid" value="<?= $datalunas["uniqid"];  ?>" > 
+    <input type="" hidden class="form-control"  id="studio" name="studio" value="<?= $datalunas["studio"];  ?>" > 
+    <label for="nama" class="form-label fw-bold">Nama Upgrade Size <span class="text-black-50">(*abaikan jika tidak ada perubahan)</span></label>
+    <input type="text"  class="form-control"  id="nama" name="nama" value="<?= $datalunas["nama"];?>" required> 
+     
+    
+  </div>
+    <div class="m-3">
+    <label for="nomer" class="form-label fw-bold">Nomor Telepon<span class="text-black-50">(*abaikan jika tidak ada perubahan)</span></label>
+    <input type="text"  class="form-control"  id="notelp" name="notelp" maxlength="13" minlength="10" value="<?= $datalunas["no_telp"];  ?>" required>
+    
+    </div>
+    <div class="m-3">
+    <label for="email" class="form-label fw-bold">Email<span class="text-black-50">(*abaikan jika tidak ada perubahan)</span></label>
+    <input type="text"  class="form-control"  id="email" name="email" value="<?= $datalunas["email"];  ?>" required>
+    </div>
+    <!----------------------------------------------------------------->
+    <div class="row row-sm-5 row-md-5 row-lg-5 p-2 mx-auto mt-3 mb-3 " style="justify-content: start;">
+      <div class="col-md-5">
+        <label for="nomer" class="form-label fw-bold">Package</label>
+            <p><?php echo $datalunas["package"];echo " "; echo '<b>'.$datalunas["tipe_package"].'</b>' ;  ?></p>
+            <input type="text" class="form-control"   name="package" value="<?= $datalunas["package"];  ?>"  hidden>
+            <input type="text" class="form-control"   name="jumlah" value="<?= $datalunas["tipe_package"];  ?>"  hidden>
+        <label for="nomer" class="form-label fw-bold mt-3">Harga</label>
+            <p>Rp <?php echo number_format($datalunas["harga"],0," ",".");?></p>
+            <input type="text" class="form-control"  id="harga" name="harga" value="<?php 
+            if($datalunas["tipe_package"]=='special package'){
+              echo 800000;
+            }else if($datalunas["tipe_package"]=='best deal'){
+              echo 500000;
+            }else if($datalunas["package"]=='gold'){
+              echo 1850000;
+            }else if($datalunas["package"]=='baby smash cake'){
+              echo 1250000;
+            }else if($datalunas["tipe_package"]=='diamond package'){
+              echo 1850000;
+            }else if($datalunas["package"]=='silver'){
+              echo 1300000;
+            }else if($datalunas["tipe_package"]=='basic'){
+              echo 80000;
+            }else if($datalunas["tipe_package"]=='medium'){
+              echo 110000;
+            }else if($datalunas["tipe_package"]=='good'){
+              echo 140000;
+            }else if($datalunas["tipe_package"]=='studio3(atas)'){
+              echo 250000;
+            }else if($datalunas["tipe_package"]=='studio2(bawah)'){
+              echo 200000;    
+            }
+            else if($datalunas["package"]=='cetak foto'){
+              echo $datalunas["harga"];
+            }
+            
+            
+            ?>"  hidden>
+    </div>
+  
+         
+    </div>
+
+    <?php if($datalunas["tipe_package"]=="cetak foto"||$datalunas["tipe_package"]=="cetak foto "){
+      ?>
+      <input type="text" class="mb-4" name="tanggal" value="0" id="tanggal" >
+    <?php
+    } else{
+      ?>
+      <div class="m-3">
+        <p for="nama" class="form-label fw-bold">Tanggal<span class="text-black-50">(*abaikan jika tidak ada perubahan)</span></p>
+        <p>tanggal yang dipesan : <?php $date = $datalunas["tanggal"]; 
+           $newDate = date("d-m-Y", strtotime($date));
+           echo $newDate; ?></p>
+        <?php $date = $datalunas["tanggal"];
+        $newDate = date("Y-m-d", strtotime($date)); 
+        ?> 
+        <input type="date" class="mb-4" name="tanggal" value="<?php echo  $newDate;?>" id="tanggal" >
+        <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">cek jadwal</button>
+    </div>
+      <?php
+    }?>
+
+    
+    <?php
+    if($datalunas["tipe_package"]=="best deal"||$datalunas["tipe_package"]=="special package"||$datalunas["package"]=="studio"||$datalunas["package"]=="baby smash cake"||$datalunas["tipe_package"]=="diamond package"||$datalunas["tipe_package"]=="prawedding"){
+      ?>
+      <div class="m-3">
+        <label for="jam" class="mb-3 fw-bold">Waktu<span class="text-black-50">(*abaikan jika tidak ada perubahan)</span></label>
+        <div class="elem-group inlined">
+        <select class="form-select form-select-md mb-3" name="jam" id="jam" aria-label=".form-select-lg example" style="max-width: 300px;" >
+          <option selected value="<?= $datalunas["jam"];  ?>">Jam yang dipesan : <?= $datalunas["jam"];  ?></option>
+          <option value="08:00-09:00">08:00-09:00</option>
+          <option value="09:30-10:30">09:30-10:30</option>
+          <option value="11:00-12:00">11:00-12:00</option>
+          <option value="12:30-13:30">12:30-13:30</option>
+          <option value="14:00-15:00">14:00-15:00</option>
+          <option value="15:30-16:30">15:30-16:30</option>
+          <option value="17:00-18:00">17:00-18:00</option>
+          <option value="18:30-19:30">18:30-19:30</option>
+          <option value="20:00-21:00">20:00-21:00</option>
+        </select>
+      </div>
+    </div>
+      <?php
+    }else if($datalunas["package"]=="self photo"){
+      ?>
+      <div class="m-3">
+        <label for="jam" class="mb-3 fw-bold">Waktu<span class="text-black-50">(*abaikan jika tidak ada perubahan)</span></label>
+        <div class="elem-group inlined">
+        <select class="form-select form-select-md mb-3" name="jam" id="jam" aria-label=".form-select-lg example" style="max-width: 300px;" >
+          <option selected value="<?= $datalunas["jam"];  ?>">Jam yang dipesan : <?= $datalunas["jam"];  ?></option>
+            <option value="09.00-09.30">09.00-09.30</option>
+            <option value="10.00-10.30">10.00-10.30</option>
+            <option value="11.00-11.30">11.00-11.30</option>
+            <option value="12.00-12.30">12.00-12.30</option>
+            <option value="13.00-13.30">13.00-13.30</option>
+            <option value="14.00-14.30">14.00-14.30</option>
+            <option value="15.00-15.30">15.00-15.30</option>
+            <option value="16.00-16.30">16.00-16.30</option>
+            <option value="17.00-17.30">17.00-17.30</option>
+            <option value="18.00-18.30">18.00-18.30</option>
+            <option value="19.00-19.30">19.00-19.30</option>
+            <option value="20.00-20.30">20.00-20.30</option>
+        </select>
+      </div>
+    </div>
+    <?php
+      }
+      else if($datalunas["package"]=="cetak foto"){
+        ?>
+        <input name = "jam" value="<?= $datalunas["jam"];  ?>">
+        <?php
+      }
+    ?>
+    
+    <?php if($datalunas['package']=='cetak foto'){}else{?>
+    <div class="jarak ms-3" >
+      <label class="mb-2 fw-bold">Jumlah Orang yang foto ke Studio<span class="fw-light text-danger">*</span></label>
+      <p  class="mb-3 text-black-50" style="font-size: 14px;">edit jumlah orang</p>
+      <div class="row" style="max-width:480px">
+        <div class="col input">
+          <p for="jam" style="padding-top:10px;font-size: 14px;">Dewasa</p>
+        </div>
+        <div class="col input">
+          <input type="text" style="max-width: 150px;" value="<?= $datalunas["jmlhorgdws"];?>" class="form-control"  id="jumlahorangdewasa" name="jumlahorangdewasa" placeholder="" minlength="1"  autocomplete="off" >
+        </div>
+        <div class="col input">
+          <p for="jam" class="text-black-50" style="padding-top:10px;font-size: 14px;">Sebelumnya,<?= $datalunas["jmlhorgdws"];?></p>
+        </div>
+      </div>
+
+      <div class="row" style="max-width:500px;">
+        <div class="col input">
+          <p for="jam" style="padding-top:10px;font-size: 14px;">Anak-anak</p>
+        </div>
+        <div class="col input">
+          <input type="text" style="max-width: 150px;" value="<?= $datalunas["jmlhorgank"];?>" class="form-control"  id="jumlahoranganak" name="jumlahoranganak" placeholder="" minlength="1" autocomplete="off" >
+        </div>
+        <div class="col input">
+          <p for="jam" class="text-black-50" style="padding-top:10px;font-size: 14px;">Sebelumnya,<?= $datalunas["jmlhorgank"];?></p>
+        </div>
+      </div>
+    </div>
+    <?php }?>
+    <?php if($datalunas['package']=='cetak foto'){
+      ?>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="jumlahoranganak" name="jumlahoranganak" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="jumlahorangdewasa" name="jumlahorangdewasa" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="hargaup" name="hargaup" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="nambahanak" name="nambahanak" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="nambahdewasa" name="nambahdewasa" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="waktuovr" name="waktuovr" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="nambahorang" name="nambahorang" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="nambahwaktu" name="nambahwaktu" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="nambahwaktustdio2" name="nambahwaktustdio2" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="nambahwaktustdio3" name="nambahwaktustdio3" placeholder="" minlength="1" autocomplete="off" hidden>
+
+      <?php
+    }else if($datalunas['package']=='studio'){?>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="hargaup" name="hargaup" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="nambahanak" name="nambahanak" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="nambahdewasa" name="nambahdewasa" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="waktuovr" name="waktuovr" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="nambahorang" name="nambahorang" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="nambahwaktu" name="nambahwaktu" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="nambahwaktustdio2" name="nambahwaktustdio2" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="nambahwaktustdio3" name="nambahwaktustdio3" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="cetakfotosebelumnya" name="cetakfotosebelumnya" placeholder="" minlength="1" autocomplete="off" hidden>
+
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="cetakharga1" name="cetakharga1" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="cetakharga2" name="cetakharga2" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="cetakharga3" name="cetakharga3" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="cetakharga4" name="cetakharga4" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="cetakharga5" name="cetakharga5" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="cetakharga6" name="cetakharga6" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="cetakharga7" name="cetakharga7" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="cetakharga8" name="cetakharga8" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="0" class="form-control"  id="cetakharga9" name="cetakharga9" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="jumlahcetak1" name="jumlahcetak1" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="jumlahcetak2" name="jumlahcetak2" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="jumlahcetak3" name="jumlahcetak3" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="jumlahcetak4" name="jumlahcetak4" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="jumlahcetak5" name="jumlahcetak5" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="jumlahcetak6" name="jumlahcetak6" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="jumlahcetak7" name="jumlahcetak7" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="jumlahcetak8" name="jumlahcetak8" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="jumlahcetak9" name="jumlahcetak9" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="cetakfoto1" name="cetakfoto1" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="cetakfoto2" name="cetakfoto2" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="cetakfoto3" name="cetakfoto3" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="cetakfoto4" name="cetakfoto4" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="cetakfoto5" name="cetakfoto5" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="cetakfoto6" name="cetakfoto6" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="cetakfoto7" name="cetakfoto7" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="cetakfoto8" name="cetakfoto8" placeholder="" minlength="1" autocomplete="off" hidden>
+      <input type="text" style="max-width: 150px;" value="" class="form-control"  id="cetakfoto9" name="cetakfoto9" placeholder="" minlength="1" autocomplete="off" hidden>
+      
+    <?php }else{ ?>
+    <div class="m-3">
+        <label for="jam" class="mt-3 fw-bold">Upgrade Size cetak foto<span class="text-black-50">(*abaikan jika tidak ada perubahan)</span> <p class="text-black-50 fw-light">(sudah termasuk frame + laminasi canvas)</p></label>
+        <p class="">Cetak foto yang dipesan : <b><?= $datalunas["cetak_foto"] ?></b></p>
+        
+      <div class="p-2 mt-3 border">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="hargaup" value="200000" <?php echo ($datalunas["cetak_foto"]== '30x40 to 40x60') ?  "checked" : "" ;?> onclick="up1()">
+            <label class="form-check-label" for="flexRadioDefault1">
+            30x40 to 40x60 200k
+            </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="hargaup" value="360000" <?php echo ($datalunas["cetak_foto"]== '30x40 to 60x90') ?  "checked" : "" ;?> onclick="up2()">
+            <label class="form-check-label" for="flexRadioDefault2">
+            30x40 to 60x90 360k
+            </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="hargaup" value="410000" <?php echo ($datalunas["cetak_foto"]== '30x40 to 60x100') ?  "checked" : "" ;?> onclick="up3()">
+            <label class="form-check-label" for="flexRadioDefault1">
+            30x40 to 60x100 410k
+            </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="hargaup" value="460000" <?php echo ($datalunas["cetak_foto"]== '30x40 to 70x100') ?  "checked" : "" ;?> onclick="up4()">
+            <label class="form-check-label" for="flexRadioDefault2">
+            30x40 to 70x100 460k
+            </label>
+        </div>
+        <?php if ($datalunas["cetak_foto"]== 'bawaan specialpackage'||$datalunas["cetak_foto"]== 'bawaan specialpackage '){?>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="hargaup" value="0" <?php echo ($datalunas["cetak_foto"]== 'bawaan specialpackage' || $datalunas["cetak_foto"]== 'bawaan specialpackage ') ?  "checked" : "" ;?> onclick="up6()">
+            <label class="form-check-label" for="flexRadioDefault2">
+            bawaan specialpackage
+            </label>
+        </div>    
+          <?php }else if ($datalunas["cetak_foto"]== 'bawaan baby specialpackage' || $datalunas["cetak_foto"]== 'bawaan baby specialpackage '){?>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="hargaup" value="0" <?php echo ($datalunas["cetak_foto"]== 'bawaan baby specialpackage' || $datalunas["cetak_foto"]== 'bawaan baby specialpackage ' ) ?  "checked" : "" ;?> onclick="up5()">
+              <label class="form-check-label" for="flexRadioDefault2">
+              bawaan baby specialpackage
+              </label>
+          </div>
+          <?php }else if ($datalunas["cetak_foto"]== 'bawaan diamondpackage' || $datalunas["cetak_foto"]== 'bawaan diamondpackage '){?>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="hargaup" value="0" <?php echo ($datalunas["cetak_foto"]== 'bawaan diamondpackage' || $datalunas["cetak_foto"]== 'bawaan diamondpackage ' ) ?  "checked" : "" ;?> onclick="up7()">
+              <label class="form-check-label" for="flexRadioDefault2">
+              bawaan baby diamondpackage
+              </label>
+          </div>
+        <?php }else if ($datalunas["cetak_foto"]== 'tidak ada' || $datalunas["cetak_foto"]== 'tidak ada '){?>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="hargaup" value="0" <?php echo ($datalunas["cetak_foto"]== 'tidak ada' || $datalunas["cetak_foto"]== 'tidak ada ' ) ?  "checked" : "" ;?> onclick="up8()">
+              <label class="form-check-label" for="flexRadioDefault2">
+              tidak ada
+              </label>
+          </div>
+        <?php }else if ($datalunas["cetak_foto"]== 'bawaan silverprawedd' ||$datalunas["cetak_foto"]== 'bawaan silverprawedd '){?> 
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="hargaup" value="0" <?php echo ($datalunas["cetak_foto"]== 'bawaan silverprawedd' ||$datalunas["cetak_foto"]== 'bawaan silverprawedd ') ?  "checked" : "" ;?> onclick="up9()">
+              <label class="form-check-label" for="flexRadioDefault2">
+              bawaan silverprawedd
+              </label>
+          </div>
+        <?php }else if($datalunas["cetak_foto"]== 'bawaan goldprawedd'||$datalunas["cetak_foto"]== 'bawaan goldprawedd '){ ?>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="hargaup" value="0" <?php echo ($datalunas["cetak_foto"]== 'bawaan goldprawedd' ||$datalunas["cetak_foto"]== 'bawaan goldprawedd ') ?  "checked" : "" ;?> onclick="up10()">
+              <label class="form-check-label" for="flexRadioDefault2">
+              bawaan goldprawedd
+              </label>
+          </div>
+        <?php }?>
+      </div>
+    </div>
+    <?php }?>
+     <div class="form-check ">
+      <input class="form-control " type="text" id="cetak" name="cetak" value="<?= $datalunas["cetak_foto"] ?>" hidden>
+      <input class="form-control " type="text" id="cetakhargaovr" name="hargaovr" value="0" hidden>
+      <!-- <input class="form-control sp" type="text" id="sp" name="cetak"> -->
+    </div>
+
+    <div class="ms-4 mt-5 me-4 mb-4 border p-3">
+      <label class="form-check-label jarak  " for="flexCheckDefault" >
+           *Penambahan <span class="text-black-50">(*abaikan jika tidak ada perubahan)</span>
+           <p>*Diatas 8 orang pakai studio 3 (Naik tangga)</p>
+          </label>
+      <div class="tambah-anak ">
+
+        <?php if ($datalunas["tipe_package"]=='best deal'||$datalunas["tipe_package"]=='special package'||$datalunas["package"]=='baby smash cake'||$datalunas["tipe_package"]=='diamond package'){?>
+        <span class="text-black-50">(*abaikan jika tidak ada perubahan)</span>
+        <div class="tambah-makeup ">
+              <div class="d-flex flex-row">
+                <!-- nambahorang makeup -->
+                  <label class="text-start mt-4 flex-fill ps-2"  for="flexCheckDefault">
+                    Makeup (400k/orang)
+                    <p class="text-start">penambahan sebelumnya : <b><?= $datalunas["tambah_makeup"];  ?></b></p>
+                  </label>
+                <div class="d-flex flex-row">  
+                  <div class="container" id="jumlah-makeup" style="height:50px;" >
+                    <div class="row">
+                      <div class="col-sm-3 mt-3 mb-3 me-3">
+                        <div class="input-group" style="width: 100px;" >
+                        <span class="input-group-btn" style="width: 30px; height: 30px;">
+                          <button type="button" class="btn btn-default btn-makeup-minus" data-type="minus" data-field="quant[1]" >
+                            <span class="fa-solid fa-circle-minus "></span>
+                          </button>
+                        </span>
+                        <input type="text" name="nambahmakeup" style="border:none;padding-left:10px;margin-left:10px;background-color: white; width: 30px; height: 30px;"  autocomplete="off" placeholder="0" class="input-makeup-number"  value="<?=$datalunas['tambah_makeup']?>" min="0" max="30" readonly >
+                        <span class="input-group-btn" style="width: 30px; height: 30px;">
+                        <button type="button" class="btn btn-default btn-makeup-plus" data-type="plus" data-field="quant[1]" >
+                            <span class="fa-solid fa-circle-plus"></span>
+                          </button>
+                        </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- nambahorang hairdo -->
+            <div class="tambah-hairdo ">
+              <div class="d-flex flex-row ">
+                <!-- nambahorang hairdo -->
+                  <label class="text-start mt-4 flex-fill ps-2"  for="flexCheckDefault">
+                    Hairdo (250k/orang)
+                    <p class="text-start">penambahan sebelumnya : <b><?= $datalunas["tambah_hairdo"];  ?></b></p>
+                  </label>
+                <div class="d-flex flex-row">  
+                  <div class="container" id="jumlah-hairdo" style="height:50px;" >
+                    <div class="row">
+                      <div class="col-sm-3 mt-3 mb-3 me-3">
+                        <div class="input-group" style="width: 100px;" >
+                        <span class="input-group-btn" style="width: 30px; height: 30px;">
+                          <button type="button" class="btn btn-default btn-hairdo-minus" data-type="minus" data-field="quant[1]" >
+                            <span class="fa-solid fa-circle-minus "></span>
+                          </button>
+                        </span>
+                        <input type="text" name="nambahhairdo" style="border:none;padding-left:10px;margin-left:10px;background-color: white; width: 30px; height: 30px;"  autocomplete="off" placeholder="0" class="input-hairdo-number"  value="<?=$datalunas['tambah_hairdo']?>" min="0" max="30" readonly >
+                        <span class="input-group-btn" style="width: 30px; height: 30px;">
+                        <button type="button" class="btn btn-default btn-hairdo-plus" data-type="plus" data-field="quant[1]" >
+                            <span class="fa-solid fa-circle-plus"></span>
+                          </button>
+                        </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        <div class="d-flex flex-row justify-content-between me-2 ms-2 ">
+          <!-- nambahorang anak-anak -->
+            <label class="text-start mt-4"  for="flexCheckDefault">
+              Anak-anak (35k/orang)
+              <p class="text-start">penambahan sebelumnya : <b><?= $datalunas["anak"];  ?></b></p>
+            
+            </label>
+          <div class="d-flex flex-row">  
+            <div class="container" id="jumlah-anak" style="height:50px;" >
+              <div class="row">
+                <div class="col-sm-3 m-3">
+                  <div class="input-group" style="width: 100px;" >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                    <button type="button" class="btn btn-default btn-anak-minus" data-type="minus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-minus "></span>
+                    </button>
+                  </span>
+                  <input type="text" name="nambahanak" style="border:none;padding-left:10px;margin-left:10px;background-color: white; width: 30px; height: 30px;"  autocomplete="off" placeholder="0" class="input-anak-number"  value="<?=$datalunas['anak']?>" min="0" max="8" readonly >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                   <button type="button" class="btn btn-default btn-anak-plus" data-type="plus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-plus"></span>
+                    </button>
+                  </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <div class="tambah-dewasa mb-4">
+            <div class="d-flex flex-row justify-content-between m-2">
+              <label class="text-start mt-2" for="flexCheckDefault">
+              Dewasa (50k/orang)
+              <p class="text-start">penambahan sebelumnya : <b><?= $datalunas["dewasa"];  ?></b></p>
+              </label>
+            
+            <!-- nambahorang Dewasa -->
+
+          <div class="d-flex flex-row">
+            <div class="container jumlah-orang" style="height:50px;">
+              <div class="row">
+                <div class="col-sm-3 m-3">
+                  <div class="input-group" style="width: 100px;">
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                  <button type="button" class="btn btn-default btngede-minus"  data-type="minus" data-field="quant[1]">
+                  <span class="fa-solid fa-circle-minus "></span>
+                  </button>
+                  </span>
+                  <input type="text" name="nambahdewasa" style="border:none;padding-left:10px;margin-left:10px;background-color: white; width: 30px; height: 30px;"  autocomplete="off" placeholder="0" class="input-gede-number" value="<?=$datalunas['dewasa']?>" min="0" max="8" readonly>
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                  <button type="button" class="btn btn-default btngede-plus" data-type="plus" data-field="quant[1]">
+                  <span class="fa-solid fa-circle-plus"></span>
+                  </button>
+                  </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+
+        <div class=" mt-4 mb-4">
+          <p class="fw-bold">Overtime<span class="text-black-50"> (Perpanjangan Waktu)</span></p>
+          <div class="ms-3 mt-2">
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="radio" value="250000" name="hargaovr" <?php echo (($datalunas["tipe_package"]=='special package'||$datalunas["tipe_package"]=='best deal'||$datalunas["package"]=='baby smash cake'||$datalunas["tipe_package"]=='diamond package')&&$datalunas["tambah_waktu"]== '1') ?  "checked" : "" ;?> onclick="myF()" >
+                    <label class="form-check-label" for="flexRadioDefault2">
+                      250k / jam
+                    </label>
+            </div>
+            <div class="form-check mt-3">
+                <input class="form-check-input" type="radio" value="150000" name="hargaovr" <?php echo (($datalunas["tipe_package"]=='special package'||$datalunas["tipe_package"]=='best deal'||$datalunas["package"]=='baby smash cake'||$datalunas["tipe_package"]=='diamond package')&&$datalunas["tambah_waktu"]== '30') ?  "checked" : "" ;?> onclick="myF1()">
+                    <label class="form-check-label" for="flexRadioDefault2">
+                      150k / 30 menit
+                    </label>
+            </div>
+            <div class="form-check mt-3">
+                <input class="form-check-input" type="radio" value="0" name="hargaovr" <?php echo (($datalunas["tipe_package"]=='special package'||$datalunas["tipe_package"]=='best deal'||$datalunas["package"]=='baby smash cake'||$datalunas["tipe_package"]=='diamond package')&&$datalunas["tambah_waktu"]== '0') ?  "checked" : "" ;?> onclick="myF2()">
+                    <label class="form-check-label" for="flexRadioDefault2">
+                      Tanpa Overtime
+                    </label>
+            </div>
+          </div>
+        </div>
+      <input class="form-control"  type="text" name="waktuovr" value="<?=$datalunas['tambah_waktu']?>" id="waktuovr" hidden>
+     <!-- <input class="form-control"  type="text" value="0"  id="waktuovr" > -->
+       
+      <input type="text" name="nambahorang" style="background-color: white;"  autocomplete="off" placeholder="0" class="form-control  text-center" value="0" min="0" max="8" hidden>
+      <input type="text" name="nambahwaktu" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+      <input type="text" name="nambahwaktustdio2" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+      <input type="text" name="nambahwaktustdio3" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+        <?php } else if ($datalunas["package"]=='self photo'){
+        ?>
+        <input class="form-control"  type="text" name="waktuovr" value="0" id="waktuovr" hidden>
+       <label class="text-start mt-2">Khusus <b>Self Photo</b><span class="text-black-50"> (abaikan jika tidak ada penambahan)</span></label>
+    <div class="tambah-orang ">
+    <div class="d-flex flex-row justify-content-between me-2 ms-2 ">
+          <label class="form-check-label mt-4" for="flexCheckDefault">
+          Tambah orang (15k/orang) <p class="text-start">penambahan sebelumnya : <b><?= $datalunas["tambah_orang"];  ?></b></p>
+          </label>
+    
+      <!-- nambahorang anak-anak -->
+    
+      
+    <div class="d-flex flex-row"> 
+      <div class="container" id="jumlah-anak" style="height:50px;" >
+      <div class="row">
+        <div class="col-sm-3 m-3">
+            <div class="input-group" style="width: 130px;" >
+                <span class="input-group-btn" style="width: 30px; height: 30px;">
+                  <button type="button" class="btn btn-default btn-orang-minus"  data-type="minus" data-field="quant[1]" >
+                    <span class="fa-solid fa-circle-minus "></span>
+                  </button>
+                </span>
+                
+                <input type="text" name="nambahorang" style="border:none;padding-left:10px;margin-left:10px;background-color: white; width: 30px; height: 30px;" autocomplete="off" placeholder="0" class="input-nambah-number" value="<?php echo $datalunas["tambah_orang"]?>" min="0" max="8" readonly >
+              <span class="input-group-btn" style="width: 30px; height: 30px;">
+                <button type="button" class="btn btn-default btn-orang-plus" data-type="plus" data-field="quant[1]" >
+                  <span class="fa-solid fa-circle-plus"></span>
+                </button>
+                </span>
+            </div>
+        </div>
+      </div>
+      </div>
+      </div>
+    </div>
+    </div>
+
+    <div class="tambah-menit mb-4">
+    <div class="d-flex flex-row justify-content-between me-2 ms-2 ">
+          <label class="form-check-label mt-4" for="flexCheckDefault">
+          Tambah waktu / Overtime (20k/5 menit) <p class="text-start">penambahan sebelumnya : <b><?= $datalunas["tambah_waktu"];  ?></b></p>
+          </label>
+      
+      <!-- nambahorang Dewasa -->
+      
+     <div class="d-flex flex-row"> 
+      <div class="container jumlah-orang" style="height:50px;">
+      <div class="row">
+        <div class="col-sm-3 m-3">
+            <div class="input-group" style="width: 130px;">
+                <span class="input-group-btn" style="width: 30px; height: 30px;">
+                  <button type="button" class="btn btn-default btn-minus"  data-type="minus" data-field="quant[1]">
+                    <span class="fa-solid fa-circle-minus "></span>
+                  </button>
+                </span>
+                
+                <input type="" name="nambahwaktu" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control input-waktu-number text-center" value="<?php $waktubaru = $datalunas["tambah_waktu"]/5; echo $waktubaru?>" min="0" max="100" hidden>
+                <p type="text" name="nambahwaktu1" id="nambahwaktu1"  style="border:none;padding-left:10px;margin-left:10px;background-color: white; width: 30px; height: 30px;" autocomplete="off" placeholder="0" class="input-gede-number" value="<?php echo $datalunas["tambah_waktu"]?>" min="0" max="100" readonly><?php echo $datalunas["tambah_waktu"]?></p>
+                
+                <span class="input-group-btn" style="width: 30px; height: 30px;">
+                  <button type="button" class="btn btn-default btn-plus" data-type="plus" data-field="quant[1]">
+                    <span class="fa-solid fa-circle-plus"></span>
+                  </button>
+                </span>
+            </div>
+        </div>
+      </div>
+      </div>
+      </div>
+      </div>
+    </div>
+    
+    <input type="text" name="nambahwaktustdio2" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahwaktustdio3" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahanak" style="background-color: white;"  autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahdewasa" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control  text-center" value="0" min="0" max="8" hidden>
+    <?php }else if($datalunas["package"]=='studio') {
+      if($datalunas["tipe_package"]=='studio2(bawah)'){
+      ?>
+    
+    
+    <label class="text-start mt-2">Khusus <b>STUDIO Photo</b><span class="text-black-50"> (abaikan jika tidak ada penambahan)</span></label>
+    <div class="tambah-menit " id="studio2">
+    <div class="d-flex flex-row justify-content-evenly me-2 ms-2 ">
+          <label class="form-check-label mt-4" for="flexCheckDefault">
+          Tambah waktu / overtime <b>studio 2 </b>(200k/jam)<p class="text-start">penambahan sebelumnya : <b><?php if(empty($datalunas["tambah_waktu"])){echo "<b>tidak ada</b>";}else{echo $datalunas["tambah_waktu"]." jam";} ?></b></p>
+          </label>
+      <!-- nambahorang Dewasa -->
+      
+     <div class="d-flex flex-row"> 
+      <div class="container jumlah-orang" style="height:50px;">
+      <div class="row">
+        <div class="col-sm-3 m-3">
+            <div class="input-group" style="width: 130px;">
+                <span class="input-group-btn" style="width: 30px; height: 30px;">
+                  <button type="button" class="btn btn-default btn-dua-minus"  data-type="minus" data-field="quant[1]">
+                    <span class="fa-solid fa-circle-minus "></span>
+                  </button>
+                </span>
+                
+                <input type="text" name="nambahwaktustdio2" id="inputstudio2" style=" border:#fff;" value="<?php echo $datalunas["tambah_waktu"];?>" autocomplete="off" placeholder="0" class="form-control input-dua-number text-center bg-white" min="0" max="100" readonly>
+                
+                
+                <span class="input-group-btn" style="width: 30px; height: 30px;">
+                  <button type="button" class="btn btn-default btn-dua-plus" data-type="plus" data-field="quant[1]">
+                    <span class="fa-solid fa-circle-plus"></span>
+                  </button>
+                </span>
+            </div>
+        </div>
+      </div>
+      </div>
+      </div>
+      </div>
+    </div>
+    <input type="text" name="nambahwaktustdio3" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahorang" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahwaktu" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahanak" style="background-color: white;"  autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahdewasa" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control  text-center" value="0" min="0" max="8" hidden>
+    <?php }else{?>
+    <div class="tambah-menit mb-4" id="studio3">
+    <div class="d-flex flex-row justify-content-evenly me-2 ms-2 ">
+          <label class="form-check-label mt-4" for="flexCheckDefault">
+          Tambah waktu / overtime <b>studio 3</b> (250k/jam)<p class="text-start">penambahan sebelumnya : <b><?php if(empty($datalunas["tambah_waktu"])){echo "<b>tidak ada</b>";}else{echo $datalunas["tambah_waktu"]." jam";} ?></b></p>
+          </label>
+      
+      <!-- nambahorang Dewasa -->
+      
+     <div class="d-flex flex-row"> 
+      <div class="container jumlah-orang" style="height:50px;">
+      <div class="row">
+        <div class="col-sm-3 m-3">
+            <div class="input-group" style="width: 130px;">
+                <span class="input-group-btn" style="width: 30px; height: 30px;">
+                  <button type="button" class="btn btn-default btn-tiga-minus"  data-type="minus" data-field="quant[1]">
+                    <span class="fa-solid fa-circle-minus "></span>
+                  </button>
+                </span>
+                
+                <input type="text" name="nambahwaktustdio3" id="inputstudio3" style=" border:#fff;" value="<?= $datalunas["tambah_waktu"];  ?>" autocomplete="off" placeholder="0" class="form-control input-tiga-number text-center bg-white"  min="0" max="100" readonly>
+                
+                
+                <span class="input-group-btn" style="width: 30px; height: 30px;">
+                  <button type="button" class="btn btn-default btn-tiga-plus" data-type="plus" data-field="quant[1]">
+                    <span class="fa-solid fa-circle-plus"></span>
+                  </button>
+                </span>
+            </div>
+        </div>
+      </div>
+      </div>
+      </div>
+      </div>
+    </div>
+    <input type="text" name="nambahwaktustdio2" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahorang" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahwaktu" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahanak" style="background-color: white;"  autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahdewasa" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control  text-center" value="0" min="0" max="8" hidden>
+    <?php }?>
+    <?php }else if($datalunas["package"]=="cetak foto"||$datalunas["package"]=="cetak foto") { 
+      ?>
+      
+    <?php }else { 
+      ?>
+      <div class=" mt-4 mb-4">
+          <p class="fw-bold">Overtime<span class="text-black-50"> (Perpanjangan Waktu)</span></p>
+          <div class="ms-3 mt-2">
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="radio" value="250000" name="hargaovr" <?php echo (($datalunas["tipe_package"]=='prawedding')&&$datalunas["tambah_waktu"]== '1') ?  "checked" : "" ;?> onclick="myF()" >
+                    <label class="form-check-label" for="flexRadioDefault2">
+                      250k / jam
+                    </label>
+            </div>
+            <div class="form-check mt-3">
+                <input class="form-check-input" type="radio" value="150000" name="hargaovr" <?php echo (($datalunas["tipe_package"]=='prawedding')&&$datalunas["tambah_waktu"]== '30') ?  "checked" : "" ;?> onclick="myF1()">
+                    <label class="form-check-label" for="flexRadioDefault2">
+                      150k / 30 menit
+                    </label>
+            </div>
+            <div class="form-check mt-3">
+                <input class="form-check-input" type="radio" value="0" name="hargaovr" <?php echo (($datalunas["tipe_package"]=='prawedding')&&$datalunas["tambah_waktu"]== '0') ?  "checked" : "" ;?> onclick="myF2()">
+                    <label class="form-check-label" for="flexRadioDefault2">
+                      Tidak ada Overtime
+                    </label>
+            </div>
+          </div>
+        </div>
+
+     <input class="form-control"  type="text" value="0" name="waktuovr" id="waktuovr" hidden>
+     <input type="text" name="nambahwaktustdio2" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahwaktustdio3" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahorang" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahwaktu" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahanak" style="background-color: white;"  autocomplete="off" placeholder="0" class="form-control text-center" value="0" min="0" max="8" hidden>
+    <input type="text" name="nambahdewasa" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control  text-center" value="0" min="0" max="8" hidden>
+      <?php
+      
+    } ?>
+    <!--  -->
+    <input type="text" name="nambahanaklama" style="background-color: white;"  autocomplete="off" placeholder="0" class="form-control text-center" value="<?=$datalunas["anak"]?>" min="0" max="8" hidden>
+    <input type="text" name="nambahdewasalama" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control  text-center" value="<?=$datalunas["dewasa"]?>" min="0" max="8" hidden>
+    <input type="text" name="nambahoranglama" style="background-color: white;"  autocomplete="off" placeholder="0" class="form-control  text-center" value="<?=$datalunas["tambah_orang"]?>" min="0" max="8" hidden>
+    <input type="text" name="nambahwaktulama" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="<?=$datalunas["tambah_waktu"]?>" min="0" max="8" hidden>
+    <input type="text" name="cetakwaktu2lama" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="<?=$datalunas["tambah_waktu"]?>" min="0" max="8" hidden>
+    <input type="text" name="cetakwaktu3lama" style="background-color: white;" autocomplete="off" placeholder="0" class="form-control text-center" value="<?=$datalunas["tambah_waktu"]?>" min="0" max="8" hidden>
+
+    <input type="text" name="cetakwaktu2"  autocomplete="off"  class="form-control  text-center" value="" id="cetakwaktu2" hidden>
+    <input type="text" name="cetakwaktu3"  autocomplete="off"  class="form-control  text-center" value="" id="cetakwaktu3" hidden>
+    <?php if ($datalunas["package"]=="studio"){
+
+
+    }else{?>
+    <div class="tambahcetak">
+         <label for="jam" class="mb-2 fw-bold">Tambah Cetak Foto<span class="text-black-50">(*abaikan jika tidak ada perubahan)</span></label>
+        <div class="elem-group inlined">
+          <span class="text-black-50">Penambahan sebelumnya :</span>
+        <!-- <select class="form-select form-select-md mb-3" name="jam" id="jam" aria-label=".form-select-lg example" style="max-width: 300px;" required> -->
+        
+        <input class="form-control" type="text" style="max-width: 400px;" name="cetakfotosebelumnya"  value="<?= $datalunas["tambah_cetak"] ?>" readonly >
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <div class="tambah-5r m-1 ">
+          <?php  
+            ?>
+        <div class="d-flex flex-row justify-content-between me-2 ms-2 ">
+          <!-- nambah -->
+            <label class="text-center mt-4"  for="flexCheckDefault">
+              5R 15k
+            </label>
+          <div class="d-flex flex-row">  
+            <div id="jumlah-5r" >
+              <div class="row">
+                <div class="col-sm-3 m-3">
+                  <div class="input-group" style="width: 100px;" >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                    <button type="button" class="btn btn-default btn-5r-minus" data-type="minus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-minus "></span>
+                    </button>
+                  </span>
+                  <input type="text" name="cetakharga1" value="<?php if (empty($datacetak["qtty_uk5r"])){echo '0';}else{echo $datacetak['qtty_uk5r'];}?>" style="border:none;padding-left:10px;margin-left:10px;background-color: white; width: 30px; height: 30px;"  autocomplete="off" placeholder="0" class="input-5r-number"   min="0" max="8" readonly >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                   <button type="button" class="btn btn-default btn-5r-plus" data-type="plus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-plus"></span>
+                    </button>
+                  </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <div class="tambah-5rframe m-1 ">
+        <div class="d-flex flex-row justify-content-between me-2 ms-2 ">
+          <!-- nambah -->
+            <label class="text-center mt-4"  for="flexCheckDefault">
+              5R + Frame 30k
+            </label>
+          <div class="d-flex flex-row">  
+            <div id="jumlah-5rframe" >
+              <div class="row">
+                <div class="col-sm-3 m-3">
+                  <div class="input-group" style="width: 100px;" >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                    <button type="button" class="btn btn-default btn-5rframe-minus" data-type="minus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-minus "></span>
+                    </button>
+                  </span>
+                  <input type="text" name="cetakharga2" value="<?php if (empty($datacetak["qtty_uk5rframe"])){echo '0';}else{echo $datacetak['qtty_uk5rframe'];}?>"  style="border:none;padding-left:10px;margin-left:10px;background-color: white; width: 30px; height: 30px;"  autocomplete="off" placeholder="0" class="input-5rframe-number"   min="0" max="8" readonly >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                   <button type="button" class="btn btn-default btn-5rframe-plus" data-type="plus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-plus"></span>
+                    </button>
+                  </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <div class="tambah-10RS m-1 ">
+        <div class="d-flex flex-row justify-content-between me-2 ms-2 ">
+          <!-- nambah -->
+            <label class="text-center mt-4"  for="flexCheckDefault">
+              10RS 35k
+            </label>
+          <div class="d-flex flex-row">  
+            <div id="jumlah-10RS " >
+              <div class="row">
+                <div class="col-sm-3 m-3">
+                  <div class="input-group" style="width: 100px;" >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                    <button type="button" class="btn btn-default btn-10RS-minus" data-type="minus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-minus "></span>
+                    </button>
+                  </span>
+                  <input type="text" name="cetakharga3" value="<?php if (empty($datacetak["qtty_uk10rs"])){echo '0';}else{echo $datacetak['qtty_uk10rs'];}?>" style="border:none;padding-left:10px;margin-left:10px;background-color: white; width: 30px; height: 30px;"  autocomplete="off" placeholder="0" class="input-10RS-number"   min="0" max="8" readonly >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                   <button type="button" class="btn btn-default btn-10RS-plus" data-type="plus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-plus"></span>
+                    </button>
+                  </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <div class="tambah-10RS-frame m-1 ">
+        <div class="d-flex flex-row justify-content-between me-2 ms-2 ">
+          <!-- nambah -->
+            <label class="text-center mt-4"  for="flexCheckDefault">
+              10RS + Frame 70k
+            </label>
+          <div class="d-flex flex-row">  
+            <div id="jumlah-10RS-frame" >
+              <div class="row">
+                <div class="col-sm-3 m-3">
+                  <div class="input-group" style="width: 100px;" >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                    <button type="button" class="btn btn-default btn-10RS-frame-minus" data-type="minus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-minus "></span>
+                    </button>
+                  </span>
+                  <input type="text" name="cetakharga4" value="<?php if (empty($datacetak["qtty_uk10rsframe"])){echo '0';}else{echo $datacetak['qtty_uk10rsframe'];}?>" style="border:none;padding-left:10px;margin-left:10px;background-color: white; width: 30px; height: 30px;"  autocomplete="off" placeholder="0" class="input-10RS-frame-number"   min="0" max="8" readonly >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                   <button type="button" class="btn btn-default btn-10RS-frame-plus" data-type="plus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-plus"></span>
+                    </button>
+                  </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <div class="tambah-30x40-frame m-1 ">
+        <div class="d-flex flex-row justify-content-between me-2 ms-2 ">
+          <!-- nambah -->
+            <label class="text-center mt-4"  for="flexCheckDefault">
+              30x40 + Frame + Laminasi canvas 150k
+            </label>
+          <div class="d-flex flex-row">  
+            <div id="jumlah-30x40-frame" >
+              <div class="row">
+                <div class="col-sm-3 m-3">
+                  <div class="input-group" style="width: 100px;" >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                    <button type="button" class="btn btn-default btn-30x40-frame-minus" data-type="minus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-minus "></span>
+                    </button>
+                  </span>
+                  <input type="text" name="cetakharga5" value="<?php if (empty($datacetak["qtty_uk30x40"])){echo '0';}else{echo $datacetak['qtty_uk30x40'];}?>" style="border:none;padding-left:10px;margin-left:10px;background-color: white; width: 30px; height: 30px;"  autocomplete="off" placeholder="0" class="input-30x40-frame-number"   min="0" max="8" readonly >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                   <button type="button" class="btn btn-default btn-30x40-frame-plus" data-type="plus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-plus"></span>
+                    </button>
+                  </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <div class="tambah-40x60-frame m-1 ">
+        <div class="d-flex flex-row justify-content-between me-2 ms-2 ">
+          <!-- nambah -->
+            <label class="text-center mt-4"  for="flexCheckDefault">
+              40x60 + Frame + Laminasi canvas 350k
+            </label>
+          <div class="d-flex flex-row">  
+            <div id="jumlah-40x60-frame" >
+              <div class="row">
+                <div class="col-sm-3 m-3">
+                  <div class="input-group" style="width: 100px;" >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                    <button type="button" class="btn btn-default btn-40x60-frame-minus" data-type="minus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-minus "></span>
+                    </button>
+                  </span>
+                  <input type="text" name="cetakharga6" value="<?php if (empty($datacetak["qtty_uk40x60"])){echo '0';}else{echo $datacetak['qtty_uk40x60'];}?>" style="border:none;padding-left:10px;margin-left:10px;background-color: white; width: 30px; height: 30px;"  autocomplete="off" placeholder="0" class="input-40x60-frame-number"   min="0" max="8" readonly >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                   <button type="button" class="btn btn-default btn-40x60-frame-plus" data-type="plus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-plus"></span>
+                    </button>
+                  </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <div class="tambah-60x90-frame m-1 ">
+        <div class="d-flex flex-row justify-content-between me-2 ms-2 ">
+          <!-- nambah -->
+            <label class="text-center mt-4"  for="flexCheckDefault">
+              60x90 + Frame + Laminasi canvas 600k
+            </label>
+          <div class="d-flex flex-row">  
+            <div id="jumlah-60x90-frame" >
+              <div class="row">
+                <div class="col-sm-3 m-3">
+                  <div class="input-group" style="width: 100px;" >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                    <button type="button" class="btn btn-default btn-60x90-frame-minus" data-type="minus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-minus "></span>
+                    </button>
+                  </span>
+                  <input type="text" name="cetakharga7" value="<?php if (empty($datacetak["qtty_uk60x90"])){echo '0';}else{echo $datacetak['qtty_uk60x90'];}?>" style="border:none;padding-left:10px;margin-left:10px;background-color: white; width: 30px; height: 30px;"  autocomplete="off" placeholder="0" class="input-60x90-frame-number"   min="0" max="8" readonly >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                   <button type="button" class="btn btn-default btn-60x90-frame-plus" data-type="plus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-plus"></span>
+                    </button>
+                  </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <div class="tambah-60x100-frame m-1 ">
+        <div class="d-flex flex-row justify-content-between me-2 ms-2 ">
+          <!-- nambah -->
+            <label class="text-center mt-4"  for="flexCheckDefault">
+              60x100 + Frame + Laminasi canvas 650k
+            </label>
+          <div class="d-flex flex-row">  
+            <div id="jumlah-60x100-frame" >
+              <div class="row">
+                <div class="col-sm-3 m-3">
+                  <div class="input-group" style="width: 100px;" >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                    <button type="button" class="btn btn-default btn-60x100-frame-minus" data-type="minus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-minus "></span>
+                    </button>
+                  </span>
+                  <input type="text" name="cetakharga8" value="<?php if (empty($datacetak["qtty_uk60x100"])){echo '0';}else{echo $datacetak['qtty_uk60x100'];}?>" style="border:none;padding-left:10px;margin-left:10px;background-color: white; width: 30px; height: 30px;"  autocomplete="off" placeholder="0" class="input-60x100-frame-number"   min="0" max="8" readonly >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                   <button type="button" class="btn btn-default btn-60x100-frame-plus" data-type="plus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-plus"></span>
+                    </button>
+                  </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+        <div class="tambah-70x100-frame m-1 ">
+        <div class="d-flex flex-row justify-content-between me-2 ms-2 ">
+          <!-- nambah -->
+            <label class="text-center mt-4"  for="flexCheckDefault">
+              70x100 + Frame + Laminasi canvas 700k
+            </label>
+          <div class="d-flex flex-row">  
+            <div id="jumlah-70x100-frame" >
+              <div class="row">
+                <div class="col-sm-3 m-3">
+                  <div class="input-group" style="width: 100px;" >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                    <button type="button" class="btn btn-default btn-70x100-frame-minus" data-type="minus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-minus "></span>
+                    </button>
+                  </span>
+                  <input type="text" name="cetakharga9" value="<?php if (empty($datacetak["qtty_uk70x100"])){echo '0';}else{echo $datacetak['qtty_uk70x100'];}?>" style="border:none;padding-left:10px;margin-left:10px;background-color: white; width: 30px; height: 30px;"  autocomplete="off" placeholder="0" class="input-70x100-frame-number"   min="0" max="8" readonly >
+                  <span class="input-group-btn" style="width: 30px; height: 30px;">
+                   <button type="button" class="btn btn-default btn-70x100-frame-plus" data-type="plus" data-field="quant[1]" >
+                      <span class="fa-solid fa-circle-plus"></span>
+                    </button>
+                  </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <!------------------------------------------------------------>
+        <!------------------------------------------------------------>
+      </div>
+      <div class="form-check" >
+        <input type="text" name="jumlahcetak1"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk5r"])){echo '';}else{echo $datacetak['qtty_uk5r'];}?>"  class="form-control  text-center" id="textbox1" hidden>
+        <input type="text" name="jumlahcetak2"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk5rframe"])){echo '';}else{echo $datacetak['qtty_uk5rframe'];}?>" class="form-control  text-center" id="textbox2" hidden>
+        <input type="text" name="jumlahcetak3"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk10rs"])){echo '';}else{echo $datacetak['qtty_uk10rs'];}?>" class="form-control  text-center" id="textbox3" hidden>
+        <input type="text" name="jumlahcetak4"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk10rsframe"])){echo '';}else{echo $datacetak['qtty_uk10rsframe'];}?>" class="form-control  text-center" id="textbox4" hidden>
+        <input type="text" name="jumlahcetak5"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk30x40"])){echo '';}else{echo $datacetak['qtty_uk30x40'];}?>" class="form-control  text-center" id="textbox5" hidden>
+        <input type="text" name="jumlahcetak6"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk40x60"])){echo '';}else{echo $datacetak['qtty_uk40x60'];}?>" class="form-control  text-center" id="textbox6" hidden>
+        <input type="text" name="jumlahcetak7"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk60x90"])){echo '';}else{echo $datacetak['qtty_uk60x90'];}?>" class="form-control  text-center" id="textbox7" hidden>
+        <input type="text" name="jumlahcetak8"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk60x100"])){echo '';}else{echo $datacetak['qtty_uk60x100'];}?>" class="form-control  text-center" id="textbox8" hidden>
+        <input type="text" name="jumlahcetak9"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk70x100"])){echo '';}else{echo $datacetak['qtty_uk70x100'];}?>" class="form-control  text-center" id="textbox9" hidden>
+    
+
+        <!-- <input type=""  class="form-control"  id="hargasdp" name="hargasdp" value="<?= $ambil["hargasetelahdp"];  ?>"> -->
+        <!-- <input type=""  class="form-control"  id="waktu" name="waktu" value="<?= $ambil["waktu"];  ?>"> -->
+       
+      </div>
+      
+      <!-- value="<?php if (!empty($datacetak['uniqid'])){$ambil = explode(',', $datacetak['qtty_uk5r']); if(in_array('(5R)', $ambil)){ echo 'ok'; }else{echo 'fail';}}else{echo 'fail';} ?>" -->
+      <input type="text" name="cetakfoto1"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk5r"])){echo '';}else{echo "(5R)=";}?>" class="form-control  text-center" id="box1" hidden>
+      <input type="text" name="cetakfoto2"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk5rframe"])){echo '';}else{echo " (5R+Frame)=";}?>" class="form-control  text-center" id="box2" hidden>
+      <input type="text" name="cetakfoto3"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk10rs"])){echo '';}else{echo " (10RS)=";}?>" class="form-control  text-center" id="box3" hidden>
+      <input type="text" name="cetakfoto4"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk10rsframe"])){echo '';}else{echo " (10RS+Frame)=";}?>" class="form-control  text-center" id="box4" hidden>
+      <input type="text" name="cetakfoto5"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk30x40"])){echo '';}else{echo " (30x40+Frame)=";}?>" class="form-control  text-center" id="box5" hidden>
+      <input type="text" name="cetakfoto6"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk40x60"])){echo '';}else{echo " (40x60+Frame)=";}?>" class="form-control  text-center" id="box6" hidden>
+      <input type="text" name="cetakfoto7"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk60x90"])){echo '';}else{echo " (60x90+Frame)=";}?>" class="form-control  text-center" id="box7" hidden>
+      <input type="text" name="cetakfoto8"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk60x100"])){echo '';}else{echo " (60x100+Frame)=";}?>" class="form-control  text-center" id="box8" hidden>
+      <input type="text" name="cetakfoto9"  autocomplete="off" value="<?php if (empty($datacetak["qtty_uk70x100"])){echo '';}else{echo " (70x100+Frame)=";}?>" class="form-control  text-center" id="box9" hidden>
+    </div>
+    <?php }?>
+    <div class="m-3"> 
+      <label class="mb-3 mt-4 fw-bold">Catatan</label>
+      <textarea type="text" class="form-control" value="" name="catatan"><?=$datalunas["catatan"]?></textarea>
+    </div>
+    <div class="m-3">    
+      <label for="upload-img" class="mb-3 mt-4 fw-bold">Bukti Transfer (DP)</label>
+      <div class="elem-group inlined">
+        <!-- img -->
+        <img class="gallery-item" aria-label="bukti"  src= "../assets/img/data_konfirmasi/<?= $datalunas["bukti_transfer"];?>" width="200"> 
+      </div>
+    </div>
+
+    
+
+    </div>
+      <button type="submit" name="edit" class="btn-lg btn-outline-dark m-4 text-center" onclick="alert()">Submit</button>
+</form>
+
+  </div>
+  </div>
+  <!-- Modal = ketika di klik masuk mode pop up -->
+    <div class="modal fade" id="imgModal" tabindex="-1" role="dialog"  aria-labelledby="exampleModalLabel" aria-="true" >
+      <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+          <div class="modal-header " >
+            <h5 class="modal-title" id="exampleModalLabel">Bukti Transfer DP</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </button>
+          </div>
+          <div class="modal-body">
+            <img class="modal-img w-100" alt="Modal image" >
+          </div>
+        </div>
+      </div>
+    </div>
+
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Cek Jadwal</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+  <div class="table-responsive mx-auto" style="max-width:1000px ;">
+		<div class="table-wrapper">
+			<div class="table-title ">
+				<div class="row m-1 ">
+					<h2></h2>
+				</div>
+			</div>
+			<table class="table table-hover mx-auto" style="width: 100%;">
+				<thead class="align-middle">
+					<tr>
+            <th style="width: 20%;">Tanggal</th>
+						<th style="width: 10%;">Nama</th>
+            <th style="width: 20%;">Jam</th>
+						<th style="width: 15%;">Package</th>  
+					</tr>
+				</thead>
+				<tbody>
+                    <?php //foreach ($data as $row ) :
+					$batas = 50;
+					$halaman = isset($_GET['halaman'])?(int)$_GET['halaman'] : 1;
+					$halaman_awal = ($halaman>1) ? ($halaman * $batas) - $batas : 0;
+					//
+					$previous = $halaman - 1;
+					$next = $halaman + 1;
+
+					$data = mysqli_query($koneksi, "SELECT nama,package,tanggal,jam,tipe_package FROM data_booking_cobahampirfinishjuga WHERE studio IN ('Bekasi-Kabupaten','') UNION SELECT nama,package,tanggal,jam,tipe_package FROM data_konfirmasi_cobahampirfinishjuga WHERE studio IN ('Bekasi-Kabupaten','') ORDER BY tanggal,jam ASC");
+					$jumlah_data = mysqli_num_rows($data);
+					$total_halaman = ceil($jumlah_data / $batas);
+
+					$data_konfirmasi = mysqli_query($koneksi,"SELECT nama,package,tanggal,jam,tipe_package FROM data_booking_cobahampirfinishjuga WHERE studio IN ('Bekasi-Kabupaten','') UNION SELECT nama,package,tanggal,jam,tipe_package FROM data_konfirmasi_cobahampirfinishjuga WHERE studio IN ('Bekasi-Kabupaten','') ORDER BY tanggal,jam ASC LIMIT $halaman_awal, $batas");
+					$nomor = $halaman_awal+1;
+					while($d = mysqli_fetch_array($data_konfirmasi)){
+						?>
+					<tr>
+              <td><?php  $tanggal1 = date("d-m-Y", strtotime($d["tanggal"]));
+                      echo $tanggal1;  ?></td>
+						  <td><?php echo $d["nama"];  ?></td>
+              <td><?php
+               if ($d["tipe_package"]== "prawedding"){
+                if($d["jam"]=="08:00-09:00 09:30-10:30"){
+                  echo "08:00-10:00";
+                }else if($d["jam"]=="11:00-12:00 12:30-13:30"){
+                echo "11:00-13:00";
+                }
+                else if($d["jam"]=="14:00-15:00 15:30-16:30"){
+                echo "14:00-16:00";
+                }
+                else if($d["jam"]=="17:00-18:00 18:30-19:30"){
+                echo "17:00-19:00";
+                }
+                else if($d["jam"]=="20:00-21:00 21:00-22:00"){
+                echo "20:00-22:00";
+                }
+                else{
+                    echo $d["jam"];
+                }
+              }else if($d["package"]== "cetak foto"){
+                echo "--";
+              }else{
+                echo $d["jam"];
+              }
+               ?></td>
+              <td><?php echo $d["package"];echo " "; echo $d["tipe_package"];  ?></td>
+
+					</tr>
+                    <?php }//endforeach;?>
+				</tbody>
+			</table>
+		</div>
+	</div>  
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Tutup Modal -->
+    <!-- Ini bagian akhir body Form -->
+
+      <!-- Ini adalah awal footer  -->
+    <footer class="bg-dark text-white pt-5 pb-4">
+      <div class="container-md text-start text-md-left mx-auto"> 
+        <div class="row text-start text-md-left"> 
+          
+          <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mt-3">
+             <h5 class="text-uppercase mb-4 fw-bold text-warning text-start">RF Studio</h5>
+            <p class="span" style="font-size: 16px;" > Sebuah foto dapat menggambarkan kita kenangan terhadap momen tersebut, segera abadikan momen-mu di Rizal Foto <h class="fw-bold">Studio</h> </p>
+           
+            </div>
+
+            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+              <h5 class="text-uppercase mb-4 fw-bold text-warning">On Going</h5>
+              <p >
+                <a href="../jadwal.php" class="fjadwal text-white" style="text-decoration:none; " ><i class="fas fa-calendar-days me-2"></i> Jadwal</a>
+                </p>
+               <p>
+                <a href="../reservasi/overtime.php" class="fovertime text-white" style="text-decoration:none;" ><i class="fa-solid fa-clock me-2"></i> Overtime</a>
+              </p>
+              <p>
+                <a href="../trackingprogress.php" class="fpelunasan text-white" style="text-decoration:none;" ><i class="fa-solid fa-rotate me-2"></i> Tracking Progress</a>
+              </p>
+                
+              </div>
+
+            <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mt-3">
+              <h5 class="text-uppercase mb-4 fw-bold text-warning"> Contact Us</h5>
+              <p>
+                <!-- <a href="https://g.page/Rizalstudio?share" class="fmaps" style="text-decoration: none; color:#fff;"> -->
+                <a class="" href="" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none; color:#fff;">
+                  <i class="fas fa-location-dot me-2"></i>RF Studio - Maps
+                </a>
+                <div class="collapse" id="collapseExample">
+                    <a href="https://g.page/Rizalstudio?share" target="_blank" class="fmaps" style="text-decoration: none; color:#fff;"><i class="fa-solid fa-map-location-dot mb-3 ms-3 me-2"></i> 
+                      Bekasi Kabupaten
+                    </a><br>
+                    <a href="https://goo.gl/maps/knP7cQPUXhfDEti2A" target="_blank" class="fmaps" style="text-decoration: none; color:#fff;"><i class="fa-solid fa-map-location-dot ms-3 me-2"></i> 
+                      Bekasi Kota
+                    </a>      
+                </div>
+              </p>
+              <p>
+                <a href="https://wa.me/6281288045066" class="fwa" style="text-decoration: none; color:#fff;">
+              <i class="fa-brands fa-whatsapp mt-2 me-2"></i>0812-8804-5066
+              </a>
+              </p>
+              <p>
+                <a href="https://mail.google.com/" class="femail" style="text-decoration: none; color:#fff;">
+              <i class="fas fa-envelope  mt-2 me-2"></i>rizalphotography98@gmail.com
+              </a>
+              </p>
+              <p>
+                <a href="adminlogin.php" class="fadmin " style="text-decoration: none; color:#fff;">
+                <i class="fas fa-lock  mt-2 me-2"></i> Masuk Admin </a>
+              </p>
+            </div>
+            
+            </div>
+            <hr class="mb-4">
+            <div class="row align-items-center">
+              <div class="col-md-6 col-lg-6 ">
+              <p class="text-start">Copyright &copy;<span id="copyright-year"></span>
+		All rights reserved by :
+            <a href="#" style="text-decoration: none;">
+                <strong class="text-warning"> Rizal Foto Studio</strong>
+            </a>
+            </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </footer>
+    <script>
+        // Menampilkan tahun saat ini
+        document.getElementById('copyright-year').textContent = new Date().getFullYear();
+    </script>
+
+    <!-- Ini adalah akhir footer  -->
+
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+  
+    <!-- Modal Foto -->
+    <script type="text/javascript"> 
+    document.addEventListener("click",function (e){
+      if(e.target.classList.contains("gallery-item")){
+          const src = e.target.getAttribute("src");
+          document.querySelector(".modal-img").src = src;
+          const myModal = new bootstrap.Modal(document.getElementById('imgModal'));
+          myModal.show();
+      }
+    })</script>
+    <script>
+      function alert(){
+      var result = confirm("sudah dicek lagi?");
+      if (result == false){
+        event.preventDefault();
+      }
+    }
+    </script>
+
+    <!--DatePicker Script  -->
+    <script> 
+    var currentDateTime = new Date();
+    var year = currentDateTime.getFullYear();
+    var month = (currentDateTime.getMonth() + 0);
+    var date = (currentDateTime.getDate() + 0);
+
+    if(date < 10) {
+      date = '0' + date;
+      }
+    if(month < 10) {
+      month = '0' + month;
+      }
+
+    var dateTomorrow = year + "-" + month + "-" + date;
+    var bookingElem = document.querySelector("#tanggal");
+    
+
+    bookingElem.setAttribute("min", dateTomorrow);
+
+    bookingElem.onchange = function () {
+    }
+ </script> 
+ <script type="text/javascript">
+ function up1() {
+  $('#cetak').val('30x40 to 40x60');
+  // $('#hargaup').val('200000');
+ }
+ function up2() {
+  $('#cetak').val('30x40 to 60x90');
+  // $('#hargaup').val('360000');
+ }
+ function up3() {
+  $('#cetak').val('30x40 to 60x100');
+  // $('#hargaup').val('410000');
+ }
+ function up4() {
+  $('#cetak').val('30x40 to 70x100');
+  // $('#hargaup').val('460000');
+ }
+ function up5() {
+  $('#cetak').val('bawaan baby specialpackage');
+  // $('#hargaup').val('460000');
+ }
+ function up6() {
+  $('#cetak').val('bawaan specialpackage');d
+  // $('#hargaup').val('460000');
+ }
+ function up7() {
+  $('#cetak').val('bawaan diamondpackage');
+  // $('#hargaup').val('460000');
+ }
+ function up8() {
+  $('#cetak').val('tidak ada');
+  // $('#hargaup').val('460000');
+ }
+ function up9() {
+  $('#cetak').val('bawaan silverprawedd');
+  // $('#hargaup').val('460000');
+ }
+ function up10() {
+  $('#cetak').val('bawaan goldprawedd');
+  // $('#hargaup').val('460000');
+ }
+ 
+
+function myFunction1() {
+  document.getElementById("mySelect1").disabled = false;
+  document.getElementById("mySelect1a").disabled = false;
+  document.getElementById("mySelect2").disabled = true;
+  document.getElementById("mySelect2a").disabled = true;
+  document.getElementById("mySelect3").disabled = true;
+  document.getElementById("mySelect3a").disabled = true;
+  document.getElementById("mySelect3b").disabled = true;
+}
+function myFunction2() {
+  document.getElementById("mySelect1").disabled = true;
+  document.getElementById("mySelect1a").disabled = true;
+  document.getElementById("mySelect2").disabled = false;
+  document.getElementById("mySelect2a").disabled = false;
+  document.getElementById("mySelect3").disabled = true;
+  document.getElementById("mySelect3a").disabled = true;
+  document.getElementById("mySelect3b").disabled = true;
+}
+function myFunction3() {
+  document.getElementById("mySelect1").disabled = true;
+  document.getElementById("mySelect1a").disabled = true;
+  document.getElementById("mySelect2").disabled = true;
+  document.getElementById("mySelect2a").disabled = true;
+  document.getElementById("mySelect3").disabled = false;
+  document.getElementById("mySelect3a").disabled = false;
+  document.getElementById("mySelect3b").disabled = false;
+}
+</script>
+
+<!-- Preview Foto -->
+<script type="text/javascript">
+function preview() {
+   thumb.src=URL.createObjectURL(event.target.files[0]);
+}
+</script>
+ <script>
+    function myF(){
+      $("#waktuovr").val("1");
+      $("#cetakhargaovr").val("250000");
+
+    }
+    function myF1(){
+      $("#waktuovr").val("30");
+      $("#cetakhargaovr").val("150000");
+    }
+    function myF2(){
+      $("#waktuovr").val("0");
+      $("#cetakhargaovr").val("0");
+    }
+    
+  </script>
+
+
+    <script type="text/javascript">
+
+         $( document ).ready(function() {
+  var iAmProcessing = false;
+  $('.link').click(function(){
+    if (iAmProcessing === true) {
+      return;
+    }
+    iAmProcessing = true;
+    $.post('ajax1.php?strana='+$(this).attr('strana'), function(odgovor) {
+      iAmProcessing = false;
+      $('#odgovor').html(odgovor);
+    });
+  });
+});
+
+    </script>
+<!--Auto increament quantity tambah orang anak-anak-->
+<script type="text/javascript">
+  function myFunctionanak(p1, p2) {
+   return p1 * p2;
+}
+  function myFunctionnanak(p1, p2) {
+   return p1 - p2;
+}
+
+    
+      $(document).ready(function(){
+        $('.btn-anak-plus').click(function (e){
+          e.preventDefault();
+          
+          var qty = $('.input-anak-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value < 10){
+            value++;
+            $('.input-anak-number').val(value);
+            
+           // document.getElementById("calculation").innerHTML = myFunctionanak(value, 35000);
+           
+          }
+        });
+
+        $('.btn-anak-minus').click(function (e){
+          e.preventDefault();
+
+          var qty = $('.input-anak-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value > 0){
+            value--;
+            $('.input-anak-number').val(value);
+           //  document.getElementById("calculation").innerHTML = myFunctionnanak((value*35000), 0);
+           
+          }
+        });
+      });
+    </script>
+
+ <!--Auto increament quantity tambah orang dewasa-->
+  <script type="text/javascript">
+//   function myFunctiongede(p1, p2) {
+//    return p1 * p2;
+// }
+//   function myFunctionngede(p1, p2) {
+//    return p1 - p2;
+// }
+
+    $(document).ready(function(){
+      $('.btngede-plus').click(function (e){
+        e.preventDefault();
+        
+        var qty = $('.input-gede-number').val();
+        var value = parseInt(qty,10);
+        value = isNaN(value)? 0 : value;
+        if(value < 10){
+          value++;
+          $('.input-gede-number').val(value);
+          
+          // document.getElementById("calculation").innerHTML = myFunctiongede(value, 50000);
+          
+        }
+      });
+
+      $('.btngede-minus').click(function (e){
+        e.preventDefault();
+
+        var qty = $('.input-gede-number').val();
+        var value = parseInt(qty,10);
+        value = isNaN(value)? 0 : value;
+        if(value > 0){
+          value--;
+          $('.input-gede-number').val(value);
+          // document.getElementById("calculation").innerHTML = myFunctionngede((value*50000), 0);
+          
+        }
+      });
+    });
+  </script>
+  <!--Auto increament quantity tambah orang-->
+<script type="text/javascript">
+  function myFunctionanak(p1, p2) {
+   return p1 * p2;
+}
+  function myFunctionnanak(p1, p2) {
+   return p1 - p2;
+}
+
+    
+      $(document).ready(function(){
+        $('.btn-orang-plus').click(function (e){
+          e.preventDefault();
+          
+          var qty = $('.input-nambah-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value < 10){
+            value++;
+            $('.input-nambah-number').val(value);
+            
+           // document.getElementById("calculation").innerHTML = myFunctionanak(value, 35000);
+           
+          }
+        });
+
+        $('.btn-orang-minus').click(function (e){
+          e.preventDefault();
+
+          var qty = $('.input-nambah-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value > 0){
+            value--;
+            $('.input-nambah-number').val(value);
+           //  document.getElementById("calculation").innerHTML = myFunctionnanak((value*35000), 0);
+           
+          }
+        });
+      });
+    </script>
+       <!--Auto increament quantity-->
+<script type="text/javascript">
+  function myFunction(p1, p2) {
+   return p1 * p2;
+}
+  function myFunctionn(p1, p2) {
+   return p1 - p2;
+}
+    
+      $(document).ready(function(){
+        $('.btn-dua-plus').click(function (e){
+          e.preventDefault();
+          
+          var qty = $('.input-dua-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value < 10){
+            value++;
+            $('.input-dua-number').val(value);
+            $('#cetakwaktu2').val(value);
+            
+           // document.getElementById("calculation").innerHTML = myFunctionanak(value, 35000);
+           
+          }
+        });
+
+        $('.btn-dua-minus').click(function (e){
+          e.preventDefault();
+
+          var qty = $('.input-dua-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value > 0){
+            value--;
+            $('.input-dua-number').val(value);
+            $('#cetakwaktu2').val(value);
+            if(value == 0){
+            $('#cetakwaktu2').val('');
+
+            }
+           //  document.getElementById("calculation").innerHTML = myFunctionnanak((value*35000), 0);
+           
+          }
+        });
+      });
+    </script>
+    <script type="text/javascript">
+  function myFunction(p1, p2) {
+   return p1 * p2;
+}
+  function myFunctionn(p1, p2) {
+   return p1 - p2;
+}
+    
+      $(document).ready(function(){
+        $('.btn-tiga-plus').click(function (e){
+          e.preventDefault();
+          
+          var qty = $('.input-tiga-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value < 10){
+            value++;
+            $('.input-tiga-number').val(value);
+            $('#cetakwaktu3').val(value);
+           // document.getElementById("calculation").innerHTML = myFunctionanak(value, 35000);
+           
+          }
+        });
+
+        $('.btn-tiga-minus').click(function (e){
+          e.preventDefault();
+
+          var qty = $('.input-tiga-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value > 0){
+            value--;
+            $('.input-tiga-number').val(value);
+             $('#cetakwaktu3').val(value);
+            if(value == 0){
+            $('#cetakwaktu3').val('');
+           //  document.getElementById("calculation").innerHTML = myFunctionnanak((value*35000), 0);
+            }
+          }
+        });
+      });
+    </script>
+<script type="text/javascript">
+    $(document).ready(function(){
+      $('.btn-makeup-plus').click(function (e){
+        e.preventDefault();
+        
+        var qty = $('.input-makeup-number').val();
+        var value = parseInt(qty,10);
+        value = isNaN(value)? 0 : value;
+        if(value < 30){
+          value++;
+          $('.input-makeup-number').val(value);
+          
+        // document.getElementById("calculation").innerHTML = myFunctionanak(value, 35000);
+        
+        }
+      });
+
+      $('.btn-makeup-minus').click(function (e){
+        e.preventDefault();
+
+        var qty = $('.input-makeup-number').val();
+        var value = parseInt(qty,10);
+        value = isNaN(value)? 0 : value;
+        if(value > 0){
+          value--;
+          $('.input-makeup-number').val(value);
+        //  document.getElementById("calculation").innerHTML = myFunctionnanak((value*35000), 0);
+        
+        }
+      });
+    });
+
+    $(document).ready(function(){
+      $('.btn-hairdo-plus').click(function (e){
+        e.preventDefault();
+        
+        var qty = $('.input-hairdo-number').val();
+        var value = parseInt(qty,10);
+        value = isNaN(value)? 0 : value;
+        if(value < 30){
+          value++;
+          $('.input-hairdo-number').val(value);
+          
+        // document.getElementById("calculation").innerHTML = myFunctionanak(value, 35000);
+        
+        }
+      });
+
+      $('.btn-hairdo-minus').click(function (e){
+        e.preventDefault();
+
+        var qty = $('.input-hairdo-number').val();
+        var value = parseInt(qty,10);
+        value = isNaN(value)? 0 : value;
+        if(value > 0){
+          value--;
+          $('.input-hairdo-number').val(value);
+        //  document.getElementById("calculation").innerHTML = myFunctionnanak((value*35000), 0);
+        
+        }
+      });
+    });
+  </script>
+ <!--Auto increament quantity tambah waktu-->
+<script type="text/javascript">
+  function myFunctiongede(p1, p2) {
+   return p1 * p2;
+}
+  function myFunctionngede(p1, p2) {
+   return p1 - p2;
+}
+
+    
+      $(document).ready(function(){
+        $('.btn-plus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-waktu-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value < 100){
+            value++;
+            $('.input-waktu-number').val(value);
+            
+            document.getElementById("nambahwaktu1").innerHTML = myFunctiongede(value, 5);
+           
+          }
+        });
+
+        $('.btn-minus').click(function (e){
+          e.preventDefault();
+
+          var qty = $('.input-waktu-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value > 0){
+            value--;
+            $('.input-waktu-number').val(value);
+            document.getElementById("nambahwaktu1").innerHTML = myFunctionngede((value*5),0);
+            // document.getElementById("calculation").innerHTML = myFunctionngede((value*50000), 0);
+           
+          }
+        });
+      });
+    </script>
+
+    <script type="text/javascript">
+      ////////////////CETAK 5R//////////////////////
+      $(document).ready(function(){
+        $('.btn-5r-plus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-5r-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value < 10){
+            value++;
+            $('.input-5r-number').val(value);
+            $('#box1').val('(5R)=');
+            $('#textbox1').val(value);
+            
+          }
+        });
+        
+        $('.btn-5r-minus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-5r-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value > 0){
+            value--;
+            $('.input-5r-number').val(value);
+            $('#textbox1').val(value);
+            if(value == 0){
+            $('#box1').val('');
+            $('#textbox1').val('');
+          }
+          }
+        });
+      });
+      </script>
+      <script type="text/javascript">
+      ////////////////CETAK 5Rframe//////////////////////
+      $(document).ready(function(){
+        $('.btn-5rframe-plus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-5rframe-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value < 10){
+            value++;
+            $('.input-5rframe-number').val(value);
+            $('#box2').val(' (5R+frame)=');
+            $('#textbox2').val(value);
+          }
+        });
+
+        $('.btn-5rframe-minus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-5rframe-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value > 0){
+            value--;
+            $('.input-5rframe-number').val(value);
+            $('#textbox2').val(value);
+            if(value == 0){
+            $('#box2').val('');
+            $('#textbox2').val('');
+          }
+          }
+        });
+      });
+      </script>
+      <script type="text/javascript">
+      ////////////////CETAK 10RS//////////////////////
+      $(document).ready(function(){
+        $('.btn-10RS-plus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-10RS-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value < 10){
+            value++;
+            $('.input-10RS-number').val(value);
+            $('#box3').val(' (10RS)=');
+            $('#textbox3').val(value);
+          }
+        });
+
+        $('.btn-10RS-minus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-10RS-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value > 0){
+            value--;
+            $('.input-10RS-number').val(value);
+            $('#textbox3').val(value);
+            if(value == 0){
+            $('#box3').val('');
+            $('#textbox3').val('');
+          }
+          }
+        });
+      });
+      </script>
+      <script type="text/javascript">
+      ////////////////CETAK 10RS-frame//////////////////////
+      $(document).ready(function(){
+        $('.btn-10RS-frame-plus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-10RS-frame-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value < 10){
+            value++;
+            $('.input-10RS-frame-number').val(value);
+            $('#box4').val(' (10RS+frame)=');
+            $('#textbox4').val(value);
+          }
+        });
+
+        $('.btn-10RS-frame-minus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-10RS-frame-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value > 0){
+            value--;
+            $('.input-10RS-frame-number').val(value);
+            $('#textbox4').val(value);
+            if(value == 0){
+            $('#box4').val('');
+            $('#textbox4').val('');
+          }
+          }
+        });
+      });
+      </script>
+      <script type="text/javascript">
+      ////////////////CETAK 30x40//////////////////////
+      $(document).ready(function(){
+        $('.btn-30x40-frame-plus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-30x40-frame-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value < 10){
+            value++;
+            $('.input-30x40-frame-number').val(value);
+            $('#box5').val(' (30x40+Frame)=');
+            $('#textbox5').val(value);
+          }
+        });
+
+        $('.btn-30x40-frame-minus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-30x40-frame-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value > 0){
+            value--;
+            $('.input-30x40-frame-number').val(value);
+            $('#textbox5').val(value);
+            if(value == 0){
+            $('#box5').val('');
+            $('#textbox5').val('');
+          }
+          }
+        });
+      });
+      </script>
+      <script type="text/javascript">
+      ////////////////CETAK 40x60//////////////////////
+      $(document).ready(function(){
+        $('.btn-40x60-frame-plus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-40x60-frame-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value < 10){
+            value++;
+            $('.input-40x60-frame-number').val(value);
+            $('#box6').val(' (40x60+Frame)=');
+            $('#textbox6').val(value);
+          }
+        });
+
+        $('.btn-40x60-frame-minus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-40x60-frame-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value > 0){
+            value--;
+            $('.input-40x60-frame-number').val(value);
+            $('#textbox6').val(value);
+            if(value == 0){
+            $('#box6').val('');
+            $('#textbox6').val('');
+          }
+          }
+        });
+      });
+      </script>
+      <script type="text/javascript">
+      ////////////////CETAK 60x90//////////////////////
+      $(document).ready(function(){
+        $('.btn-60x90-frame-plus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-60x90-frame-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value < 10){
+            value++;
+            $('.input-60x90-frame-number').val(value);
+            $('#box7').val(' (60x90+Frame)=');
+            $('#textbox7').val(value);
+          }
+        });
+
+        $('.btn-60x90-frame-minus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-60x90-frame-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value > 0){
+            value--;
+            $('.input-60x90-frame-number').val(value);
+            $('#textbox7').val(value);
+            if(value == 0){
+            $('#box7').val('');
+            $('#textbox7').val('');
+          }
+          }
+        });
+      });
+      </script>
+      <script type="text/javascript">
+      ////////////////CETAK 60x100//////////////////////
+      $(document).ready(function(){
+        $('.btn-60x100-frame-plus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-60x100-frame-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value < 10){
+            value++;
+            $('.input-60x100-frame-number').val(value);
+            $('#box8').val(' (60x100+Frame)=');
+            $('#textbox8').val(value);
+          }
+        });
+
+        $('.btn-60x100-frame-minus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-60x100-frame-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value > 0){
+            value--;
+            $('.input-60x100-frame-number').val(value);
+            $('#textbox8').val(value);
+           if(value == 0){
+            $('#box8').val('');
+            $('#textbox8').val('');
+          }
+          }
+        });
+      });
+      </script>
+      <script type="text/javascript">
+      ////////////////CETAK 70x100//////////////////////
+      $(document).ready(function(){
+        $('.btn-70x100-frame-plus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-70x100-frame-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value < 10){
+            value++;
+            $('.input-70x100-frame-number').val(value);
+            $('#box9').val(' (70x100+Frame)=');
+            $('#textbox9').val(value);
+          }
+        });
+
+        $('.btn-70x100-frame-minus').click(function (e){
+          e.preventDefault();
+          var qty = $('.input-70x100-frame-number').val();
+          var value = parseInt(qty,10);
+          value = isNaN(value)? 0 : value;
+          if(value > 0){
+            value--;
+            $('.input-70x100-frame-number').val(value);
+            $('#textbox9').val(value);
+           if(value == 0){
+            $('#box9').val('');
+            $('#textbox9').val('');
+          }
+          }
+        });
+      });
+    </script>
+
+  </body>
+  </html>

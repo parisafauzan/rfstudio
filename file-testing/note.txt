@@ -1,0 +1,58 @@
+
+//dibawah ini query untuk custom id/client id = RFS000....
+// $cekid = "SELECT * FROM data_konfirmasi_coba ORDER BY id DESC LIMIT 1";
+// $cekhasil = mysqli_query($koneksi,$cekid);
+// if (mysqli_num_rows($cekhasil)>0)
+// {
+// if ($row = mysqli_fetch_assoc($cekhasil)){
+//  $client_id = $row['client_id'];
+//  $get_number = str_replace("RFS","","$client_id");
+//  $id_increase = $get_number+1;
+//  $get_string = str_pad($id_increase,5,0,STR_PAD_LEFT);
+//  $id = "RFS".$get_string;
+
+//  $insert_qry = "INSERT INTO data_konfirmasi_coba
+//                 VALUES
+//                 ('','$id','$nama','$notelp','$email','$package','$tanggal','$jam','$bukti_transfer','$jumlah','CURRENT_TIMESTAMP')";
+//   $hasil = mysqli_query($koneksi,$insert_qry);
+//   if($hasil){
+    
+//     echo "
+//     <script>
+//           alert('Data Berhasil Ditambahkan <br> Nomor Registrasi : $id');
+//           document.location.href.'index.php';
+//     </script>
+//     ";
+//   }else{
+//     echo "
+//     <script>
+//           alert('Data Gagal Ditambahkan);
+//           document.location.href.'index.php';
+//     </script>
+//     ";
+//   }
+
+// }
+// }else{
+//   $id = "RFS00001";
+//   $insert_qry = "INSERT INTO data_konfirmasi_coba
+//                 VALUES
+//                 ('','$id','$nama','$notelp','$email','$package','$tanggal','$jam','$bukti_transfer','$jumlah','CURRENT_TIMESTAMP')";
+//   $hasil = mysqli_query($koneksi,$insert_qry);
+//   if($hasil){
+    
+//     echo "
+//     <script>
+//           alert('Data Berhasil Ditambahkan <br> Nomor Registrasi : $id');
+//           document.location.href.'index.php';
+//     </script>
+//     ";
+//   }else{
+//     echo "
+//     <script>
+//           alert('Data Gagal Ditambahkan);
+//           document.location.href.'index.php';
+//     </script>
+//     ";
+//   }
+// }

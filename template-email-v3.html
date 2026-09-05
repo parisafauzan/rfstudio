@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rizal Foto Studio</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 1px;
+        background-color: white;
+      }
+      .container {
+        width: 100%;
+        background-color: #f4f4f4;
+        border: 1px solid #ddd;
+        margin: 20px auto;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      table {
+        width: 100%;
+        max-width: 350px;
+        margin: 20px auto;
+        padding: 10px;
+        font-size: 14px;
+        background-color: #ffffff;
+        border-spacing: 0;
+        border-collapse: collapse;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .td1 {
+        padding: 10px;
+        text-align: left;
+      }
+      .td2 {
+        padding: 10px;
+        text-align: right;
+        font-weight: bold;
+      }
+      .header {
+        width: 100%;
+        max-width: 100px;
+        background-color: #212529;
+        color: #ffffff;
+        font-size: 24px;
+        text-align: center;
+        padding: 15px 0;
+        border-radius: 10px;
+      }
+      tfoot {
+        background-color: #212529;
+        color: #ffffff;
+        font-size: 12px;
+        text-align: center;
+        padding: 15px 0;
+        border-radius: 10px;
+      }
+      .content-table {
+        width: 100%;
+      }
+      .content-table td {
+        width: 50%;
+        vertical-align: top;
+      }
+      .footer {
+        background-color: rgb(234, 234, 234);
+        text-align: center;
+        padding: 15px 0;
+        font-size: 14px;
+      }
+      .footer a {
+        text-decoration: underline;
+        color: #212529;
+      }
+      .line {
+        border-top: 1px solid rgb(234, 234, 234);
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <table>
+        <tr>
+          <td class="header">Rizal Foto Studio</td>
+        </tr>
+      </table>
+
+      <!-- Content -->
+      <table class="content-table">
+        <tbody>
+          <tr>
+            <td class="td1">Nama</td>
+            <td class="td2">'.$nama.'</td>
+          </tr>
+          <tr>
+            <td class="td1">No. Telp</td>
+            <td class="td2">'.$notelp.'</td>
+          </tr>
+          <tr>
+            <td class="td1">Email</td>
+            <td class="td2">'.$email.'</td>
+          </tr>
+          <tr>
+            <td class="td1">Tanggal</td>
+            <td class="td2">'.$date.'</td>
+          </tr>
+          <tr>
+            <td class="td1">Jam</td>
+            <td class="td2">'.$jam.'</td>
+          </tr>
+          <tr>
+            <td class="td1">Jumlah Orang yang Foto</td>
+            <td class="td2">'.$jumlahorangdewasa.' dan '.$jumlahoranganak.'</td>
+          </tr>
+          <tr>
+            <td class="td1">Kode Track Progress</td>
+            <td class="td2">'.$uniqid.'</td>
+          </tr>
+          <tr>
+            <td class="td1">Lokasi Studio</td>
+            <td class="td2">'.$studio.'</td>
+          </tr>
+          <tr>
+            <td class="td1">Package</td>
+            <td class="td2">'.$package.' '.$jumlah.'</td>
+          </tr>
+          <tr>
+            <td class="td1">Cetak Foto</td>
+            <td class="td2">'.$cetakfoto.'</td>
+          </tr>
+          <tr>
+            <td class="td1">Penambahan Waktu</td>
+            <td class="td2">'.$penambahanwaktu.'</td>
+          </tr>
+          <tr>
+            <td class="td1">Penambahan Makeup</td>
+            <td class="td2">'.$penambahanmakeup.'</td>
+          </tr>
+          <tr>
+            <td class="td1">Penambahan Hairdo</td>
+            <td class="td2">'.$penambahanhairdo.'</td>
+          </tr>
+          <tr>
+            <td class="td1">Penambahan Cetak</td>
+            <td class="td2">'.$nambahcetak.'</td>
+          </tr>
+          <tr>
+            <td class="td1">Catatan</td>
+            <td class="td2">'.$catatanemail.'</td>
+          </tr>
+          <tr>
+            <td class="td1">Status</td>
+            <td class="td2">'.$ketbayar.'</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <td>
+            <p><strong>*Note :</strong></p>
+            <p>
+              - Mohon untuk datang lebih awal<b> dari jam bookingan. </b
+              ><b>Jika Terlambat</b> diluar tanggung jawab kami. Sesi Foto
+              mengikuti jam bookingan.
+            </p>
+            <p>- Yang belum lunas pelunasan setelah selesai foto</p>
+          </td>
+          <td>
+            <br />
+            <br />
+            <p>- Link google drive dikirim setelah pelunasan</p>
+            <p>- Reschedule paling lambat h-3</p>
+            <p>- Link Google drive berlaku hanya 2 minggu</p>
+          </td>
+        </tfoot>
+      </table>
+
+      <div class="line"></div>
+
+      <!-- Footer -->
+      <div class="footer">
+        Terimakasih telah menggunakan layanan kami<br />
+        <a href="https://rfstudio.id">RFStudio.id</a>
+      </div>
+    </div>
+  </body>
+</html>

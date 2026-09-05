@@ -1,0 +1,106 @@
+Rencana pembukuan:	- database sudah terhubung dengan website admin dan user
+			tapi belum mencantumkan harga pada tabel database, jadinya belum bisa mengetahui
+			biaya yang masuk secara dp ataupun pelunasan.
+			- (baru kepikiran) jadi nanti bikin tombol yaitu pelunasan yaitu berisikan 
+id
+
+saya akan memasukkan tabel data_booking dari tabel data_konfirmasi berdasarkan id
+insert into data_konfirmasi_ select * from data_konfirmasi where id = $id
+
+menghapus id dari tabel data_konfirmasi 
+delete from table data_konfirmasi where id=$id
+
+jadi ketika tombol konfirmasi ditekan, maka yang terjadi adalah data dari tabel konfirmasiDP tersalin ke tabel booking 
+dan tombol konfirmasi berubah menjadi tanda/tulisan lunas dp, 
+
+$id = $_GET['id'];
+
+$sql = mysql_fetch_array(mysql_query("SELECT id,name, cv FROM candidates WHERE id=".$id));
+
+mysql_query("INSERT INTO sortlist(id,name,cv) values($sql['id'],$sql['name'],$sql['cv'])");
+
+mysql_query("DELETE FROM candidates WHERE id='".$id."'");
+
+
+
+BASIC PACKAGE 80k
+- 10 menit
+- Unlimited Photo
+- 10 Photo Edit
+- All Softcopy via Google drive
+- Max 2 Person
+
+MEDIUM PACKAGE 110k
+- 15 menit
+- Unlimited Photo
+- 15 Photo Edit
+- All Softcopy via Google drive
+- max 3 person
+
+GOOD PACKAGE 110k
+- 20 menit
+- Unlimited Photo
+- 20 Photo Edit
+- All Softcopy via Google drive
+- max 4 person
+
+*Additional person 15k/orang
+*Additional extra time 20k/5 menit
+
+GOLD PACKAGE PRAWEDDING
+
+Benefits
+1 Photographer
+2 Background Photo
+1-1.5 Jam Makeup
+2 Jam Photo Session
+2 Cetak uk 30 x 40 + Frame
+Free 15-20 Photo edit tone warna
+Unlimited Photo
+All Softcopy on Google drive
+Include Makeup + Busana
+
+SILVER PACKAGE PRAWEDDING
+
+Benefits
+
+1 Photographer
+2 Background Photo
+2-3 Jam Photo Session
+2 Cetak uk 17R
+Free 20 Photo edit tone warna / retouch wajah
+Unlimited Photo
+All Softcopy on Google drive
+
+UPDATE `data_konfirmasi_cobahampirfinishjuga` SET `harga` = '80000', `bukti_lunas` = 'kosong' WHERE `data_konfirmasi_cobahampirfinishjuga`.`id` = 33; 
+UPDATE `data_konfirmasi_cobahampirfinishjuga` SET `bukti_lunas` = 'kosong' WHERE `data_konfirmasi_cobahampirfinishjuga`.`id` = 34; 
+UPDATE `data_konfirmasi_cobahampirfinishjuga` SET `bukti_lunas` = 'kosong' WHERE `data_konfirmasi_cobahampirfinishjuga`.`id` = 35;
+
+      $emailpengirim = 'rizalfotostudio2022@gmail.com';
+      $namapengirim = 'rizal';
+      $emailpenerima = $email;
+      $subjek = 'COBA CUY';
+      $pesan = 'asdasdadasdasdas';
+
+      $mail = new PHPMailer();
+      $mail ->isSMTP();
+
+      $mail->Host = 'smtp.gmail.com';
+      $mail->Username = $emailpengirim;
+      $mail->Password = 'Rfstudio2022';
+      $mail->Port = 465;
+      $mail->SMTPAuth = true;
+      $mail->SMTPSecure = 'ssl';
+      $mail->SMTPDebug = 2;
+
+      $mail->setFrom($emailpengirim,$namapengirim);
+      $mail->addAddress($emailpengirim);
+      $mail->isHTML(true);
+      $mail->Subject = $subjek;
+      $mail->Body = $pesan;
+
+      $send = $mail->send();
+
+booking : Kami mengingatkan (agar jangan sampai terlewat ya jadwal photoshoot kamu, soalnya udah deket nih $tanggal dan $jam)
+pelunasan : Segera melakukan pelunasan (photoshoot sudah sekarang tinggal tahap pelunasan)
+lunas : Pembayaran pelunasanmu terkonfirmasi oleh RFStudio (teimakasih telah mempercayakan kami RFStudio, jangan ragu untuk share ke teman-temanmu ya)

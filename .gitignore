@@ -1,0 +1,25 @@
+# Backup & arsip (bukan source code)
+*.zip
+error_log
+*.sql
+
+# Hosting/SSL-specific
+.well-known/
+
+# Dependency (regenerate via composer install)
+vendor/
+
+# Data unggahan customer (privasi)
+uploads/*
+!uploads/.gitkeep
+assets/img/data_konfirmasi/*
+!assets/img/data_konfirmasi/.gitkeep
+assets/img/data_cetakonly/*
+!assets/img/data_cetakonly/.gitkeep
+assets/img/data_overtime/*
+!assets/img/data_overtime/.gitkeep
+assets/img/data_pelunasan/*
+!assets/img/data_pelunasan/.gitkeep
+
+# Kredensial (setelah dipisah ke config.php)
+config.php

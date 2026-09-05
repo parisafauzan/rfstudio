@@ -1,0 +1,31 @@
+RewriteEngine On
+
+# Mengarahkan HTTP ke HTTPS jika diperlukan
+RewriteCond %{HTTPS} off 
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Hapus ekstensi .php jika ada pada URL, tetapi tetap bisa mengakses file .php
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[\s?] [NC]
+RewriteRule ^ /%1 [R=301,NE,L]
+
+# Internal rewrite untuk file PHP tanpa ekstensi .php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+?)/?$ $1.php [L]
+
+# Jika user mengakses "rizalfamily", arahkan ke "rizalfamily/rizal-storage" tanpa .php
+RewriteCond %{REQUEST_URI} ^/rizalfamily/?$
+RewriteRule ^$ /rizalfamily/rizal-storage [L,R=302]
+
+# Pastikan semua file selain direktori dapat diakses tanpa ekstensi .php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^([^/]+)$ $1.php [L]
+
+# Mengarahkan halaman utama (root) ke index.php tanpa menampilkan 'index' di URL
+RewriteCond %{REQUEST_URI} ^/$
+RewriteRule ^$ /index.php [L]
+
+# Pastikan index.php tidak muncul di URL, meskipun ada referensi dari halaman lain
+RewriteCond %{REQUEST_URI} ^/index$
+RewriteRule ^index$ / [L]

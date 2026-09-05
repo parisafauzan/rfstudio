@@ -1,0 +1,98 @@
+  <div class="form-check mt-2" >
+      <input type="text" name="nambahorang" style="background-color: white;"  autocomplete="off" placeholder="0" class="form-control  text-center" value="0" min="0" max="8" hidden>
+      <input type="text" name="nambahwaktu" style="background-color: white;"  autocomplete="off" placeholder="0" class="form-control  text-center" value="0" min="0" max="8" hidden>
+    </div>
+ <label for="tanggal" class="mb-3 text-black-50">*disarankan untuk cek jadwal terlebih dahulu</label>
+ 
+<button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">cek jadwal</button>
+
+
+buat halaman email:
+setelah isi data - belum
+konfirmasi - sudah
+pengingat - sudah
+keterangan pelunasan - belum
+konfirmasi lunas - belum
+
+<?php
+$total = 0;
+$items = [];
+$info  = 'Pilih penambahan untuk cetak.';
+
+// form submitted
+if( !empty( $_POST['choice'] ) && is_array( $_POST['choice'] ) )
+{
+    // loop all item choices
+    foreach( $_POST['choice'] as $item )
+    {
+        // filter item info
+        $name     = trim( $item['name'] );
+        $price    = floatval( $item['price'] );
+        
+
+        // only add if item was checked and quantity is more than 0
+        if( isset( $item['checked'] ) && $quantity > 0 )
+        {
+            $items[] = $quantity .' '. $name;
+            $total  += $price * $quantity;
+        }
+    }
+    // update info if items were selected
+    if( count( $items ) )
+    {
+        $info = 'You selected ('.implode( ', ', $items ).'), total: '.$total;
+    }
+}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+ <!-- Favicons -->
+  <link href="../img/logo.png" rel="icon">
+  <link href="../img/logo.png" rel="apple-touch-icon">
+    <title>Order Form</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+
+    <form id="order-form" action="<?= $_SERVER['PHP_SELF'] ?>" method="post">
+        <div class="form-item">
+            <input type="checkbox" name="choice[0][checked]" />
+            <span>Chicken, Price: 8</span>
+            <input type="number" name="choice[0][quantity]" value="1" />
+            <input type="hidden" name="choice[0][price]" value="8" />
+            <input type="hidden" name="choice[0][name]" value="Chicken" />
+        </div>
+        <div class="form-item">
+            <input type="checkbox" name="choice[1][checked]" />
+            <span>Meat, Price: 3</span>
+            <input type="number" name="choice[1][quantity]" value="1" />
+            <input type="hidden" name="choice[1][price]" value="3" />
+            <input type="hidden" name="choice[1][name]" value="Meat" />
+        </div>
+        <div class="form-item">
+            <input type="checkbox" name="choice[2][checked]" />
+            <span>Souvlaki, Price: 2.50</span>
+            <input type="number" name="choice[2][quantity]" value="1" />
+            <input type="hidden" name="choice[2][price]" value="2.50" />
+            <input type="hidden" name="choice[2][name]" value="Souvlaki" />
+        </div>
+        <div class="form-item">
+            <input type="checkbox" name="choice[3][checked]" />
+            <span>Pizza, Price: 12</span>
+            <input type="number" name="choice[3][quantity]" value="1" />
+            <input type="hidden" name="choice[3][price]" value="12" />
+            <input type="hidden" name="choice[3][name]" value="Pizza" />
+        </div>
+        <input type="submit" value="Order"/>
+    </form>
+
+    <hr />
+    <p><?= $info ?></p>
+
+</body>
+</html>
+
+ALTER TABLE `data_konfirmasi_coba` ADD `waktu2` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) AFTER `waktu1`, ADD `waktu3` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) AFTER `waktu2`, ADD `waktu4` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) AFTER `waktu3`, ADD `waktu5` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) AFTER `waktu4`, ADD `gambar1` VARCHAR(50) NOT NULL AFTER `waktu5`, ADD `gambar2` VARCHAR(50) NOT NULL AFTER `gambar1`, ADD `gambar3` VARCHAR(50) NOT NULL AFTER `gambar2`, ADD `gambar4` VARCHAR(50) NOT NULL AFTER `gambar3`, ADD `gambar5` VARCHAR(50) NOT NULL AFTER `gambar4`;
+
+

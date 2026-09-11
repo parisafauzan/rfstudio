@@ -220,6 +220,15 @@
             <button type="button" class="btn btn-dark m-1" >View Price List </button>
           </a>
           </div>
+          <div class="col-sm-5 p-3">
+            <div class="inner">
+                <img class="d-block w-100" src="img/foto55.png" alt="pas foto">
+            </div>
+            <h5 class="span m-4">Pas Foto / CV / Comcard</p>
+            <a href="kategori/pasfotopackage.php">
+            <button type="button" class="btn btn-dark m-1" >View Price List </button>
+          </a>
+          </div>
           <div class="col-sm-5 p-3 container" style="position:relative;">
               <img src="assets/new.png" style="width: 10%;position:absolute; top:10px;right:16px;">
             <div class="inner">              

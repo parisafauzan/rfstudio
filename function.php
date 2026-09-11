@@ -1043,8 +1043,427 @@ if($studio == 'Bekasi-Kabupaten'||$studio == ''){
     } 
 }
 //upload gambar
-$bukti_transfer = uploadDpTf();
-if(!$bukti_transfer){
+$bukti_transfer = uploadDpTfOptional();
+if($bukti_transfer===false){
+    return false;
+}
+    
+//urutan query sql = id,nama,notelp,email,package,harga(total),hargasetelahdp(total-dp),tanggal,jam,buktitf,buktilunas,jumlah(jenispaket),cetakfoto,nambahanak,nambahdewasa,nambahorang,nambahwaktu,tambahcetak,waktutransaksi(suksess isi data)
+     $query = "INSERT INTO data_konfirmasi_cobahampirfinishjuga
+                VALUES
+                ('','$nama','$notelp',
+                '$email','$package',
+                '$harga' + ($nambahanak * 35000) + ($nambahdewasa * 50000) 
+                + ($nambahorang * 15000) + ($nambahwaktu * 20000) 
+                + ($cetakharga1 * 15000) + ($cetakharga2 * 30000)
+                + ($cetakharga3 * 35000) + ($cetakharga4 * 70000)
+                + ($cetakharga5 * 150000) + ($cetakharga6 * 350000)
+                + ($cetakharga7 * 600000) + ($cetakharga8 * 650000)
+                + ($cetakharga9 * 700000),
+                0 ,
+                '$date', 
+                '$jam','$bukti_transfer',
+                '$bukti_lunas','$jumlah','$cetakfoto',
+                '$nambahanak','$nambahdewasa',
+                '$nambahorang',
+                 '$nambahwaktu' * 5,
+                 '$cetakfoto1$jumlahcetak1'
+                 '$cetakfoto2$jumlahcetak2'
+                 '$cetakfoto3$jumlahcetak3'
+                 '$cetakfoto4$jumlahcetak4'
+                 '$cetakfoto5$jumlahcetak5'
+                 '$cetakfoto6$jumlahcetak6'
+                 '$cetakfoto7$jumlahcetak7'
+                 '$cetakfoto8$jumlahcetak8'
+                 '$cetakfoto9$jumlahcetak9','0','0', '$waktuinput','$uniqid','$catatan','$jumlahorangdewasa','$jumlahoranganak','$studio' )";
+                
+mysqli_query($koneksi, $query);
+
+mysqli_query($koneksi, "INSERT INTO data_tambahcetak VALUES(
+                '',
+                '$nama',
+                '$uniqid',
+                '$cetakharga1' * 15000,('$cetakharga2' * 30000),
+                ('$cetakharga3' * 35000),('$cetakharga4' * 70000),
+                ('$cetakharga5' * 150000),('$cetakharga6' * 350000),
+                ('$cetakharga7' * 600000),('$cetakharga8' * 650000),
+                ('$cetakharga9' * 700000),$cetakharga1, $cetakharga2,
+                $cetakharga3,$cetakharga4,$cetakharga5,$cetakharga6,
+                $cetakharga7,$cetakharga8,$cetakharga9,($cetakharga1 * 15000) + ($cetakharga2 * 30000)
+                + ($cetakharga3 * 35000) + ($cetakharga4 * 70000)
+                + ($cetakharga5 * 150000) + ($cetakharga6 * 350000)
+                + ($cetakharga7 * 600000) + ($cetakharga8 * 650000)
+                + ($cetakharga9 * 700000), '$harga' + ($nambahanak * 35000) + ($nambahdewasa * 50000) 
+                + ($nambahorang * 15000) + ($nambahwaktu * 20000) 
+                + ($cetakharga1 * 15000) + ($cetakharga2 * 30000)
+                + ($cetakharga3 * 35000) + ($cetakharga4 * 70000)
+                + ($cetakharga5 * 150000) + ($cetakharga6 * 350000)
+                + ($cetakharga7 * 600000) + ($cetakharga8 * 650000)
+                + ($cetakharga9 * 700000) 
+            )");
+
+
+// $harganambah = "UPDATE data_konfirmasi_cobahampirfinishjuga SET anak = $hargaanak , dewasa = $hargadewasa WHERE harga = $harga + $hargaanak + $hargadewasa";
+// mysqli_query($koneksi, $harganambah);
+
+ // transaksi
+$input = "INSERT INTO data_tracking_coba 
+        VALUES('','$uniqid','$nama','$email','$tambah1','','','','','','','','','$waktuinput','','','','','$gambar1','$gambar2','$gambar3','$gambar4','$gambar5','','')";
+mysqli_query($koneksi,$input);
+
+// transaksi
+
+include('assets/phpmailer/Exception.php');
+include('assets/phpmailer/PHPMailer.php');
+include('assets/phpmailer/SMTP.php');
+
+
+//Create an instance; passing `true` enables exceptions
+$mail = new PHPMailer(true);
+
+
+    $mail->do_debug = 0;
+    //Server settings
+    $mail->SMTPDebug = false;                     //Enable verbose debug output
+    $mail->isSMTP();                                            //Send using SMTP
+    $mail->Host       = 'ssl://smtp.gmail.com:465';                     //Set the SMTP server to send through
+    $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+    $mail->Username   = 'rizalfotostudio2022@gmail.com';                     //SMTP username
+     $mail->Password   = 'dpbgrqoftjhvbcev';                               //SMTP password
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+    $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+    $mail->isHTML(true);
+    //$mail->addEmbeddedImage(dirname(__FILE__).'../img/logo2.png','logo');
+
+    //Recipients
+    $mail->setFrom('rizalfotostudio2022@gmail.com', 'RF Studio');
+        $mail->addAddress('rfstudioarsip2022@gmail.com', 'Data Arsip');
+    $mail->addAddress($email, $nama);     //Add a recipient
+
+
+    // //Attachments
+    // $mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
+    // $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    //Optional name
+
+    // if(file_exists($template))
+    //     $pesan = file_get_contents($template);
+    // else
+    //     die("gagal dapat templet");
+    
+    //Content
+    // $mail->isHTML(true);                                  //Set email format to HTML
+    $mail->Subject = 'Berhasil Mengisi Data';
+    $mail->Body = '
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>RF Studio Email</title>
+
+<style>
+    body {
+        background:#f5f5f5; 
+        font-family: Arial, sans-serif; 
+        margin:0; 
+        padding:20px;
+    }
+    .card {
+        background:#ffffff;
+        border-radius:10px;
+        padding:20px;
+        max-width:500px;
+        margin:auto;
+        box-shadow:0 0 5px rgba(0,0,0,0.1);
+    }
+    .header {
+        background:#212529;
+        color:#fff;
+        padding:15px;
+        text-align:center;
+        font-size:20px;
+        font-weight:bold;
+        border-radius:8px;
+    }
+    .rf-box {
+        background: #ffffff;
+        border: 1px solid #dcdcdc;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .label {
+        font-weight:bold;
+        padding:6px 10px;
+        width:40%;
+        vertical-align:top;
+        color:#000;
+    }
+    .value {
+        padding:6px 10px;
+        width:60%;
+        vertical-align:top;
+        color:#333;
+    }
+    .note-box {
+        background:#f1f1f1;
+        padding:15px;
+        border-radius:8px;
+        margin-top:20px;
+        font-size:13px;
+        color:#444;
+    }
+    .footer {
+        text-align:center;
+        font-size:13px;
+        margin-top:20px;
+        color:#555;
+    }
+    a { color:#212529; }
+</style>
+
+</head>
+
+<body>
+
+<div class="card rf-box">
+
+    <div class="header">Rizal Foto Studio</div>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="font-size:14px; margin-top:20px;">
+
+        <tr><td class="label">Nama</td>
+            <td class="value">'.$nama.'</td></tr>
+
+        <tr><td class="label">No. Telp</td>
+            <td class="value">'.$notelp.'</td></tr>
+
+        <tr><td class="label">Email</td>
+            <td class="value">'.$email.'</td></tr>
+
+        <tr><td class="label">Tanggal</td>
+            <td class="value">'.$date.'</td></tr>
+
+        <tr><td class="label">Jam</td>
+            <td class="value">'.$jam.'</td></tr>
+
+        <tr><td class="label">Jumlah Orang</td>
+            <td class="value">'.$jumlahorangdewasa.' & '.$jumlahoranganak.'</td></tr>
+
+        <tr><td class="label">Kode Track Progress</td>
+            <td class="value">'.$uniqid.'</td></tr>
+
+        <tr><td class="label">Lokasi Studio</td>
+            <td class="value">'.$studio.'</td></tr>
+
+        <tr><td class="label">Package</td>
+            <td class="value">'.$package.' '.$jumlah.'</td></tr>
+
+        <tr><td class="label">Cetak Foto</td>
+            <td class="value">'.$cetakfoto.'</td></tr>
+
+        <tr><td class="label">Penambahan Waktu</td>
+            <td class="value">'.$penambahanwaktu.'</td></tr>
+
+        <tr><td class="label">Penambahan Cetak</td>
+            <td class="value">
+                  '.$cetakfoto1.$jumlahcetak1.
+                    $cetakfoto2.$jumlahcetak2.
+                    $cetakfoto3.$jumlahcetak3.
+                    $cetakfoto4.$jumlahcetak4.
+                    $cetakfoto5.$jumlahcetak5.
+                    $cetakfoto6.$jumlahcetak6.
+                    $cetakfoto7.$jumlahcetak7.
+                    $cetakfoto8.$jumlahcetak8.
+                    $cetakfoto9.$jumlahcetak9.'</td></tr>
+
+        <tr><td class="label">Catatan</td>
+            <td class="value">'.$catatanemail.'</td></tr>
+
+        <tr><td class="label">Status</td>
+            <td class="value">'.$ketbayar.'</td></tr>
+
+    </table>
+
+    <div class="note-box">
+        <b>*Note :</b><br>
+        - Mohon datang lebih awal dari jam bookingan.<br>
+        - Sesi Foto mengikuti jam bookingan.<br>
+        - <b>Terlambat</b> diluar tanggung jawab kami.<br>
+        - Yang belum lunas, pelunasan dilakukan setelah selesai foto.<br>
+        - Link Google Drive dikirim setelah pelunasan.<br>
+        - Reschedule maksimal H-3.<br>
+        - Link Google Drive berlaku selama 2 minggu.
+    </div>
+
+    <div class="footer">
+        Terima kasih telah menggunakan layanan kami<br>
+        <a href="https://rfstudio.id">RFStudio.id</a>
+    </div>
+
+</div>
+
+</body>
+</html>
+';
+    // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+   try { $mail->send(); } catch (\Throwable $e) { /* kirim email gagal: diabaikan agar proses tetap lanjut & tidak halaman putih */ }
+
+return mysqli_affected_rows($koneksi);
+}
+
+function tambahpasfoto($data){
+    
+    global $koneksi;
+//ambil data dari tiap elemen dalam form
+$nama = htmlspecialchars($data["nama"]);
+$notelp = htmlspecialchars($data["notelp"]);
+$email = htmlspecialchars($data["email"]);
+$package = htmlspecialchars($data["package"]);
+$harga = htmlspecialchars($data["harga"]);
+//
+$olddate =htmlspecialchars ($data["tanggal"]);
+$date = date('Y-m-d', strtotime($olddate));
+$uniqid =htmlspecialchars ($data["uniqid"]);
+$studio =htmlspecialchars ($data["studio"]);
+
+//
+$jam =htmlspecialchars ($data["jam"]);
+$bukti_lunas =htmlspecialchars ($data["buktilunas"]);
+$jumlah =htmlspecialchars ($data["jumlah"]);
+$cetakfoto =htmlspecialchars ($data["cetak"]);
+$ketbayar =htmlspecialchars ($data["ketbayar"]);
+$catatan = htmlspecialchars ($data["catatan"]);
+$latar = htmlspecialchars ($data["latar"]);
+$catatan = 'Latar: '.$latar.($catatan!=='' ? ' | '.$catatan : '');
+//
+////////////////////////////////////////////////////////////////
+$katajmlhorgdws = htmlspecialchars ($data["jumlahorangdewasa"]);
+$katajmlhorgank = htmlspecialchars ($data["jumlahoranganak"]);
+$jumlahorangdewasa = 'dewasa='.$katajmlhorgdws;
+$jumlahoranganak = 'anakanak='.$katajmlhorgank;
+////////////////////////////////////////////////////////////////
+// $arraycetak = ($data["cetakfoto"]);
+// $tambahcetak = implode($arraycetak);
+// $arrayjumlah = ($data["jumlahcetak"]);
+// $jumlahcetak = implode($arrayjumlah);
+///
+$cetakharga1 = (int)($data["cetak4r"]);
+$cetakharga2 =htmlspecialchars ($data["cetakharga2"]);
+$cetakharga3 =htmlspecialchars ($data["cetakharga3"]);
+$cetakharga4 =htmlspecialchars ($data["cetakharga4"]);
+$cetakharga5 =htmlspecialchars ($data["cetakharga5"]);
+$cetakharga6 =htmlspecialchars ($data["cetakharga6"]);
+$cetakharga7 =htmlspecialchars ($data["cetakharga7"]);
+$cetakharga8 =htmlspecialchars ($data["cetakharga8"]);
+$cetakharga9 =htmlspecialchars ($data["cetakharga9"]);
+///
+$cetakfoto1 =htmlspecialchars ($data["cetakfoto1"]);
+$cetakfoto2 =htmlspecialchars ($data["cetakfoto2"]);
+$cetakfoto3 =htmlspecialchars ($data["cetakfoto3"]);
+$cetakfoto4 =htmlspecialchars ($data["cetakfoto4"]);
+$cetakfoto5 =htmlspecialchars ($data["cetakfoto5"]);
+$cetakfoto6 =htmlspecialchars ($data["cetakfoto6"]);
+$cetakfoto7 =htmlspecialchars ($data["cetakfoto7"]);
+$cetakfoto8 =htmlspecialchars ($data["cetakfoto8"]);
+$cetakfoto9 =htmlspecialchars ($data["cetakfoto9"]);
+///
+$jumlahcetak1 =htmlspecialchars ($data["jumlahcetak1"]);
+$jumlahcetak2 =htmlspecialchars ($data["jumlahcetak2"]);
+$jumlahcetak3 =htmlspecialchars ($data["jumlahcetak3"]);
+$jumlahcetak4 =htmlspecialchars ($data["jumlahcetak4"]);
+$jumlahcetak5 =htmlspecialchars ($data["jumlahcetak5"]);
+$jumlahcetak6 =htmlspecialchars ($data["jumlahcetak6"]);
+$jumlahcetak7 =htmlspecialchars ($data["jumlahcetak7"]);
+$jumlahcetak8 =htmlspecialchars ($data["jumlahcetak8"]);
+$jumlahcetak9 =htmlspecialchars ($data["jumlahcetak9"]);
+///
+$nambahanak =htmlspecialchars ($data["nambahanak"]);
+$nambahdewasa =htmlspecialchars ($data["nambahdewasa"]);
+$nambahorang =htmlspecialchars ($data["nambahorang"]);
+$nambahwaktu =htmlspecialchars ($data["nambahwaktu"]);
+$catatanemail = empty($catatan) ? '-' : $catatan;
+/////// tabel tracking transaksi
+$random = random_bytes(3);
+$uniqid = (bin2hex($random));
+
+$bayardp = "Terimakasih sudah melakukan pembayaran dp sebesar Rp. 200.000";
+
+$bayarself = "Terimakasih sudah mengisi format booking, data anda telah tersimpan. Untuk memastikan silahkan hubungi admin via Whatsapp";
+
+$nambahcetak = empty($cetakfoto1.$jumlahcetak1.
+                 $cetakfoto2.$jumlahcetak2.
+                 $cetakfoto3.$jumlahcetak3.
+                 $cetakfoto4.$jumlahcetak4.
+                 $cetakfoto5.$jumlahcetak5.
+                 $cetakfoto6.$jumlahcetak6.
+                 $cetakfoto7.$jumlahcetak7.
+                 $cetakfoto8.$jumlahcetak8.
+                 $cetakfoto9.$jumlahcetak9)  ? '-' : $cetakfoto1.$jumlahcetak1.
+                 $cetakfoto2.$jumlahcetak2.
+                 $cetakfoto3.$jumlahcetak3.
+                 $cetakfoto4.$jumlahcetak4.
+                 $cetakfoto5.$jumlahcetak5.
+                 $cetakfoto6.$jumlahcetak6.
+                 $cetakfoto7.$jumlahcetak7.
+                 $cetakfoto8.$jumlahcetak8.
+                 $cetakfoto9.$jumlahcetak9;
+
+//
+date_default_timezone_set("Asia/Jakarta");
+$waktuinput= date("d-m-Y H:i:s"); 
+
+///////
+$tambah1 = htmlspecialchars ($data["tambah1"]);
+$gambar1 = htmlspecialchars ($data["gambar1"]);
+$gambar2 = htmlspecialchars ($data["gambar2"]);
+$gambar3 = htmlspecialchars ($data["gambar3"]);
+$gambar4 = htmlspecialchars ($data["gambar4"]);
+$gambar5 = htmlspecialchars ($data["gambar5"]);
+
+/////// tabel tracking transaksi
+
+// $hargaanak = $nambahanak*35000;
+// $hargadewasa = $nambahdewasa*50000;
+//SELF FOTO
+
+
+if($studio == 'Bekasi-Kabupaten'||$studio == ''){
+    $jamjadwal = mysqli_query($koneksi, "SELECT tanggal,jam FROM data_konfirmasi_cobahampirfinishjuga WHERE tanggal='$date' AND jam='$jam' AND studio IN ('Bekasi-Kabupaten','')");
+    $jamjadwal1 = mysqli_query($koneksi, "SELECT tanggal,jam FROM data_booking_cobahampirfinishjuga WHERE tanggal='$date' AND jam='$jam' AND studio IN ('Bekasi-Kabupaten','')");
+    if (mysqli_fetch_assoc($jamjadwal)){  
+        echo '<script language="javascript">';
+        echo 'alert("Mohon maaf, jam yang anda pilih sudah dipesan");';
+        echo 'window.location = "booking-pasfoto.php";';
+        echo '</script>';
+        return false;
+    }else if(mysqli_fetch_assoc($jamjadwal1)){
+        echo '<script language="javascript">';
+        echo 'alert("Mohon maaf, jam yang anda pilih sudah dipesan");';
+        echo 'window.location = "booking-pasfoto.php";';
+        echo '</script>';
+        return false;
+    } 
+}else{
+    $jamjadwal = mysqli_query($koneksi, "SELECT tanggal,jam FROM data_konfirmasi_cobahampirfinishjuga WHERE tanggal='$date' AND jam='$jam' AND studio IN ('Bekasi-Kota')");
+    $jamjadwal1 = mysqli_query($koneksi, "SELECT tanggal,jam FROM data_booking_cobahampirfinishjuga WHERE tanggal='$date' AND jam='$jam' AND studio IN ('Bekasi-Kota')");
+    if (mysqli_fetch_assoc($jamjadwal)){  
+        echo '<script language="javascript">';
+        echo 'alert("Mohon maaf, jam yang anda pilih sudah dipesan");';
+        echo 'window.location = "booking-pasfoto.php";';
+        echo '</script>';
+        return false;
+    }else if(mysqli_fetch_assoc($jamjadwal1)){
+        echo '<script language="javascript">';
+        echo 'alert("Mohon maaf, jam yang anda pilih sudah dipesan");';
+        echo 'window.location = "booking-pasfoto.php";';
+        echo '</script>';
+        return false;
+    } 
+}
+//upload gambar
+$bukti_transfer = uploadDpTfOptional();
+if($bukti_transfer===false){
     return false;
 }
     
@@ -3844,6 +4263,53 @@ function uploadDpTf(){
 
 }
 // ===============================
+function uploadDpTfOptional(){
+    // versi opsional: jika user TIDAK upload bukti transfer, booking tetap diproses (return '-')
+    $namaFile = $_FILES['buktitransfer']['name'];
+    $ukuranFile = $_FILES['buktitransfer']['size'];
+    $error = $_FILES['buktitransfer']['error'];
+    $tmpName = $_FILES['buktitransfer']['tmp_name'];
+
+    // tidak ada file yang diupload -> lanjut tanpa bukti transfer
+    if($error===4){
+        return '-';
+    }
+
+    // cek apakah yang diupload benar-benar gambar
+    $extensigambarValid = ['jpg','jpeg','png'];
+    $extensigambar = explode('.',$namaFile);
+    $extensigambar = strtolower(end($extensigambar));
+
+    if(!in_array($extensigambar,$extensigambarValid)){
+        echo "<script>
+        alert('yang anda upload bukan gambar!');
+        </script>
+        ";
+        return false;
+    }
+
+    if($ukuranFile > 5000000){
+        echo "<script>
+        alert('gambar terlalu besar!');
+        </script>
+        ";
+        return false;
+    }
+
+    $random = random_bytes(3);
+    $uniqid = (bin2hex($random));
+    $namaFileBaru = 'dptf-';
+    $namaFileBaru .= $uniqid;
+    $namaFileBaru .= '.';
+    $namaFileBaru .= $extensigambar;
+
+    if (move_uploaded_file($tmpName,dirname(__FILE__).'/assets/img/data_konfirmasi/'.$namaFileBaru)){
+    }else{
+    }
+
+    return $namaFileBaru;
+}
+
 function uploadOvrTf(){
     $namaFile = $_FILES['buktiovr']['name'];
     $ukuranFile = $_FILES['buktiovr']['size'];

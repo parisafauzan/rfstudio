@@ -9,7 +9,7 @@ $jadwal = mysqli_fetch_array($ambiljadwal);
 $hapusjamsementara = $jadwal['id'];
   if(isset($_POST["submit"])){
     // var_dump($_POST);
-  if(tambahbsc($_POST)>0){
+  if(tambahpasfoto($_POST)>0){
     echo '<script language="javascript">';
     echo 'function alert() {';
     echo 'document.getElementById("myForm").reset()};';
@@ -20,7 +20,7 @@ $hapusjamsementara = $jadwal['id'];
     }else{
 
         echo '<script language="javascript">';
-        echo 'window.location = "bookingbsc.php";';
+        echo 'window.location = "booking-pasfoto.php";';
         echo '</script>';
     }exit;
   }
@@ -165,63 +165,72 @@ $hapusjamsementara = $jadwal['id'];
               <label for="nomer" class="form-label fw-bold">Pilih Package<span class="text-danger">* </span><label class="text-black-50"> wajib diisi </label></label>
               <div class="border bmg-package p-2 mt-3" >
                 <div class="form-check mt-2">
-                  <input class="form-check-input" type="radio" value="80000" name="harga" onclick="org()" id="mySelect3"  required>
-                  <label class="form-check-label" for="flexRadioDefault2" >
-                  <b>BASIC PACKAGE</b> <label class="text-decoration-line-through text-black-50"> 99k</label> 80k
-                  </label>
-                  <div  style="font-size: 15px;">
-                    <p class="" style="font-size:small;margin-top:10px;">10 menit</p>
-                    <p class="" style="font-size:small;">Unlimited Photo</p>
-                    <p class="" style="font-size:small;">10 Photo Edit</p>
-                    <p class="" style="font-size:small;">All Softcopy on Google drive<b><br> (berlaku 2 Minggu)</b></p>
-                    
-                  </div>  
-                </div>
-            </div>
-              <div class="form-check mt-3" hidden>
-                <input class="form-control" type="text" value="self photo" name="package">
-                  <label class="form-check-label" for="flexRadioDefault1">
-                    Self Photo Studio Package
-                  </label>
-              </div>
-            </div>
-        
-          <div class="col-md-5 mt-3">
-            <!-- harga paket -->
-            <!-- bmg = basic medium gold package -->
-            
-            <div class="border bmg-package p-2 mt-3" >
-              <div class="form-check mt-2">
-                  <input class="form-check-input" type="radio" value="110000" name="harga" onclick="org1()" id="mySelect3a" required>
-                  <label class="form-check-label" for="flexRadioDefault2">
-                  <b>MEDIUM PACKAGE</b> <label class="text-decoration-line-through text-black-50"> 129k</label> 110k
+                  <input class="form-check-input" type="radio" value="40000" name="harga" onclick="org()" id="mySelect3" required>
+                  <label class="form-check-label" for="mySelect3" >
+                  <b>BASIC PACKAGE</b> (Pas Foto, CV, Comcard) 40k
                   </label>
                   <div style="font-size: 15px;">
-                    <p class="" style="font-size:small;margin-top:10px;">15 menit</p>
-                    <p class="" style="font-size:small;">Unlimited Photo</p>
-                    <p class="" style="font-size:small;">15 Photo Edit</p>
-                    <p class="" style="font-size:small;">All Softcopy on Google drive<b><br> (berlaku 2 Minggu)</b></p>
-                    
-                  </div>  
+                    <p style="font-size:small;margin-top:10px;">1 person</p>
+                    <p style="font-size:small;">Photographer</p>
+                    <p style="font-size:small;">1 pose (3 - 4 kali take foto)</p>
+                    <p style="font-size:small;">1 file edit</p>
+                    <p style="font-size:small;">All file on G-Drive <b><br>(berlaku 2 Minggu)</b></p>
+                  </div>
+                </div>
+              </div>
+              <div class="form-check mt-3" hidden>
+                <input class="form-control" type="text" value="pas foto" name="package">
+                  <label class="form-check-label">Pas Foto Package</label>
+              </div>
+            </div>
+
+          <div class="col-md-5 mt-3">
+            <div class="border bmg-package p-2 mt-3" >
+              <div class="form-check mt-2">
+                  <input class="form-check-input" type="radio" value="100000" name="harga" onclick="org1()" id="mySelect3a" required>
+                  <label class="form-check-label" for="mySelect3a">
+                  <b>PAS FOTO NIKAH FORMAL</b> 100k
+                  </label>
+                  <div style="font-size: 15px;">
+                    <p style="font-size:small;margin-top:10px;">2 person</p>
+                    <p style="font-size:small;">Photographer</p>
+                    <p style="font-size:small;">3 - 4 kali take foto / person</p>
+                    <p style="font-size:small;">2 file edit</p>
+                    <p style="font-size:small;">Cetakan 2 x 3 = 6 lmbr</p>
+                    <p style="font-size:small;">Cetakan 3 x 4 = 6 lmbr</p>
+                    <p style="font-size:small;">Cetakan 4 x 6 = 6 lmbr</p>
+                    <p style="font-size:small;">All file on G-Drive <b><br>(berlaku 2 Minggu)</b></p>
+                  </div>
                 </div>
               </div>
             <div class="border bmg-package p-2 mt-3" >
                 <div class="form-check mt-2">
-                  <input class="form-check-input" type="radio" value="140000" name="harga" onclick="org2()" id="mySelect3b" required>
-                  <label class="form-check-label" for="flexRadioDefault2">
-                  <b>GOOD PACKAGE</b> <label class="text-decoration-line-through text-black-50"> 159k</label> 140k
+                  <input class="form-check-input" type="radio" value="80000" name="harga" onclick="org2()" id="mySelect3b" required>
+                  <label class="form-check-label" for="mySelect3b">
+                  <b>PAS FOTO NIKAH GAYA BEBAS</b> 80k
                   </label>
                   <div style="font-size: 15px;">
-                    <p class="" style="font-size:small;margin-top:10px;">20 menit</p>
-                    <p class="" style="font-size:small;">Unlimited Photo</p>
-                    <p class="" style="font-size:small;">20 Photo Edit</p>
-                    <p class="" style="font-size:small;">All Softcopy via Google drive</p>
-                    
-                  </div>  
+                    <p style="font-size:small;margin-top:10px;">Self Photo 10 menit</p>
+                    <p style="font-size:small;">Unlimited Photo</p>
+                    <p style="font-size:small;">10 Photo Edit tone warna</p>
+                    <p style="font-size:small;">All Softcopy on Google drive</p>
+                    <p style="font-size:small;">Max 2 Person</p>
+                  </div>
                 </div>
               </div>
-
           </div>
+          </div>
+
+          <div class="jarak ms-5 mt-3">
+            <label class="mb-2 fw-bold">Pilih Latar / Background<span class="text-danger">* </span><label class="text-black-50"> wajib diisi </label></label>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="latar" id="latarbiru" value="Biru" required>
+              <label class="form-check-label" for="latarbiru">Latar Biru</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="latar" id="latarmerah" value="Merah" required>
+              <label class="form-check-label" for="latarmerah">Latar Merah</label>
+            </div>
           </div>
 
             <div class="form-check ">
@@ -290,29 +299,17 @@ $hapusjamsementara = $jadwal['id'];
           </div>
 
           <div class="jarak ms-5" >
-            <label class="mb-2 fw-bold">Jumlah Orang yang foto ke Studio<span class="text-danger">* </span><label class="text-black-50"> wajib diisi </label></label>
-            <p  class="mb-3 text-black-50" style="font-size: 14px;">jika salah satu kosong, isikan 0</p>
+            <label class="mb-2 fw-bold">Jumlah Orang<span class="text-danger">* </span><label class="text-black-50"> wajib diisi </label></label>
+            <p class="mb-3 text-black-50" style="font-size: 14px;">jumlah orang yang akan difoto</p>
             <div class="row" style="max-width:200px;">
               <div class="col input">
-                <p for="jam" style="padding-top:10px;font-size: 14px;">Dewasa</p>
-              </div>
-              <div class="col input">
-                <input type="tel" style="max-width: 50px;"  class="form-control"  id="jumlahorangdewasa" name="jumlahorangdewasa" placeholder="" minlength="1" maxlength="2"  autocomplete="off" required>
+                <input type="tel" style="max-width: 60px;" class="form-control" id="jumlahorangdewasa" name="jumlahorangdewasa" placeholder="" value="1" minlength="1" maxlength="2" autocomplete="off" required>
               </div>
             </div>
-
-            <div class="row" style="max-width:200px;">
-              <div class="col input">
-                <p for="jam" style="padding-top:10px;font-size: 14px;">Anak-anak</p>
-              </div>
-              <div class="col input">
-                <input type="tel" style="max-width: 50px;"  class="form-control"  id="jumlahoranganak" name="jumlahoranganak" placeholder="" minlength="1" maxlength="2"  autocomplete="off" required>
-              </div>
-            </div>
+            <input type="hidden" id="jumlahoranganak" name="jumlahoranganak" value="0">
           </div>
-            
 
-          <div class="row row-sm-5 row-md-5 row-lg-5 border ms-4 me-4" id="nambah" style="justify-content: center; margin-left:20px; margin-right:20px;">
+          <div class="row row-sm-5 row-md-5 row-lg-5 border ms-4 me-4" id="nambah" style="display:none; justify-content: center; margin-left:20px; margin-right:20px;">
           <label class="form-check-label m-3  " for="flexCheckDefault" >
                 *Opsi penambahan <span class="text-black-50"> (abaikan jika tidak ada penambahan)</span>
                 <!--<p>*Diatas 8 orang pakai studio 3 (Naik tangga)</p>-->
@@ -707,6 +704,14 @@ $hapusjamsementara = $jadwal['id'];
             <input type="text" name="cetakfoto8"  autocomplete="off"  class="form-control  text-center" id="box8" hidden>
             <input type="text" name="cetakfoto9"  autocomplete="off"  class="form-control  text-center" id="box9" hidden>
           
+              <div class="jarak ms-5 mb-3">
+                <label class="mb-2 fw-bold">Tambah Cetak Foto 4R <span class="text-black-50">(Rp15.000 / lembar, abaikan jika tidak perlu)</span></label>
+                <div class="row" style="max-width:200px;">
+                  <div class="col input">
+                    <input type="number" style="max-width:70px;" class="form-control" id="cetak4r" name="cetak4r" value="0" min="0" max="50" autocomplete="off">
+                  </div>
+                </div>
+              </div>
               <div class="row mb-4">
               <label class="mb-2 fw-bold">*Catatan<span class="text-black-50"> (abaikan jika tidak ada catatan)</span></label>
               <textarea rows="3" name="catatan" style="margin-left:20px; width:250px; resize: none;"></textarea>
@@ -718,7 +723,7 @@ $hapusjamsementara = $jadwal['id'];
             <label  class="fw-bold ms-3 mt-3">Pembayaran<span class="fw-light text-danger">*</span></label>
           <div class="elem-group inlined ms-3 mt-3">
           <input type="text" class="form-control" id="buktilunas" name="buktilunas" value="0" hidden>
-            <label  class="form-check-label  ms-3">Transfer ke Bank <i>MANDIRI</i> <p> 1560025685225 A.n. Rizal Satria Agung</p><h class="text-black-50" style="font-size: 14px;">(*jumlahkan dengan penambahan apabila ada penambahan)</h></label>
+            <label  class="form-check-label  ms-3">Transfer ke Bank <i>MANDIRI</i> <p> 1560025685225 A.n. Rizal Satria Agung</p><h class="text-black-50" style="font-size: 14px;"></h></label>
             
           </div>
           </div>
@@ -1058,12 +1063,18 @@ $hapusjamsementara = $jadwal['id'];
  <script>
  function org() {
   $('#jumlah').val('basic');
+  $('#jumlahorangdewasa').val(1);
+  $('#jumlahorangdewasa').prop('readonly',false);
  }
  function org1() {
-  $('#jumlah').val('medium');
+  $('#jumlah').val('nikah-formal');
+  $('#jumlahorangdewasa').val(2);
+  $('#jumlahorangdewasa').prop('readonly',true);
  }
  function org2() {
-  $('#jumlah').val('good');
+  $('#jumlah').val('nikah-gaya-bebas');
+  $('#jumlahorangdewasa').val(2);
+  $('#jumlahorangdewasa').prop('readonly',true);
  }
 </script>
   <script>

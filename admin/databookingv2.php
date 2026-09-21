@@ -189,8 +189,8 @@ th{
                     echo "Studio : Bekasi-Kota";
                 }?> </td>
               <td>
-                <?php $izinAdmin = bookingPublicationConsentStoredValue($d); ?>
-                <span class="badge <?php echo bookingPublicationConsentBadgeClass($izinAdmin); ?>"><?php echo bookingPublicationConsentLabel($izinAdmin); ?></span>
+                <?php $izinAdmin = bookingPublicationConsent($d); ?>
+                <span class="badge <?php echo ($izinAdmin === '1') ? 'bg-success' : 'bg-secondary'; ?>"><?php echo bookingPublicationConsentLabel($izinAdmin); ?></span>
               </td>
               <td style="min-width: 210px; font-size: 13px;"><?php echo bookingAdditionalSummary($d); ?></td>
               <td style="min-width: 180px; font-size: 13px;"><?php echo empty($d["catatan"]) ? '--' : nl2br(htmlspecialchars($d["catatan"], ENT_QUOTES, 'UTF-8')); ?></td>

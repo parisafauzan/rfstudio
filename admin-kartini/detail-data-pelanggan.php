@@ -137,11 +137,11 @@ footer {
           </div>
           <div class="jarak">
             <label class="m-1 fw-bold">Lokasi Studio</label></br>
-            <label class="ms-2 "><?php
-            if($ambildata["studio"]==''||$ambildata["studio"]=='Bekasi-Kabupaten'){
-              echo 'Bekasi-Kabupaten';
-            }
-            ?></label>
+            <label class="ms-2 "><?= namaLokasiStudio($ambildata["studio"])?></label>
+          </div>
+          <div class="jarak">
+            <label class="m-1 fw-bold">Izin Publikasi Konten</label></br>
+            <label class="ms-2 "><?= bookingPublicationConsentLabel(bookingPublicationConsentStoredValue($ambildata))?></label>
           </div>
           <div class="jarak">
             <label class="m-1 fw-bold">Anak-anak</label></br>

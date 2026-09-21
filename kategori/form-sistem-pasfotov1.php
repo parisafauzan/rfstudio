@@ -158,7 +158,7 @@ require "../function.php";
                 </div>
                 </div> 
                 <div class="text-center">
-                    <button id="btnsubmit" type="submit" disabled name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
+                    <button id="btnsubmit" type="submit" name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
                   </div>                       
             </div>
           <?php          
@@ -215,7 +215,7 @@ require "../function.php";
                 </div>
                 </div> 
                 <div class="text-center">
-                    <button id="btnsubmit" type="submit" disabled name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
+                    <button id="btnsubmit" type="submit" name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
                   </div>                       
             </div>
           <?php
@@ -366,7 +366,7 @@ require "../function.php";
                 </div>
                 </div> 
                 <div class="text-center">
-                    <button id="btnkartinisubmit" type="submit" disabled name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
+                    <button id="btnsubmitkartini" type="submit" name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
                   </div>                       
             </div>
           <?php          
@@ -422,7 +422,7 @@ require "../function.php";
                 </div>
                 </div> 
                 <div class="text-center">
-                    <button id="btnkartinisubmit" type="submit" disabled name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
+                    <button id="btnkartinisubmit" type="submit" name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
                   </div>                       
             </div>
           <?php
@@ -439,20 +439,18 @@ require "../function.php";
   <script>
     // $('.bekasi-kabupaten').show();
     // $('.bekasi-kota').hide();
-    function updateScheduleSubmitButtons() {
-      var kabupatenDipilih = $('#btpform input[name="jampost"]:checked').length > 0;
-      var kotaDipilih = $('#kartiniform input[name="jampost"]:checked').length > 0;
-
-      $("#btnsubmit").prop('disabled', !kabupatenDipilih);
-      $("#btnkartinisubmit").prop('disabled', !kotaDipilih);
-    }
-
-    updateScheduleSubmitButtons();
-
+    $("#btnsubmit").prop('disabled',true);
+    $("#btnkartinisubmit").prop('disabled',true);
     $('.btn-outline-dark').click(function() {
-      // Jalankan setelah handler tombol jam selesai mengubah radio checked.
-      setTimeout(updateScheduleSubmitButtons, 0);
-    });
+      $("#btnsubmit").prop('disabled',false);
+      $("#btnkartinisubmit").prop('disabled',false);
+      // if( $('input.radio').is(':checked') ){
+          
+      // }
+      // else{
+      //     $("#btnsubmit").prop('disabled',true);
+      // }
+    }); 
     
 
       $('#btn1').click(function() {

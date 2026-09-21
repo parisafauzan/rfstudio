@@ -200,8 +200,8 @@ function kategoriJadwalPhotoshoot($package){
                   echo $d["jmlhorgdws"]; echo " "; echo $d["jmlhorgank"];
                 ?></td>
                 <td>
-                  <?php $izinJadwal = bookingPublicationConsentStoredValue($d); ?>
-                  <span class="badge <?php echo bookingPublicationConsentBadgeClass($izinJadwal); ?>">
+                  <?php $izinJadwal = (isset($d["izin_publikasi"]) && (string)$d["izin_publikasi"] === '1') ? '1' : '0'; ?>
+                  <span class="badge <?php echo ($izinJadwal === '1') ? 'bg-success' : 'bg-secondary'; ?>">
                     <?php echo bookingPublicationConsentLabel($izinJadwal); ?>
                   </span>
                 </td>
@@ -309,8 +309,8 @@ function kategoriJadwalPhotoshoot($package){
                   echo $d["jmlhorgdws"]; echo " "; echo $d["jmlhorgank"];
                 ?></td>
                 <td>
-                  <?php $izinJadwal = bookingPublicationConsentStoredValue($d); ?>
-                  <span class="badge <?php echo bookingPublicationConsentBadgeClass($izinJadwal); ?>">
+                  <?php $izinJadwal = (isset($d["izin_publikasi"]) && (string)$d["izin_publikasi"] === '1') ? '1' : '0'; ?>
+                  <span class="badge <?php echo ($izinJadwal === '1') ? 'bg-success' : 'bg-secondary'; ?>">
                     <?php echo bookingPublicationConsentLabel($izinJadwal); ?>
                   </span>
                 </td>

@@ -12,7 +12,7 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <!-- As a heading -->
-    <title>Self Photo Studio Package</title>
+    <title>Pas Foto Package</title>
     <!-- Fontawesome -->
     <script src="https://kit.fontawesome.com/8a35befa8d.js" crossorigin="anonymous"></script>
     
@@ -42,7 +42,13 @@
         padding-left: 15px;
         padding-right: 15px;
       }
-      
+      /* Fix carousel images to have consistent size */
+      #carouselExampleIndicators .carousel-item img {
+        height: 400px;
+        object-fit: contain;
+        width: 100%;
+        background-color: #fff;
+      }
       
       </style>
     <!-- awal konten foto, harga, benefit -->
@@ -51,11 +57,11 @@
    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
         <ol class="breadcrumb mb-5 ms-3">
           <li class="breadcrumb-item"><a href="../index.php " class="text-dark" style="text-decoration: none;">Home</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Self Photo Studio</li>
+          <li class="breadcrumb-item active" aria-current="page">Pas Foto</li>
         </ol>
       </nav>
       <div class="d-inline-flex ps-1 pe-1 text-white bg-dark " style="width: 200px; height: 60px; " > 
-      <h5 class="product-title text-center mt-3 mx-auto">Self Photo Studio</h5></div>
+      <h5 class="product-title text-center mt-3 mx-auto">Pas Foto</h5></div>
    <div class="row row-sm-5 row-md-5 row-lg-5 p-2 mx-auto border shadow p-3 mb-5 bg-body rounded">
       <div class="col-md-5">
         <!--  -->
@@ -67,13 +73,13 @@
         </div>
             <div class="carousel-inner">
               <div class="carousel-item active">
-               <img class="gallery-item d-block w-100" src="../img/foto55.png" alt="slide" > 
+               <img class="gallery-item d-block w-100" src="../img/ZAL_3x4_2.jpg.jpeg" alt="slide" > 
               </div>
               <div class="carousel-item">
-                <img class="gallery-item d-block w-100" src="../img/foto38.png" alt="slide" >
+                <img class="gallery-item d-block w-100" src="../img/ZAL_5562 copy.jpg.jpeg" alt="slide" >
             </div>
             <div class="carousel-item">
-                <img class="gallery-item d-block w-100" src="../img/foto39.png" alt="slide" >
+                <img class="gallery-item d-block w-100" src="../img/ZAL_7522 copy.jpg.jpeg" alt="slide" >
             </div>
         </div>
           <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
@@ -92,63 +98,67 @@
 
       <div class="col-md-2 mx-auto">
       
-        <p class="harga-diskon mt-4 fw-bold">BASIC PACKAGE</p>  
+        <p class="harga-diskon mt-4 fw-bold">BASIC (Pas Foto / CV / Visa)</p>  
       <div class="d-flex flex-sm-row flex-md-row"> 
-        <p class="harga-asli text-decoration-line-through mt-2 text-black-50">99k</p>
-        <p class="harga-diskon mt-2 ms-2 fs-4">80k</p>
+        <p class="harga-diskon mt-2 fs-4">40k</p>
       </div>
 
       <p class="benefit mt-3 mb-4 fs-5">Benefit</p>
       
      
     <div style="font-size: 15px;">
-        <p>10 menit</p>
-        <p>Unlimited Photo</p>
-        <p>10 Photo Edit</p>
-        <p>All Softcopy on Google drive<b><br> (berlaku 2 Minggu)</b></p>
-        <p>Max 2 Person</p>
+        <p>1 person</p>
+        <p>Photographer</p>
+        <p>1 pose (3 - 4 kali take foto)</p>
+        <p>1 file edit</p>
+        <p>All file on G-Drive<b><br> (berlaku 2 Minggu)</b></p>
     </div>  
 
     </div>
     
     <div class="col-md-2 mx-auto">
       
-        <p class="harga-diskon mt-4 fw-bold">MEDIUM PACKAGE</p>  
+        <p class="harga-diskon mt-4 fw-bold">PAS FOTO NIKAH FORMAL</p>  
       <div class="d-flex flex-sm-row flex-md-row"> 
-        <p class="harga-asli text-decoration-line-through mt-2 text-black-50">129k</p>
-        <p class="harga-diskon mt-2 ms-2 fs-4">110k</p>
+        <p class="harga-diskon mt-2 fs-4">100k</p>
       </div>
 
       <p class="benefit mt-3 mb-4 fs-5">Benefit</p>
       
      
     <div style="font-size: 15px;">
-        <p>15 menit</p>
-        <p>Unlimited Photo</p>
-        <p>15 Photo Edit</p>
-        <p>All Softcopy on Google drive<b><br> (berlaku 2 Minggu)</b></p>
-        <p>Max 3 Person</p>
+        <p>2 person</p>
+        <p>Photographer</p>
+        <p>3 - 4 kali take foto / person</p>
+        <p>2 file edit</p>
+        <p>Cetakan 2x3, 3x4, 4x6 (@6 lmbr)</p>
+        <p>All file on G-Drive<b><br> (berlaku 2 Minggu)</b></p>
     </div>  
 
     </div>
 
     <div class="col-md-2 mx-auto">
       
-        <p class="harga-diskon mt-4 fw-bold">GOOD PACKAGE</p>  
+        <p class="harga-diskon mt-4 fw-bold">PAS FOTO NIKAH FORMAL + GAYA BEBAS</p>  
       <div class="d-flex flex-sm-row flex-md-row"> 
-        <p class="harga-asli text-decoration-line-through mt-2 text-black-50">159k</p>
-        <p class="harga-diskon mt-2 ms-2 fs-4">140k</p>
+        <p class="harga-diskon mt-2 fs-4">180k</p>
       </div>
 
       <p class="benefit mt-3 mb-4 fs-5">Benefit</p>
       
      
     <div style="font-size: 15px;">
-        <p>20 menit</p>
+        <p>2 person</p>
+        <p><b>Sesi Formal:</b></p>
+        <p>Photographer</p>
+        <p>3 - 4 kali take foto / person</p>
+        <p>2 file edit</p>
+        <p>Cetakan 2x3, 3x4, 4x6 (@6 lmbr)</p>
+        <p><b>Sesi Gaya Bebas:</b></p>
+        <p>Self Photo 10 menit (Tanpa Photographer)</p>
         <p>Unlimited Photo</p>
-        <p>20 Photo Edit</p>
-        <p>All Softcopy via Google drive<b><br> (berlaku 2 Minggu)</b></p>
-        <p>Max 4 Person</p>
+        <p>10 Photo Edit tone warna</p>
+        <p>All file on G-Drive<b><br> (berlaku 2 Minggu)</b></p>
     </div>  
 
     </div>
@@ -333,7 +343,7 @@
               <a type="button" class="btn btn-outline-dark btpbtn" style="width:100%;border-radius:0px" onclick="btpbtn()"> Bekasi Kabupaten </a>
             </div>
             <div class="formsatu">
-              <form class="form" id="btpform" method="post" action="../reservasi/cekpost-self">
+              <form class="form" id="btpform" method="post" action="../reservasi/cekpost-pasfoto">
                 <div class="p-2 border">
                   <div class="row border p-2 me-2 ms-2">
                     <div class="col ">
@@ -374,7 +384,7 @@
               </form>
             </div>
   
-              <form class="form" id="kartiniform" method="post" action="../reservasi/cekpost-self">
+              <form class="form" id="kartiniform" method="post" action="../reservasi/cekpost-pasfoto">
                 <div class="p-2 border">
                   <div class="row border p-2 me-2 ms-2">
                     <div class="col ">
@@ -629,7 +639,7 @@
         $("#loader").show();
         if(tanggal !=''){
           $.ajax({
-            url:"form-sistem-selfphoto",
+            url:"form-sistem-pasfoto",
             method:"POST",
             data:{tanggal:tanggal, jam:jam},
             success:function(data){
@@ -653,7 +663,7 @@
         $("#loaderkartini").show();
         if(tanggalkartini !=''){
           $.ajax({
-            url:"form-sistem-selfphoto",
+            url:"form-sistem-pasfoto",
             method:"POST",
             data:{tanggalkartini:tanggalkartini, jam:jam},
             success:function(data){
@@ -1106,15 +1116,5 @@
       }
       
   </script>
-  
-    <script>
-      $(document).on('submit', '#btpform, #kartiniform', function(event) {
-        if ($(this).find('input[name="jampost"]:checked').length === 0) {
-          event.preventDefault();
-          alert('Silakan pilih jadwal terlebih dahulu.');
-          return false;
-        }
-      });
-    </script>
-</body>
+  </body>
   </html>

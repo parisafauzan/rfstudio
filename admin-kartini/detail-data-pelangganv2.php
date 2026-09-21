@@ -4,7 +4,7 @@ require '../function.php';
 $uniqid = $_GET["uniqid"];
 $ambildata = query("SELECT * FROM data_history_cobahampirfinishjuga WHERE uniqid ='$uniqid' UNION SELECT * FROM data_history WHERE uniqid ='$uniqid'")[0];
 session_start();
- if(!isset($_SESSION['admin'])){
+ if(!isset($_SESSION['adminkartini'])){
     header("location:adminlogin.php");
     exit;
 }
@@ -23,7 +23,7 @@ session_start();
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- As a heading -->
-<title>Detail - Bekasi Kabupaten</title>
+<title>Detail - Bekasi Kota</title>
 <!-- Fontawesome -->
 <script src="https://kit.fontawesome.com/8a35befa8d.js" crossorigin="anonymous"></script>
 <!--  -->
@@ -93,8 +93,8 @@ footer {
 
 <div class="d-flex justify-content-between pb-4">
   <div class="kembali">
-    <a href="logoutadmin.php" class="btn btn-outline-dark align-items-center  text-decoration-none " onClick="<?php echo 'history.go(-1);';?>">
-      <i class="fa-solid fa-circle-left"></i>
+    <a class="btn btn-outline-dark align-items-center  text-decoration-none " onClick="<?php echo 'history.go(-1);';?>">
+      <i class="fa-solid fa-circle-chevron-left"></i>
       <span class="d-none d-sm-inline mx-1 ms-3">Kembali</span>
     </a><br>
   </div>
@@ -141,7 +141,7 @@ footer {
           </div>
           <div class="jarak">
             <label class="m-1 fw-bold">Izin Publikasi Konten</label></br>
-            <label class="ms-2 "><?= bookingPublicationConsentLabel(bookingPublicationConsentStoredValue($ambildata))?></label>
+            <label class="ms-2 "><?= bookingPublicationConsentLabel(isset($ambildata["izin_publikasi"]) ? $ambildata["izin_publikasi"] : 0)?></label>
           </div>
           <div class="jarak">
             <label class="m-1 fw-bold">Anak-anak</label></br>

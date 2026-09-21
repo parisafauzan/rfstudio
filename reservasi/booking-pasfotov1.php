@@ -428,78 +428,32 @@ $hapusjamsementara = $jadwal['id'];
             <input type="text" name="cetakfoto9"  autocomplete="off"  class="form-control  text-center" id="box9" hidden>
           
               <div class="jarak ms-5 mb-3">
-                <label class="mb-2 fw-bold">Tambah Cetak Foto</label>
-                <div class="text-black-50 mb-3" style="max-width:560px; font-size:13px; line-height:1.55;">
-                  <strong class="text-dark">Tambahan cetak foto 15K untuk ukuran template 4R</strong><br><br>
-                  <!-- Template 4 x 6 = 4 lmbr<br>
-                  Template 3 x 4 = 9 lmbr<br>
-                  Template 2 x 3 = 18 lmbr<br>
-                  Template mix (2x3 = 3, 3x4 = 3, 4x6 = 3) = 9 lmbr<br>
-                  Visa = Menyesuaikan persyaratan -->
-                </div>
-                <button type="button" class="btn btn-outline-dark btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#templateCetakFotoModal">
-                  Lihat contoh template cetak foto
-                </button>
-                <div class="mt-2" style="max-width:560px;">
+                <label class="mb-2 fw-bold">Tambah Cetak Foto <span class="text-black-50">(Rp15.000 / template, abaikan jika tidak perlu)</span></label>
+                <div class="mt-2" style="max-width:300px;">
                   <div class="d-flex align-items-center mb-2">
-                    <label class="text-start flex-fill" style="min-width:70px;">4x6</label>
-                    <div class="input-group" style="width:100px;">
-                      <span class="input-group-btn" style="width:30px; height:30px;">
-                        <button type="button" class="btn btn-default cetak-template-minus" data-target="#cetakharga1" aria-label="Kurangi template 4x6"><span class="fa-solid fa-circle-minus"></span></button>
-                      </span>
-                      <input type="text" name="cetakharga1" id="cetakharga1" value="0" class="input-cetak-template-number" style="border:none; padding-left:10px; margin-left:10px; background-color:white; width:30px; height:30px; text-align:center;" autocomplete="off" min="0" max="50" readonly>
-                      <span class="input-group-btn" style="width:30px; height:30px;">
-                        <button type="button" class="btn btn-default cetak-template-plus" data-target="#cetakharga1" aria-label="Tambah template 4x6"><span class="fa-solid fa-circle-plus"></span></button>
-                      </span>
-                    </div>
+                    <label class="me-2" style="min-width:50px;">4x6</label>
+                    <input type="number" style="max-width:70px;" class="form-control form-control-sm" id="cetakharga1" name="cetakharga1" value="0" min="0" max="50" autocomplete="off">
+                    <span class="ms-2 text-black-50" style="font-size:13px;">@15k</span>
                   </div>
                   <div class="d-flex align-items-center mb-2">
-                    <label class="text-start flex-fill" style="min-width:70px;">3x4</label>
-                    <div class="input-group" style="width:100px;">
-                      <span class="input-group-btn" style="width:30px; height:30px;">
-                        <button type="button" class="btn btn-default cetak-template-minus" data-target="#cetakharga2" aria-label="Kurangi template 3x4"><span class="fa-solid fa-circle-minus"></span></button>
-                      </span>
-                      <input type="text" name="cetakharga2" id="cetakharga2" value="0" class="input-cetak-template-number" style="border:none; padding-left:10px; margin-left:10px; background-color:white; width:30px; height:30px; text-align:center;" autocomplete="off" min="0" max="50" readonly>
-                      <span class="input-group-btn" style="width:30px; height:30px;">
-                        <button type="button" class="btn btn-default cetak-template-plus" data-target="#cetakharga2" aria-label="Tambah template 3x4"><span class="fa-solid fa-circle-plus"></span></button>
-                      </span>
-                    </div>
+                    <label class="me-2" style="min-width:50px;">3x4</label>
+                    <input type="number" style="max-width:70px;" class="form-control form-control-sm" id="cetakharga2" name="cetakharga2" value="0" min="0" max="50" autocomplete="off">
+                    <span class="ms-2 text-black-50" style="font-size:13px;">@15k</span>
                   </div>
                   <div class="d-flex align-items-center mb-2">
-                    <label class="text-start flex-fill" style="min-width:70px;">2x3</label>
-                    <div class="input-group" style="width:100px;">
-                      <span class="input-group-btn" style="width:30px; height:30px;">
-                        <button type="button" class="btn btn-default cetak-template-minus" data-target="#cetakharga3" aria-label="Kurangi template 2x3"><span class="fa-solid fa-circle-minus"></span></button>
-                      </span>
-                      <input type="text" name="cetakharga3" id="cetakharga3" value="0" class="input-cetak-template-number" style="border:none; padding-left:10px; margin-left:10px; background-color:white; width:30px; height:30px; text-align:center;" autocomplete="off" min="0" max="50" readonly>
-                      <span class="input-group-btn" style="width:30px; height:30px;">
-                        <button type="button" class="btn btn-default cetak-template-plus" data-target="#cetakharga3" aria-label="Tambah template 2x3"><span class="fa-solid fa-circle-plus"></span></button>
-                      </span>
-                    </div>
+                    <label class="me-2" style="min-width:50px;">2x3</label>
+                    <input type="number" style="max-width:70px;" class="form-control form-control-sm" id="cetakharga3" name="cetakharga3" value="0" min="0" max="50" autocomplete="off">
+                    <span class="ms-2 text-black-50" style="font-size:13px;">@15k</span>
                   </div>
                   <div class="d-flex align-items-center mb-2">
-                    <label class="text-start flex-fill" style="min-width:70px;">Mix</label>
-                    <div class="input-group" style="width:100px;">
-                      <span class="input-group-btn" style="width:30px; height:30px;">
-                        <button type="button" class="btn btn-default cetak-template-minus" data-target="#cetakharga4" aria-label="Kurangi template Mix"><span class="fa-solid fa-circle-minus"></span></button>
-                      </span>
-                      <input type="text" name="cetakharga4" id="cetakharga4" value="0" class="input-cetak-template-number" style="border:none; padding-left:10px; margin-left:10px; background-color:white; width:30px; height:30px; text-align:center;" autocomplete="off" min="0" max="50" readonly>
-                      <span class="input-group-btn" style="width:30px; height:30px;">
-                        <button type="button" class="btn btn-default cetak-template-plus" data-target="#cetakharga4" aria-label="Tambah template Mix"><span class="fa-solid fa-circle-plus"></span></button>
-                      </span>
-                    </div>
+                    <label class="me-2" style="min-width:50px;">Mix</label>
+                    <input type="number" style="max-width:70px;" class="form-control form-control-sm" id="cetakharga4" name="cetakharga4" value="0" min="0" max="50" autocomplete="off">
+                    <span class="ms-2 text-black-50" style="font-size:13px;">@15k</span>
                   </div>
                   <div class="d-flex align-items-center mb-2">
-                    <label class="text-start flex-fill" style="min-width:70px;">Visa</label>
-                    <div class="input-group" style="width:100px;">
-                      <span class="input-group-btn" style="width:30px; height:30px;">
-                        <button type="button" class="btn btn-default cetak-template-minus" data-target="#cetakharga5" aria-label="Kurangi template Visa"><span class="fa-solid fa-circle-minus"></span></button>
-                      </span>
-                      <input type="text" name="cetakharga5" id="cetakharga5" value="0" class="input-cetak-template-number" style="border:none; padding-left:10px; margin-left:10px; background-color:white; width:30px; height:30px; text-align:center;" autocomplete="off" min="0" max="50" readonly>
-                      <span class="input-group-btn" style="width:30px; height:30px;">
-                        <button type="button" class="btn btn-default cetak-template-plus" data-target="#cetakharga5" aria-label="Tambah template Visa"><span class="fa-solid fa-circle-plus"></span></button>
-                      </span>
-                    </div>
+                    <label class="me-2" style="min-width:50px;">Visa</label>
+                    <input type="number" style="max-width:70px;" class="form-control form-control-sm" id="cetakharga5" name="cetakharga5" value="0" min="0" max="50" autocomplete="off">
+                    <span class="ms-2 text-black-50" style="font-size:13px;">@15k</span>
                   </div>
                 </div>
                 <input type="hidden" name="cetakharga6" value="0">
@@ -541,20 +495,6 @@ $hapusjamsementara = $jadwal['id'];
             <span class="text-danger">*</span> wajib diisi </p>
       </form>
     
-      <div class="modal fade" id="templateCetakFotoModal" tabindex="-1" aria-labelledby="templateCetakFotoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="templateCetakFotoModalLabel">Contoh Template Cetak Foto</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-            </div>
-            <div class="modal-body text-center">
-              <img src="../assets/img/template-cetak-foto.png" class="img-fluid rounded border" style="max-height:75vh;" alt="Contoh layout template cetak foto">
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -1303,33 +1243,6 @@ function preview() {
       });
     </script>
 
-
-      <script>
-        document.addEventListener('click', function(event) {
-          var button = event.target.closest('.cetak-template-minus, .cetak-template-plus');
-          if (!button) return;
-
-          event.preventDefault();
-          var input = document.querySelector(button.getAttribute('data-target'));
-          if (!input) return;
-
-          var value = parseInt(input.value, 10);
-          var minimum = parseInt(input.getAttribute('min'), 10);
-          var maximum = parseInt(input.getAttribute('max'), 10);
-          value = isNaN(value) ? 0 : value;
-          minimum = isNaN(minimum) ? 0 : minimum;
-          maximum = isNaN(maximum) ? 50 : maximum;
-
-          if (button.classList.contains('cetak-template-plus')) {
-            value = Math.min(value + 1, maximum);
-          } else {
-            value = Math.max(value - 1, minimum);
-          }
-
-          input.value = value;
-          input.dispatchEvent(new Event('change', { bubbles: true }));
-        });
-      </script>
 
   </body>
   </html>

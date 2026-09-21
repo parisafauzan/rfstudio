@@ -1,7 +1,7 @@
 <?php
 // koneksi database
 require '../function.php';
-require '../session.php';
+require '../session-kartini.php';
 // ambil data dari database
 
 // $data = mysqli_fetch_row($result) ;
@@ -19,7 +19,7 @@ require '../session.php';
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- As a heading -->
-<title>Jadwal Photoshoot - Bekasi Kabupaten</title>
+<title>Jadwal Photoshoot - Bekasi Kota</title>
 <!-- Fontawesome -->
 <script src="https://kit.fontawesome.com/8a35befa8d.js" crossorigin="anonymous"></script>
 <!--  -->
@@ -87,7 +87,7 @@ th{
                             <i class="fa-solid fa-book m-2"></i> <span class=" me-2 d-none d-sm-inline">Data Pelanggan</span> </a>
                     </li>
                     <li>
-                        <a href="setting.php" class="nav-link mt-2 px-0 align-middle text-white"style="font-size: 16px;">
+                        <a href="setting.php" class="nav-link mt-2 px-0 align-middle text-white" style="font-size: 16px;">
                             <i class="fa-solid fa-gear m-2"></i></i> <span class=" me-2 d-none d-sm-inline">Setting</span> </a>
                     </li>
                 </ul>
@@ -108,7 +108,7 @@ th{
 		<div class="table-wrapper">
 			<div class="table-title ">
 				<div class="row m-1 ">
-					<h2>Jadwal<b>Photoshoot  </b></h2>
+					<h2>Jadwal<b>Photoshoot - Kartini </b></h2>
 				</div>
 			</div>
       <table class="table table-hover ">
@@ -118,10 +118,7 @@ th{
               <th class="align-middle">Nama</th>
               <th class="align-middle">Jam</th>              
               <th class="align-middle">Package</th> 
-                            <th class="align-middle">Izin Publikasi</th>
-              <th class="align-middle">Tambahan</th>
-              <th class="align-middle">Catatan</th>
-<th class="align-middle">Bukti Transfer</th>
+              <th class="align-middle">Bukti Transfer</th>
               <th class="align-middle">Pilihan</th>
 
                         
@@ -138,12 +135,12 @@ th{
 					$previous = $halaman - 1;
 					$next = $halaman + 1;
 
-	        $data = mysqli_query($koneksi, "SELECT * FROM data_booking_cobahampirfinishjuga WHERE (studio = 'Bekasi-Kabupaten' OR studio = '') ORDER BY tanggal,jam ASC");
+	        $data = mysqli_query($koneksi, "SELECT * FROM data_booking_cobahampirfinishjuga WHERE studio = 'Bekasi-Kota' ORDER BY tanggal,jam ASC");
 					$jumlah_data = mysqli_num_rows($data);
 					$total_halaman = ceil($jumlah_data / $batas);
 
 
-					$data_konfirmasi = mysqli_query($koneksi,"SELECT * FROM data_booking_cobahampirfinishjuga WHERE (studio = 'Bekasi-Kabupaten' OR studio = '')  ORDER BY tanggal,jam ASC LIMIT $halaman_awal, $batas");
+					$data_konfirmasi = mysqli_query($koneksi,"SELECT * FROM data_booking_cobahampirfinishjuga WHERE studio = 'Bekasi-Kota'  ORDER BY tanggal,jam ASC LIMIT $halaman_awal, $batas");
 					$nomor = $halaman_awal+1;
 					while($d = mysqli_fetch_array($data_konfirmasi)){
 						?>
@@ -188,12 +185,6 @@ th{
                 }else{
                     echo "Studio : Bekasi-Kota";
                 }?> </td>
-              <td>
-                <?php $izinAdmin = bookingPublicationConsentStoredValue($d); ?>
-                <span class="badge <?php echo bookingPublicationConsentBadgeClass($izinAdmin); ?>"><?php echo bookingPublicationConsentLabel($izinAdmin); ?></span>
-              </td>
-              <td style="min-width: 210px; font-size: 13px;"><?php echo bookingAdditionalSummary($d); ?></td>
-              <td style="min-width: 180px; font-size: 13px;"><?php echo empty($d["catatan"]) ? '--' : nl2br(htmlspecialchars($d["catatan"], ENT_QUOTES, 'UTF-8')); ?></td>
               <td hidden><?php 
               if($d["package"] == 'cetak foto'){
                 echo '--';
@@ -274,11 +265,11 @@ th{
                   echo $others2." jam";
                 }
               ?></td>
-               <td hidden><?php if (empty($d["tambah_cetak"])){ echo '--';}else{echo $d["tambah_cetak"]; }?></td>
+              <td hidden><?php if (empty($d["tambah_cetak"])){ echo '--';}else{echo $d["tambah_cetak"]; }?></td>
               <td hidden><?php echo $d["tambah_makeup"];  ?></td>
               <td hidden><?php echo $d["tambah_hairdo"];  ?></td>
-              <td hidden>Rp. <?= number_format($d["harga"],0," ",".");?></td>
-              <td hidden>Rp. <?= number_format($d["hargasetelahdp"],0," ",".");?></td>
+              <td hidden><?php echo $d["harga"];  ?></td>
+              <td hidden><?php echo $d["hargasetelahdp"];  ?></td>
               <td hidden><?php echo $d["time_stamp"];  ?></td>
               <td hidden><?php echo $d["catatan"];  ?></td>
               <td>
@@ -317,7 +308,6 @@ th{
 			
 		</div>
 	</div> 
-</section>
    <div class="clearfix d-flex justify-content-end">
 				<ul class="pagination">
                     <li class="page-item"><a class="page-link"<?php if($halaman > 1){ echo "href='?halaman=$previous'"; } ?>>Previous</a></li>
@@ -582,21 +572,21 @@ th{
               $('#nama').val(data[1]);
               $('#jam').val(data[2]);
               $('#package').val(data[3]);
-              $('#jumlahfoto').val(data[7]);
-              $('#notelp').val(data[8]);
-              $('#email').val(data[9]);
-              $('#cetakfoto').val(data[10]);
-              $('#tambahanak').val(data[11]);
-              $('#tambahdewasa').val(data[12]);
-              $('#tambahorang').val(data[13]);
-              $('#tambahwaktu').val(data[14]);
-              $('#tambahcetak').val(data[15]);
-              $('#tambahmakeup').val(data[16]);
-              $('#tambahhairdo').val(data[17]);
-              $('#harga').val(data[18]);
-              $('#hargasetelahdp').val(data[19]);
-              $('#waktutransaksi').val(data[20]);
-              $('#catatan').val(data[6]);
+              $('#jumlahfoto').val(data[4]);
+              $('#notelp').val(data[5]);
+              $('#email').val(data[6]);
+              $('#cetakfoto').val(data[7]);
+              $('#tambahanak').val(data[8]);
+              $('#tambahdewasa').val(data[9]);
+              $('#tambahorang').val(data[10]);
+              $('#tambahwaktu').val(data[11]);
+              $('#tambahcetak').val(data[12]);
+              $('#tambahmakeup').val(data[13]);
+              $('#tambahhairdo').val(data[14]);
+              $('#harga').val(data[15]);
+              $('#hargasetelahdp').val(data[16]);
+              $('#waktutransaksi').val(data[17]);
+              $('#catatan').val(data[18]);
 
             });
         </script>

@@ -1106,15 +1106,5 @@
       }
       
   </script>
-  
-    <script>
-      $(document).on('submit', '#btpform, #kartiniform', function(event) {
-        if ($(this).find('input[name="jampost"]:checked').length === 0) {
-          event.preventDefault();
-          alert('Silakan pilih jadwal terlebih dahulu.');
-          return false;
-        }
-      });
-    </script>
-</body>
+  </body>
   </html>

@@ -3,9 +3,9 @@ require 'vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
-$koneksi = mysqli_connect("localhost","rfstu853_rfsadmin","Rfstudio2022","rfstu853_rfstudio");
+// $koneksi = mysqli_connect("localhost","rfstu853_rfsadmin","Rfstudio2022","rfstu853_rfstudio");
 // $koneksi = mysqli_connect("localhost","rfstu853_rfsadmin","Rfstudio2022","rfstu853_testdb");
-// $koneksi = mysqli_connect("localhost","root","","rfstudio");
+$koneksi = mysqli_connect("localhost","root","","rfstudio");
 
 // Samakan perilaku error mysqli dengan produksi (PHP <= 8.0) agar tidak fatal di PHP 8.1+
 mysqli_report(MYSQLI_REPORT_OFF);
@@ -26,28 +26,8 @@ function bookingPublicationConsent($data){
     return (isset($data['izin_publikasi']) && $data['izin_publikasi'] === '1') ? '1' : '0';
 }
 
-function bookingPublicationConsentStoredValue($data){
-    if (!is_array($data) || !array_key_exists('izin_publikasi', $data) || $data['izin_publikasi'] === null || $data['izin_publikasi'] === '') {
-        return null;
-    }
-
-    return ((string)$data['izin_publikasi'] === '1') ? '1' : '0';
-}
-
 function bookingPublicationConsentLabel($izinPublikasi){
-    if ($izinPublikasi === null || $izinPublikasi === '') {
-        return 'Belum ditanya';
-    }
-
     return ((string)$izinPublikasi === '1') ? 'Diizinkan' : 'Tidak diizinkan';
-}
-
-function bookingPublicationConsentBadgeClass($izinPublikasi){
-    if ($izinPublikasi === null || $izinPublikasi === '') {
-        return 'bg-warning text-dark';
-    }
-
-    return ((string)$izinPublikasi === '1') ? 'bg-success' : 'bg-secondary';
 }
 
 function bookingAdditionalSummary($data){
@@ -112,15 +92,15 @@ function detailLokasiStudio($studio){
     if ($studio === 'Bekasi-Kota'){
         return array(
             'nama' => 'Bekasi Timur Kota',
-            'alamat' => 'Villa Tmn Kartini Bekasi<br>Jl. Graha Juwita III Blok A2 No. 3<br>Margahayu, Bekasi Timur',
-            'maps' => 'https://maps.app.goo.gl/GiCMhmMnvEk6UKhVA'
+            'alamat' => 'Villa Tmn Kartini Bekasi, Jl. Graha Juwita III Blok A2 No.3, Margahayu, Bekasi Timur',
+            'maps' => 'https://maps.app.goo.gl/cUriRYWeLPUQMMor5?g_st=ic'
         );
     }
 
     return array(
         'nama' => 'Bekasi Timur Kabupaten',
-        'alamat' => 'Jl. Arjuna 4 No. 1<br>Setiamekar, Bekasi Timur',
-        'maps' => 'https://maps.app.goo.gl/EkaZZsSD1PdPzKnW9'
+        'alamat' => 'Jl. Arjuna 4 No.1, Setiamekar, Bekasi Timur',
+        'maps' => 'https://maps.app.goo.gl/PjiW8XqJuNAGboNV6?g_st=ic'
     );
 }
 
@@ -139,8 +119,7 @@ function emailLokasiStudio($studio){
     $lokasi = detailLokasiStudio($studio);
     return '<tr><td class="label">Alamat Studio</td><td class="value">'
         . $lokasi['alamat']
-        . '</td></tr>'
-        . '<tr><td class="label">Link Maps</td><td class="value"><a href="' . $lokasi['maps'] . '" target="_blank" rel="noopener noreferrer">' . $lokasi['maps'] . '</a></td></tr>';
+        . '<br><a href="' . $lokasi['maps'] . '">Buka Google Maps</a></td></tr>';
 }
 function jadwal($data){
     global $koneksi;

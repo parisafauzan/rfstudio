@@ -1,12 +1,6 @@
 <?php
 require 'function.php';
 
-function kategoriJadwalPhotoshoot($package){
-    $package = strtolower(trim((string)$package));
-    $khusus = array('self photo', 'selfphoto', 'pas foto', 'pasfoto', 'cetak foto');
-    return in_array($package, $khusus, true) ? 'self-pasfoto' : 'photo-studio';
-}
-
 ?>
 <!doctype html>
 <html lang="en">
@@ -27,67 +21,6 @@ function kategoriJadwalPhotoshoot($package){
   <script src="https://kit.fontawesome.com/8a35befa8d.js" crossorigin="anonymous"></script>
   <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet" />
-
-    <style>
-      .jadwal-page-shell {
-        width: 100%;
-        max-width: 1150px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-      .jadwal-panel {
-        width: 100%;
-      }
-      .jadwal-filter-bar {
-        width: 100%;
-      }
-      .jadwal-table-scroll {
-        width: 100%;
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-      }
-      .jadwal-table-scroll .table {
-        min-width: 920px;
-        margin-bottom: 0;
-      }
-      @media (max-width: 767.98px) {
-        .navbar .h1 {
-          font-size: 1.25rem !important;
-          margin-left: .5rem !important;
-        }
-        .row.mx-auto[style*="max-width:500px"] {
-          width: 100%;
-          max-width: 100% !important;
-        }
-        .std-kab,
-        .std-kot {
-          font-size: 13px;
-          padding-left: 6px;
-          padding-right: 6px;
-        }
-        .jadwal-filter-bar {
-          flex-wrap: nowrap !important;
-          justify-content: flex-start !important;
-          overflow-x: auto;
-          padding-bottom: 5px;
-          -webkit-overflow-scrolling: touch;
-        }
-        .jadwal-filter {
-          flex: 0 0 auto;
-          white-space: nowrap;
-        }
-        .jadwal-table-scroll {
-          width: calc(100% + 24px);
-          margin-left: -12px;
-          margin-right: -12px;
-        }
-        .jadwal-table-scroll .table {
-          min-width: 920px;
-          font-size: 13px;
-        }
-      }
-    </style>
   </head>
   <body>
     <!-- Ini adalah awal navbar header -->
@@ -105,8 +38,8 @@ function kategoriJadwalPhotoshoot($package){
     </nav>
     <!-- Ini adalah akhir navbar header -->
     <?php
-      $jadwalkabupaten = mysqli_query($koneksi, "SELECT id FROM data_konfirmasi_cobahampirfinishjuga WHERE studio = '' OR studio ='Bekasi-Kabupaten' UNION ALL SELECT id FROM data_booking_cobahampirfinishjuga WHERE studio = '' OR studio ='Bekasi-Kabupaten' ");
-      $adaKabupaten = mysqli_num_rows($jadwalkabupaten) > 0;
+      $jadwalkabupaten = mysqli_query($koneksi, "SELECT * FROM data_konfirmasi_cobahampirfinishjuga WHERE studio = '' AND studio ='Bekasi-Kabupaten' UNION ALL SELECT * FROM data_booking_cobahampirfinishjuga WHERE studio = '' AND studio ='Bekasi-Kabupaten' ");
+      $ambil = mysqli_fetch_array($jadwalkabupaten);
 
     
 
@@ -128,17 +61,11 @@ function kategoriJadwalPhotoshoot($package){
               </div>
             </div>
           </div>
-    <div class="jadwal-page-shell">
+    <div class="mx-auto" style="max-width:fit-content">
           
-      <div id="bekasi-kab" class="jadwal-panel" data-jadwal-container="kab">
-        <div class="jadwal-filter-bar d-flex flex-wrap justify-content-center gap-2 mt-4 mb-3" data-jadwal-filter-group="kab">
-          <button type="button" class="btn btn-dark btn-sm jadwal-filter active" data-jadwal-group="kab" data-jadwal-filter="all">Semua</button>
-          <button type="button" class="btn btn-outline-dark btn-sm jadwal-filter" data-jadwal-group="kab" data-jadwal-filter="photo-studio">Photo Studio</button>
-          <button type="button" class="btn btn-outline-dark btn-sm jadwal-filter" data-jadwal-group="kab" data-jadwal-filter="self-pasfoto">Self Photo + Pas Foto</button>
-        </div>
-        <div class="jadwal-table-scroll">
+      <div id="bekasi-kab" class="table-responsive">
         <?php
-          if ($adaKabupaten){?>
+          if (empty($ambil)){?>
         <table  class="table border table-striped table-hover mx-auto mt-5" style="max-width: 70%;" >
           <thead class="align-middle">
             <tr>
@@ -147,8 +74,7 @@ function kategoriJadwalPhotoshoot($package){
               <th style="width: 20%;">Nama</th>
               <th style="width: 10%;">Studio</th>
               <th style="width: 15%;">Package</th> 
-              <th style="width: 15%;">Jumlah Orang</th>
-              <th style="width: 15%;">Izin Publikasi</th> 
+              <th style="width: 15%;">Jumlah Orang</th> 
               <th style="width: 15%;">Catatan</th> 
             </tr>
           </thead>
@@ -161,16 +87,15 @@ function kategoriJadwalPhotoshoot($package){
             $previous = $halaman - 1;
             $next = $halaman + 1;
 
-            $data = mysqli_query($koneksi, "SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' ORDER BY tanggal,jam ASC");
+            $data = mysqli_query($koneksi, "SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' ORDER BY tanggal,jam ASC");
             $jumlah_data = mysqli_num_rows($data);
             $total_halaman = ceil($jumlah_data / $batas);
 
-            $data_konfirmasi = mysqli_query($koneksi,"SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' ORDER BY tanggal,jam ASC LIMIT $halaman_awal, $batas");
+            $data_konfirmasi = mysqli_query($koneksi,"SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' ORDER BY tanggal,jam ASC LIMIT $halaman_awal, $batas");
             $nomor = $halaman_awal+1;
             while($d = mysqli_fetch_array($data_konfirmasi)){
-              $kategoriJadwal = kategoriJadwalPhotoshoot($d["package"]);
               ?>
-            <tr data-jadwal-category="<?php echo $kategoriJadwal; ?>">
+            <tr>
                 <td><?php 
                 if($d["package"]== "cetak foto"){
                   echo "--";
@@ -199,21 +124,12 @@ function kategoriJadwalPhotoshoot($package){
                 <td><?php
                   echo $d["jmlhorgdws"]; echo " "; echo $d["jmlhorgank"];
                 ?></td>
-                <td>
-                  <?php $izinJadwal = bookingPublicationConsentStoredValue($d); ?>
-                  <span class="badge <?php echo bookingPublicationConsentBadgeClass($izinJadwal); ?>">
-                    <?php echo bookingPublicationConsentLabel($izinJadwal); ?>
-                  </span>
-                </td>
                 <td><?php
                   echo $d["catatan"]; 
                 ?></td>
 
             </tr>
                       <?php }//endforeach;?>
-            <tr class="jadwal-filter-empty" style="display:none;">
-              <td colspan="8" class="text-center text-black-50">Tidak ada jadwal pada kategori ini.</td>
-            </tr>
           </tbody>
         </table>
         <?php }else{
@@ -235,19 +151,12 @@ function kategoriJadwalPhotoshoot($package){
             <li class="page-item"><a class="page-link" <?php if($halaman < $total_halaman) { echo "href='?halaman=$next'"; } ?>>Next</a></li>
           </ul>
         </div> -->
-        </div>
       </div>
-      <div id="bekasi-kota" class="jadwal-panel" data-jadwal-container="kota">
-        <div class="jadwal-filter-bar d-flex flex-wrap justify-content-center gap-2 mt-4 mb-3" data-jadwal-filter-group="kota">
-          <button type="button" class="btn btn-dark btn-sm jadwal-filter active" data-jadwal-group="kota" data-jadwal-filter="all">Semua</button>
-          <button type="button" class="btn btn-outline-dark btn-sm jadwal-filter" data-jadwal-group="kota" data-jadwal-filter="photo-studio">Photo Studio</button>
-          <button type="button" class="btn btn-outline-dark btn-sm jadwal-filter" data-jadwal-group="kota" data-jadwal-filter="self-pasfoto">Self Photo + Pas Foto</button>
-        </div>
-        <div class="jadwal-table-scroll">
+      <div id="bekasi-kota" class="table-responsive">
         <?php
-          $ambilbekasikota =mysqli_query($koneksi, "SELECT id FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' UNION ALL SELECT id FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' ");
-          $adaKota = mysqli_num_rows($ambilbekasikota) > 0;
-          if ($adaKota){?>
+          $ambilbekasikota =mysqli_query($koneksi, "SELECT * FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' UNION ALL SELECT * FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' ");
+          $ambilkota = mysqli_fetch_array($ambilbekasikota); 
+          if ($ambilkota["studio"]=='Bekasi-Kota'){?>
         <table  class="table border table-striped table-hover mx-auto mt-5" style="max-width: 70%;" >
           <thead class="align-middle">
             <tr>
@@ -257,7 +166,6 @@ function kategoriJadwalPhotoshoot($package){
               <th style="width: 10%;">Studio</th>
               <th style="width: 15%;">Package</th> 
               <th style="width: 15%;">Jumlah Orang</th>
-              <th style="width: 15%;">Izin Publikasi</th>
               <th style="width: 15%;">Catatan</th>
             </tr>
           </thead>
@@ -270,16 +178,15 @@ function kategoriJadwalPhotoshoot($package){
             $previous = $halaman - 1;
             $next = $halaman + 1;
 
-            $data = mysqli_query($koneksi, "SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' ORDER BY tanggal,jam ASC");
+            $data = mysqli_query($koneksi, "SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' ORDER BY tanggal,jam ASC");
             $jumlah_data = mysqli_num_rows($data);
             $total_halaman = ceil($jumlah_data / $batas);
 
-            $data_konfirmasi = mysqli_query($koneksi,"SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' ORDER BY tanggal,jam ASC LIMIT $halaman_awal, $batas");
+            $data_konfirmasi = mysqli_query($koneksi,"SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' ORDER BY tanggal,jam ASC LIMIT $halaman_awal, $batas");
             $nomor = $halaman_awal+1;
             while($d = mysqli_fetch_array($data_konfirmasi)){
-              $kategoriJadwal = kategoriJadwalPhotoshoot($d["package"]);
               ?>
-            <tr data-jadwal-category="<?php echo $kategoriJadwal; ?>">
+            <tr>
                 <td><?php 
                 if($d["package"]== "cetak foto"){
                   echo "--";
@@ -308,21 +215,12 @@ function kategoriJadwalPhotoshoot($package){
                 <td><?php
                   echo $d["jmlhorgdws"]; echo " "; echo $d["jmlhorgank"];
                 ?></td>
-                <td>
-                  <?php $izinJadwal = bookingPublicationConsentStoredValue($d); ?>
-                  <span class="badge <?php echo bookingPublicationConsentBadgeClass($izinJadwal); ?>">
-                    <?php echo bookingPublicationConsentLabel($izinJadwal); ?>
-                  </span>
-                </td>
                 <td><?php
                   echo $d["catatan"]; 
                 ?></td>
 
             </tr>
                       <?php }//endforeach;?>
-            <tr class="jadwal-filter-empty" style="display:none;">
-              <td colspan="8" class="text-center text-black-50">Tidak ada jadwal pada kategori ini.</td>
-            </tr>
           </tbody>
         </table>
         <?php }else{
@@ -344,7 +242,6 @@ function kategoriJadwalPhotoshoot($package){
             <li class="page-item"><a class="page-link" <?php if($halaman < $total_halaman) { echo "href='?halaman=$next'"; } ?>>Next</a></li>
           </ul>
         </div> -->
-        </div>
       </div>
     </div>        
   </div>
@@ -532,35 +429,5 @@ function kategoriJadwalPhotoshoot($package){
 </script> -->
 
 
-
-    <script>
-      document.addEventListener('click', function(event) {
-        var button = event.target.closest('.jadwal-filter');
-        if (!button) return;
-
-        var group = button.getAttribute('data-jadwal-group');
-        var filter = button.getAttribute('data-jadwal-filter');
-        var container = document.querySelector('[data-jadwal-container="' + group + '"]');
-        if (!container) return;
-
-        var rows = container.querySelectorAll('tbody tr[data-jadwal-category]');
-        var visibleRows = 0;
-        rows.forEach(function(row) {
-          var show = filter === 'all' || row.getAttribute('data-jadwal-category') === filter;
-          row.style.display = show ? '' : 'none';
-          if (show) visibleRows++;
-        });
-
-        var emptyRow = container.querySelector('.jadwal-filter-empty');
-        if (emptyRow) emptyRow.style.display = visibleRows === 0 ? 'table-row' : 'none';
-
-        document.querySelectorAll('.jadwal-filter[data-jadwal-group="' + group + '"]').forEach(function(item) {
-          item.classList.remove('active', 'btn-dark');
-          item.classList.add('btn-outline-dark');
-        });
-        button.classList.add('active', 'btn-dark');
-        button.classList.remove('btn-outline-dark');
-      });
-    </script>
   </body>
 </html>

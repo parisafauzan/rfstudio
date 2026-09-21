@@ -646,7 +646,7 @@ require '../function.php';
         <!-- <a type="button" id="btn_reset" class="btn mt-2 btn-outline-dark">Reset <span class='glyphicon glyphicon-remove'></span></a> -->
         
         
-          <!-- <button type="submit" id="btn_upload" class="btn btn-success">Upload File <span class='glyphicon glyphicon-arrow-up'></span></button> -->
+          <?php echo bookingPublicationConsentField(); ?>
          <div class="empty-text w-50" style="width: 20%;">
             <img id="thumb" src="" width="250px"/>
         </div>

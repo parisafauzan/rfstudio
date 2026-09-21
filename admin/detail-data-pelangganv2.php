@@ -141,7 +141,7 @@ footer {
           </div>
           <div class="jarak">
             <label class="m-1 fw-bold">Izin Publikasi Konten</label></br>
-            <label class="ms-2 "><?= bookingPublicationConsentLabel(bookingPublicationConsentStoredValue($ambildata))?></label>
+            <label class="ms-2 "><?= bookingPublicationConsentLabel(isset($ambildata["izin_publikasi"]) ? $ambildata["izin_publikasi"] : 0)?></label>
           </div>
           <div class="jarak">
             <label class="m-1 fw-bold">Anak-anak</label></br>

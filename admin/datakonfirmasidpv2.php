@@ -2,10 +2,10 @@
 // koneksi database
 require '../function.php';
 require '../session.php';
-// ambil data dari database
-
+     
 // $data = mysqli_fetch_row($result) ;
 // var_dump($data);
+  
 
 ?>
 
@@ -19,7 +19,7 @@ require '../session.php';
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- As a heading -->
-<title>Jadwal Photoshoot - Bekasi Kabupaten</title>
+<title>Nunggu Konfirmasi - Bekasi Kabupaten</title>
 <!-- Fontawesome -->
 <script src="https://kit.fontawesome.com/8a35befa8d.js" crossorigin="anonymous"></script>
 <!--  -->
@@ -29,25 +29,34 @@ require '../session.php';
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
 <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
 </head>
 <!--  -->
-<style>
-.nav-link:hover {
-  background-color: black;
-}
-table{
-  width: 100%;
-}
-th{
-  text-align: center;
-}
 
+
+<style>
+
+    .nav-link:hover {
+    background-color: black;
+    }
+    table{
+    width: 100%;
+    }
+    th,td{
+    text-align: start;
+    }
+    .scroll-view{
+        overflow-y: scroll;
+        height:800px;
+    }
 
 </style>
 <body>
+  <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
+<script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 
     <!-- Ini adalah awal navbar header -->
     <link rel="stylesheet" href="../style.css">
@@ -67,18 +76,22 @@ th{
      <!-- Awal Sidebar -->
 <div class="container-fluid">
     <div class="row flex-nowrap">
-        <div class="col-auto px-sm-2 px-0 bg-dark">
+        <div class="col-auto  px-sm-2 px-0 bg-dark">
             <div class="d-flex flex-column align-items-center align-items-sm-start px-1 pt-2 text-white min-vh-100">
                 <a class="d-flex mx-auto pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
                     <span class="fs-5 d-none d-sm-inline mt-4 fs-3">admin</span>
                 </a>
                 <ul class="nav nav-pills flex-column mb-sm-auto mb-0  align-items-center align-items-sm-start" id="menu">
                     <li >
-                        <a href="datakonfirmasidp.php" class="nav-link px-0 mt-2 align-middle text-white" style="font-size: 16px;" >
+                        <a href="#" class="nav-link px-0 mt-2 align-middle text-white" style="background-color:black ; font-size: 16px;" >
                         <i class="fa-solid fa-list-check m-2 "></i> <span class=" me-2 d-none d-sm-inline">Nunggu Konfirmasi</span> </a>
                     </li>
+                    <!--<li>-->
+                    <!--    <a href="data-upload.php" class="nav-link px-0 mt-2 align-middle text-white" style="font-size: 16px;" >-->
+                    <!--    <i class="fa-solid fa-images m-2"></i> <span class=" me-2 d-none d-sm-inline">Upload Foto</span> </a>-->
+                    <!--</li>-->
                     <li>
-                        <a href="#" class="nav-link mt-2 px-0 align-middle text-white" style="background-color:black ; font-size: 16px;">
+                        <a href="databooking.php" class="nav-link mt-2 px-0 align-middle text-white" style=" font-size: 16px;">
                             <i class="fa-solid fa-list-ol m-2"></i> <span class=" me-2 d-none d-sm-inline">Jadwal Photoshoot</span></a>
                     </li>
                    
@@ -102,28 +115,28 @@ th{
         </div>
 <div class="col pt-5 pb-4">
 <!-------------------------------Tabell----------------------------------------------------->
+
 <section class="container-md" id="containermd">
-  
+ 
 	<div class="table-responsive">
 		<div class="table-wrapper">
 			<div class="table-title ">
 				<div class="row m-1 ">
-					<h2>Jadwal<b>Photoshoot  </b></h2>
+					<h2>Nunggu<b>Konfirmasi</b></h2>
 				</div>
 			</div>
-      <table class="table table-hover ">
+			<table class="table  table-hover">
 				<thead class="align-middle head">
 					<tr >
               <th class="align-middle">Tanggal</th>
               <th class="align-middle">Nama</th>
               <th class="align-middle">Jam</th>              
-              <th class="align-middle">Package</th> 
-                            <th class="align-middle">Izin Publikasi</th>
+              <th class="align-middle">Package</th>  
+              <th class="align-middle">Izin Publikasi</th>
               <th class="align-middle">Tambahan</th>
               <th class="align-middle">Catatan</th>
-<th class="align-middle">Bukti Transfer</th>
+              <th class="align-middle">Bukti Transfer</th>             
               <th class="align-middle">Pilihan</th>
-
                         
 					</tr>
 				</thead>
@@ -138,18 +151,18 @@ th{
 					$previous = $halaman - 1;
 					$next = $halaman + 1;
 
-	        $data = mysqli_query($koneksi, "SELECT * FROM data_booking_cobahampirfinishjuga WHERE (studio = 'Bekasi-Kabupaten' OR studio = '') ORDER BY tanggal,jam ASC");
+					$data = mysqli_query($koneksi, "SELECT * FROM data_konfirmasi_cobahampirfinishjuga WHERE (studio = 'Bekasi-Kabupaten' OR studio = '') ORDER BY time_stamp ASC");
+
 					$jumlah_data = mysqli_num_rows($data);
 					$total_halaman = ceil($jumlah_data / $batas);
 
 
-					$data_konfirmasi = mysqli_query($koneksi,"SELECT * FROM data_booking_cobahampirfinishjuga WHERE (studio = 'Bekasi-Kabupaten' OR studio = '')  ORDER BY tanggal,jam ASC LIMIT $halaman_awal, $batas");
+					$data_konfirmasi = mysqli_query($koneksi,"SELECT * FROM data_konfirmasi_cobahampirfinishjuga WHERE (studio = 'Bekasi-Kabupaten' OR studio = '') ORDER BY time_stamp ASC LIMIT $halaman_awal, $batas");
 					$nomor = $halaman_awal+1;
 					while($d = mysqli_fetch_array($data_konfirmasi)){
 						?>
-			<tr style="font-size: 15px;">
-     
-            <td><?php 
+					<tr style="font-size: 15px;">
+              <td><?php 
               if($d["package"] == 'cetak foto'){
                 echo '--';
               }else{
@@ -182,15 +195,10 @@ th{
                 echo $d["jam"];
               }
                ?></td>
-              <td><?php echo $d["package"];echo " ";echo  '<b>'.$d["tipe_package"].'</b><br>';
-                if(empty($d["studio"]) || $d["studio"]=='Bekasi-Kabupaten'){
-                    echo "Studio : Bekasi-Kabupaten";
-                }else{
-                    echo "Studio : Bekasi-Kota";
-                }?> </td>
+              <td><?php echo $d["package"];echo " ";echo  '<b>'.$d["tipe_package"];'</b>'  ?> </td>
               <td>
-                <?php $izinAdmin = bookingPublicationConsentStoredValue($d); ?>
-                <span class="badge <?php echo bookingPublicationConsentBadgeClass($izinAdmin); ?>"><?php echo bookingPublicationConsentLabel($izinAdmin); ?></span>
+                <?php $izinAdmin = bookingPublicationConsent($d); ?>
+                <span class="badge <?php echo ($izinAdmin === '1') ? 'bg-success' : 'bg-secondary'; ?>"><?php echo bookingPublicationConsentLabel($izinAdmin); ?></span>
               </td>
               <td style="min-width: 210px; font-size: 13px;"><?php echo bookingAdditionalSummary($d); ?></td>
               <td style="min-width: 180px; font-size: 13px;"><?php echo empty($d["catatan"]) ? '--' : nl2br(htmlspecialchars($d["catatan"], ENT_QUOTES, 'UTF-8')); ?></td>
@@ -253,7 +261,7 @@ th{
               <td hidden><?php 
               $waktu_self = $d["tambah_waktu"];
               $others2 = $d["tambah_waktu"];
-              if ($d["package"] == 'self photo' && $d["tambah_waktu"] > 0)
+             if ($d["package"] == 'self photo' && $d["tambah_waktu"] > 0)
                 { 
                   echo $waktu_self." menit";
                 }
@@ -274,51 +282,33 @@ th{
                   echo $others2." jam";
                 }
               ?></td>
-               <td hidden><?php if (empty($d["tambah_cetak"])){ echo '--';}else{echo $d["tambah_cetak"]; }?></td>
+              <td hidden><?php if (empty($d["tambah_cetak"])){ echo '--';}else{echo $d["tambah_cetak"]; }?></td>
               <td hidden><?php echo $d["tambah_makeup"];  ?></td>
               <td hidden><?php echo $d["tambah_hairdo"];  ?></td>
               <td hidden>Rp. <?= number_format($d["harga"],0," ",".");?></td>
-              <td hidden>Rp. <?= number_format($d["hargasetelahdp"],0," ",".");?></td>
               <td hidden><?php echo $d["time_stamp"];  ?></td>
               <td hidden><?php echo $d["catatan"];  ?></td>
+              <td>  
+                <img class="gallery-item" aria-label="bukti" src= "../assets/img/data_konfirmasi/<?= $d["bukti_transfer"];?>" width="80" height="80"></td>
               <td>
-                <?php 
-                if($d["bukti_lunas"]=="0"||$d["bukti_lunas"]=" "){
-                ?>
-                    <img class="gallery-item" aria-label="bukti" src= "../assets/img/data_konfirmasi/<?= $d["bukti_transfer"];?>" width="80" height="80"><br>  
-                <?php
-                }else{
-                ?>
-                    <img class="gallery-item" aria-label="bukti" src= "../assets/img/data_konfirmasi/<?= $d["bukti_transfer"];?>" width="80" height="80"><br>
-                    <img class="gallery-item mt-2" aria-label="bukti" src= "../assets/img/data_overtime/<?= $d["bukti_lunas"];?>" width="80" height="80">
-                <?php
-                } 
-                ?>
-                </td>
-              
-                <td>
-              
-                    <a href="lunas.php?uniqid=<?= $d["uniqid"];  ?>"  style="font-size: 13px;" class="btn btn-primary ms-2  text-white" name="tombol_konF" onclick="return confirm('Anda yakin client sudah melakukan photoshoot ?')">
-                        Konfirmasi</a>
-                    <a href="kirimpesan.php?id=<?= $d["id"]; ?>"  style="font-size: 13px;" class="btn btn-info ms-2 mt-1 " name="tombol_konF" >
-                        Pesan</a>
-                    <button type="button" style="font-size: 13px;" class="btn btn-success viewdata ms-2 mt-1" id="viewdata" >
-                        Detail</button>
-                    <a href="editbooking.php?id=<?= $d["id"]; ?>"  style="font-size: 13px;" class="btn btn-warning ms-2 mt-1 text-dark" name="tombol_konF" >
-                        Edit</a>
-                    <a href="deletebooking.php?uniqid=<?= $d["uniqid"]; ?>"  style="font-size: 13px;" class="btn btn-danger ms-2 mt-1 text-white" name="tombol_konF" onclick="return confirm('Anda yakin ingin menghapus data ini ?')">
-                        Hapus</a>
-                </td>
-            </tr>
+                <a href="konfirmasi.php?uniqid=<?= $d["uniqid"];  ?>" style="font-size: 13px;" class="btn btn-primary ms-2 mt-2 text-white" name="tombol_konF" onclick="return confirm('Anda yakin biaya DP sudah masuk ke Rekening ?')">
+                    Konfirmasi</a>
+                <button type="button" style="font-size: 13px;" class="btn btn-success viewdata ms-2 mt-1" id="viewdata" >
+                  Detail</button>
+                <a href="edit.php?id=<?= $d["id"]; ?>"  style="font-size: 13px;" class="btn btn-warning ms-2 mt-1 text-dark" name="tombol_konF" >
+                    Edit</a>
+                <a href="delete.php?uniqid=<?= $d["uniqid"]; ?>" style="font-size: 13px;" class="btn btn-danger ms-2 mt-1 text-white" name="tombol_konF" onclick="return confirm('Anda yakin ingin menghapus data ini ?')">
+                    Hapus</a>
+              </td>
+          </tr>
             <?php }//endforeach;?>
 				</tbody>
 			</table>
-      
-			
 		</div>
-	</div> 
+    
+	</div>   
 </section>
-   <div class="clearfix d-flex justify-content-end">
+  <div class="clearfix d-flex justify-content-end">
 				<ul class="pagination">
                     <li class="page-item"><a class="page-link"<?php if($halaman > 1){ echo "href='?halaman=$previous'"; } ?>>Previous</a></li>
 					<?php 
@@ -330,13 +320,13 @@ th{
 					?>		
 					<li class="page-item"><a class="page-link" <?php if($halaman < $total_halaman) { echo "href='?halaman=$next'"; } ?>>Next</a></li>
 				</ul>
-			</div>           
-        </section>
+			</div>     
+
 <!-- Modal = ketika di klik masuk mode pop up -->
     <div class="modal fade" id="imgModal" tabindex="-1" role="dialog"  aria-labelledby="exampleModalLabel" aria-hidden="true" >
       <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
-          <div class="modal-header">
+          <div class="modal-header " >
             <h5 class="modal-title" id="exampleModalLabel">Bukti Transfer DP</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
             </button>
@@ -347,16 +337,16 @@ th{
         </div>
       </div>
     </div>
-    <!-- Modal = ketika di klik masuk mode pop up -->
+ <!-- Modal = ketika di klik masuk mode pop up -->
     <div class="modal fade" id="viewModal" tabindex="-1" role="dialog"  aria-labelledby="exampleModalLabel" aria-hidden="true" >
-        <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
             <div class="modal-header " >
                 <h5 class="modal-title" id="exampleModalLabel">Data Client</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
-            <div class="modal-body" style="width:100%; ">
+            <div class="modal-body scroll-view" style="width:100%; ">
             <table class="table table-hover" style="font-size: 15px;">
                 <tbody>
                 <tr> 
@@ -488,14 +478,6 @@ th{
                 </tr>
                 <tr> 
                     <td class="align-middle">
-                        <label>Sisa Pelunasan</label>
-                    </td>
-                    <td>
-                        <input id="hargasetelahdp" class="form-control mt-2 ms-3" style="width: 250px; background-color:white;" type="text" readonly>
-                    </td>
-                </tr>
-                <tr> 
-                    <td class="align-middle">
                         <label>Waktu Transaksi</label>
                     </td>
                     <td>
@@ -517,7 +499,7 @@ th{
             </div>
         </div>
     </div>
-    <!------------------------------------------- -->
+                <!------------------------------------------- -->
 <!-- <h3 class='text-start note' id="note" style="margin-top: 200px; margin-left:200px;" hidden>Belum ada data yang masuk</h3> -->
 <!------------------------------------------------------------------------------------>
 
@@ -569,7 +551,10 @@ th{
       }
     })</script>
     <script >
-            $(document).on('click','.viewdata',function(){ 
+      $(document).ready(function () {
+          $('#table').DataTable();
+      });
+              $(document).on('click','.viewdata',function(){ 
               $('#viewModal').modal("show");  
 
               $tr = $(this).closest('tr');
@@ -594,8 +579,7 @@ th{
               $('#tambahmakeup').val(data[16]);
               $('#tambahhairdo').val(data[17]);
               $('#harga').val(data[18]);
-              $('#hargasetelahdp').val(data[19]);
-              $('#waktutransaksi').val(data[20]);
+              $('#waktutransaksi').val(data[19]);
               $('#catatan').val(data[6]);
 
             });

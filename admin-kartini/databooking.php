@@ -118,7 +118,10 @@ th{
               <th class="align-middle">Nama</th>
               <th class="align-middle">Jam</th>              
               <th class="align-middle">Package</th> 
-              <th class="align-middle">Bukti Transfer</th>
+                            <th class="align-middle">Izin Publikasi</th>
+              <th class="align-middle">Tambahan</th>
+              <th class="align-middle">Catatan</th>
+<th class="align-middle">Bukti Transfer</th>
               <th class="align-middle">Pilihan</th>
 
                         
@@ -185,6 +188,12 @@ th{
                 }else{
                     echo "Studio : Bekasi-Kota";
                 }?> </td>
+              <td>
+                <?php $izinAdmin = bookingPublicationConsentStoredValue($d); ?>
+                <span class="badge <?php echo bookingPublicationConsentBadgeClass($izinAdmin); ?>"><?php echo bookingPublicationConsentLabel($izinAdmin); ?></span>
+              </td>
+              <td style="min-width: 210px; font-size: 13px;"><?php echo bookingAdditionalSummary($d); ?></td>
+              <td style="min-width: 180px; font-size: 13px;"><?php echo empty($d["catatan"]) ? '--' : nl2br(htmlspecialchars($d["catatan"], ENT_QUOTES, 'UTF-8')); ?></td>
               <td hidden><?php 
               if($d["package"] == 'cetak foto'){
                 echo '--';
@@ -572,21 +581,21 @@ th{
               $('#nama').val(data[1]);
               $('#jam').val(data[2]);
               $('#package').val(data[3]);
-              $('#jumlahfoto').val(data[4]);
-              $('#notelp').val(data[5]);
-              $('#email').val(data[6]);
-              $('#cetakfoto').val(data[7]);
-              $('#tambahanak').val(data[8]);
-              $('#tambahdewasa').val(data[9]);
-              $('#tambahorang').val(data[10]);
-              $('#tambahwaktu').val(data[11]);
-              $('#tambahcetak').val(data[12]);
-              $('#tambahmakeup').val(data[13]);
-              $('#tambahhairdo').val(data[14]);
-              $('#harga').val(data[15]);
-              $('#hargasetelahdp').val(data[16]);
-              $('#waktutransaksi').val(data[17]);
-              $('#catatan').val(data[18]);
+              $('#jumlahfoto').val(data[7]);
+              $('#notelp').val(data[8]);
+              $('#email').val(data[9]);
+              $('#cetakfoto').val(data[10]);
+              $('#tambahanak').val(data[11]);
+              $('#tambahdewasa').val(data[12]);
+              $('#tambahorang').val(data[13]);
+              $('#tambahwaktu').val(data[14]);
+              $('#tambahcetak').val(data[15]);
+              $('#tambahmakeup').val(data[16]);
+              $('#tambahhairdo').val(data[17]);
+              $('#harga').val(data[18]);
+              $('#hargasetelahdp').val(data[19]);
+              $('#waktutransaksi').val(data[20]);
+              $('#catatan').val(data[6]);
 
             });
         </script>

@@ -151,11 +151,11 @@ $hapusjamsementara = $jadwal['id'];
                   <!--------------------------------------------->
           <div >
               <input type="text" name="tambah1" style="background-color: white;"  autocomplete="off" placeholder="0" class="form-control  text-center" value="data anda berhasil terkirim, menunggu konfirmasi dari admin" hidden>
-              <input type="text" name="gambar1" style="background-color: white;"  autocomplete="off" placeholder="0" class="form-control  text-center" value="correct.png" min="0" max="8" hidden>
-              <input type="text" name="gambar2" style="background-color: white;"  autocomplete="off" placeholder="0" class="form-control  text-center" value="circle.png" min="0" max="8" hidden>
-              <input type="text" name="gambar3" style="background-color: white;"  autocomplete="off" placeholder="0" class="form-control  text-center" value="circle.png" min="0" max="8" hidden>
-              <input type="text" name="gambar4" style="background-color: white;"  autocomplete="off" placeholder="0" class="form-control  text-center" value="circle.png" min="0" max="8" hidden>
-              <input type="text" name="gambar5" style="background-color: white;"  autocomplete="off" placeholder="0" class="form-control  text-center" value="circle.png" min="0" max="8" hidden>
+              <input type="hidden" name="gambar1" value="correct.png">
+              <input type="hidden" name="gambar2" value="circle.png">
+              <input type="hidden" name="gambar3" value="circle.png">
+              <input type="hidden" name="gambar4" value="circle.png">
+              <input type="hidden" name="gambar5" value="circle.png">
             </div>
             <input type="text" class="form-control" id="ketbayar" name="ketbayar" value="Terimakasih sudah melakukan pembayaran, untuk memastikan silahkan hubungi admin via Whatsapp" hidden>
             <!--------------------------------------------->
@@ -711,42 +711,28 @@ $hapusjamsementara = $jadwal['id'];
               <label class="mb-2 fw-bold">*Catatan<span class="text-black-50"> (abaikan jika tidak ada catatan)</span></label>
               <textarea rows="3" name="catatan" style="margin-left:20px; width:250px; resize: none;"></textarea>
             </div>
-          </div>
-            
-          
-          <div class="m-3">
-            <label  class="fw-bold ms-3 mt-3">Pembayaran<span class="fw-light text-danger">*</span></label>
-          <div class="elem-group inlined ms-3 mt-3">
-          <input type="text" class="form-control" id="buktilunas" name="buktilunas" value="0" hidden>
-            <label  class="form-check-label  ms-3">Transfer ke Bank <i>MANDIRI</i> <p> 1560025685225 A.n. Rizal Satria Agung</p><h class="text-black-50" style="font-size: 14px;">(*jumlahkan dengan penambahan apabila ada penambahan)</h></label>
+            <?php echo bookingPublicationConsentField(); ?>
             
           </div>
-          </div>
-        
-          <div class="ms-5 " style="font-size: 14px;" >
-            <label for="upload-img" class="mb-3 mt-3 fw-bold">Upload Bukti Transfer <label class="text-black-50"> (opsional, boleh dikosongkan) </label></label>
-              <p class="text-black-50" >
-                  *ukuran max 5 MB </p>
-                  <p class="text-black-50 ">
-                  *format gambar .png/.jpg/.jpeg
-          </p>
-              <p class="text-black-50 ">
-              *pastikan anda telah menjumlahkan dengan penambahan (jika ada penambahan) sebelum transfer </p>
-        
-            <div class="elem-group inlined  ">
-              <input type="file" class="mb-2" id="buktitransfer" name="buktitransfer" value="" onchange="preview()">
-              <div class="empty-text w-50" style="width: 20%;">
-                  <img id="thumb" src="" width="250px"/>
-              </div>
-            </div>
-          </div>
-          
           <div class="jarak">
             <div class="container-check">
               <input type="checkbox" id="test6"/>
               <label for="test6">Dibaca dulu yaa <u><b>Term & Condition</b> (syarat & ketentuan)</u></label>
             </div>
           </div>
+          <!-- Pembayaran disembunyikan untuk Pas Foto/Self Photo.
+               Field backend tetap dipertahankan agar function.php tidak perlu diubah. -->
+          <input type="hidden" id="buktilunas" name="buktilunas" value="0">
+          <input type="file" id="buktitransfer" name="buktitransfer" hidden>
+        </div>
+          </div>
+          
+          <!-- <div class="jarak">
+            <div class="container-check">
+              <input type="checkbox" id="test6"/>
+              <label for="test6">Dibaca dulu yaa <u><b>Term & Condition</b> (syarat & ketentuan)</u></label>
+            </div>
+          </div> -->
 
           <div class="text-center">
             <button type="submit" id="submit" name="submit" class="btn btn-lg btn-outline-dark mt-2 mb-5" onclick="alert()" >Booking</button>

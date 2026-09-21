@@ -81,6 +81,12 @@
           opacity: 1;
       }
     }
+  /* Consistent package image sizing */
+  .inner img {
+    height: 350px;
+    object-fit: contain;
+    background-color: #f8f8f8;
+  }
   </style>
   </head>
   
@@ -222,9 +228,9 @@
           </div>
           <div class="col-sm-5 p-3">
             <div class="inner">
-                <img class="d-block w-100" src="img/foto55.png" alt="pas foto">
+                <img class="d-block w-100" src="img/ZAL_3x4_2.jpg.jpeg" alt="pas foto">
             </div>
-            <h5 class="span m-4">Pas Foto / CV / Comcard</p>
+            <h5 class="span m-4">Pas Foto / CV / Visa</p>
             <a href="kategori/pasfotopackage.php">
             <button type="button" class="btn btn-dark m-1" >View Price List </button>
           </a>

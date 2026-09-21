@@ -341,6 +341,7 @@ $hapusjamsementara = $jadwal['id'];
               <label class="mb-2 fw-bold">*Catatan<span class="text-black-50"> (abaikan jika tidak ada catatan)</span></label>
               <textarea rows="3" name="catatan" style="margin-left:20px; width:250px; resize: none;"></textarea>
             </div>
+            <?php echo bookingPublicationConsentField(); ?>
             
 
           <div class="row row-sm-5 row-md-5 row-lg-5 border mx-auto" hidden id="nambah" style="justify-content: center;">

@@ -29,19 +29,6 @@ require "../function.php";
                 <div class="d-flex justify-content-center text-center my-2">
                   <span class="button-radio mx-2">
                     <?php
-                    $ambiljamkab1 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('08:00-08:30','08.00-08.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('08:00-08:30','08.00-08.30') AND studio IN ('Bekasi-Kabupaten','');");
-                    $jamkab1 = mysqli_fetch_array($ambiljamkab1);
-                    if($jamkab1){
-                    ?>
-                    <button id="btn1" type="button" class="btn btn-outline-dark "  style="font-size:11px;" disabled>08:00-08:30</button>
-                    <input id="jam1"  type="radio" hidden name="jampost" class="radio" value="08:00-08:30" disabled/>
-                    <?php }else{?>
-                      <button id="btn1" type="button" class="btn btn-outline-dark "  style="font-size:11px;">08:00-08:30</button>
-                      <input id="jam1"  type="radio" hidden name="jampost" class="radio" value="08:00-08:30" />
-                    <?php } ?>
-                  </span>
-                  <span class="button-radio mx-2">
-                    <?php
                     $ambiljamkab2 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('09:00-09:30','09.00-09.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('09:00-09:30','09.00-09.30') AND studio IN ('Bekasi-Kabupaten','');");
                     $jamkab2 = mysqli_fetch_array($ambiljamkab2);
                     if($jamkab2){
@@ -163,46 +150,7 @@ require "../function.php";
                       <input id="jam10"  type="radio" hidden name="jampost" class="radio" value="17:00-17:30"/>
                       <?php }?>
                   </span>
-                  <span class="button-radio mx-2">
-                    <?php 
-                    $ambiljamkab11 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('18:00-18:30','18.00-18.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('18:00-18:30','18.00-18.30') AND studio IN ('Bekasi-Kabupaten','');");
-                    $jamkab11 = mysqli_fetch_array($ambiljamkab11);
-                    if($jamkab11){?>
-                      <button id="btn11" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>18:00-18:30</button>
-                      <input id="jam11"  type="radio" hidden name="jampost" class="radio" value="18:00-18:30" disabled/>  
-                    <?php }else{?>
-                      <button id="btn11" type="button" class="btn btn-outline-dark"  style="font-size:11px;">18:00-18:30</button>
-                      <input id="jam11"  type="radio" hidden name="jampost" class="radio" value="18:00-18:30"/>
-                      <?php }?>
-                  </span>
-                  <span class="button-radio mx-2">
-                    <?php 
-                    $ambiljamkab12 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('19:00-19:30','19.00-19.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('19:00-19:30','19.00-19.30') AND studio IN ('Bekasi-Kabupaten','');");
-                    $jamkab12 = mysqli_fetch_array($ambiljamkab12);
-                    if($jamkab12){
-                    ?>
-                      <button id="btn12" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>19:00-19:30</button>
-                      <input id="jam12"  type="radio" hidden name="jampost" class="radio" value="19:00-19:30" disabled/>  
-                    <?php }else{?>
-                      <button id="btn12" type="button" class="btn btn-outline-dark"  style="font-size:11px;">19:00-19:30</button>
-                      <input id="jam12"  type="radio" hidden name="jampost" class="radio" value="19:00-19:30"/>
-                      <?php }?>
-                  </span>
-                </div>
-                <div class="d-flex justify-content-center text-center my-2">
-                  <span class="button-radio mx-2">
-                    <?php 
-                    $ambiljamkab13 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('20:00-20:30','20.00-20.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('20:00-20:30','20.00-20.30') AND studio IN ('Bekasi-Kabupaten','');");
-                    $jamkab13 = mysqli_fetch_array($ambiljamkab13);
-                    if($jamkab13){
-                    ?>
-                      <button id="btn13" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>20:00-20:30</button>
-                      <input id="jam13"  type="radio" hidden name="jampost" class="radio" value="20:00-20:30" disabled/>  
-                    <?php }else{?>
-                      <button id="btn13" type="button" class="btn btn-outline-dark"  style="font-size:11px;">20:00-20:30</button>
-                      <input id="jam13"  type="radio" hidden name="jampost" class="radio" value="20:00-20:30"/>
-                      <?php }?>
-                  </span>
+
                 </div>
                 <input type="text" name="uniqid" hidden class="radio" value="<?php $random = random_bytes(3); $uniqid = (bin2hex($random));echo $uniqid;?>"/>
                 <div class="text-center">
@@ -210,7 +158,7 @@ require "../function.php";
                 </div>
                 </div> 
                 <div class="text-center">
-                    <button id="btnsubmit" type="submit" name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
+                    <button id="btnsubmit" type="submit" disabled name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
                   </div>                       
             </div>
           <?php          
@@ -218,10 +166,6 @@ require "../function.php";
           ?>
           <div class="elem-group mx-auto inlined ms-2 me-2 mt-2 mb-2">
                 <div class="d-flex justify-content-center text-center my-2">
-                  <span class="button-radio mx-2">
-                      <button id="btn1" type="button" class="btn btn-outline-dark "  style="font-size:11px;">08:00-08:30</button>
-                      <input id="jam1"  type="radio" hidden name="jampost" class="radio" value="08:00-08:30" />
-                  </span>
                   <span class="button-radio mx-2">
                     <button id="btn2" type="button" class="btn btn-outline-dark"  style="font-size:11px;">09:00-09:30</button>
                     <input id="jam2"  type="radio" hidden name="jampost" class="radio" value="09:30-10:30"/>
@@ -263,18 +207,7 @@ require "../function.php";
                       <button id="btn10" type="button" class="btn btn-outline-dark"  style="font-size:11px;">17.00-17.30</button>
                       <input id="jam10"  type="radio" hidden name="jampost" class="radio" value="17.00-17.30"/>
                   </span>
-                  <span class="button-radio mx-2">
-                      <button id="btn11" type="button" class="btn btn-outline-dark"  style="font-size:11px;">18.00-18.30</button>
-                      <input id="jam11"  type="radio" hidden name="jampost" class="radio" value="18.00-18.30"/>
-                  </span>
-                  <span class="button-radio mx-2">
-                      <button id="btn12" type="button" class="btn btn-outline-dark"  style="font-size:11px;">19.00-19.30</button>
-                      <input id="jam12"  type="radio" hidden name="jampost" class="radio" value="19.00-19.30"/>
-                  </span>
-                  <span class="button-radio mx-2">
-                      <button id="btn13" type="button" class="btn btn-outline-dark"  style="font-size:11px;">20.00-20.30</button>
-                      <input id="jam13"  type="radio" hidden name="jampost" class="radio" value="20.00-20.30"/>
-                  </span>
+
                 </div>
                 <input type="text" name="uniqid" hidden class="radio" value="<?php $random = random_bytes(3); $uniqid = (bin2hex($random));echo $uniqid;?>"/>
                 <div class="text-center">
@@ -282,7 +215,7 @@ require "../function.php";
                 </div>
                 </div> 
                 <div class="text-center">
-                    <button id="btnsubmit" type="submit" name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
+                    <button id="btnsubmit" type="submit" disabled name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
                   </div>                       
             </div>
           <?php
@@ -302,19 +235,6 @@ require "../function.php";
           ?>
             <div class="elem-group mx-auto inlined ms-2 me-2 mt-2 mb-2 bekasi-kota">
                 <div class="d-flex justify-content-center text-center my-2">
-                  <span class="button-radio mx-2">
-                    <?php
-                    $ambiljamkab1 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('08:00-08:30','08.00-08.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('08:00-08:30','08.00-08.30') AND studio IN ('Bekasi-Kota');");
-                    $jamkab1 = mysqli_fetch_array($ambiljamkab1);
-                    if($jamkab1){
-                    ?>
-                    <button id="btnkartini1" type="button" class="btn btn-outline-dark "  style="font-size:11px;" disabled>08:00-08:30</button>
-                    <input id="jamkartini1"  type="radio" hidden name="jampost" class="radio" value="08:00-08:30" disabled/>
-                    <?php }else{?>
-                      <button id="btnkartini1" type="button" class="btn btn-outline-dark "  style="font-size:11px;">08:00-08:30</button>
-                      <input id="jamkartini1"  type="radio" hidden name="jampost" class="radio" value="08:00-08:30" />
-                    <?php } ?>
-                  </span>
                   <span class="button-radio mx-2">
                     <?php
                     $ambiljamkab2 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('09:00-09:30','09.00-09.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('09:00-09:30','09.00-09.30') AND studio IN ('Bekasi-Kota');");
@@ -438,46 +358,7 @@ require "../function.php";
                       <input id="jamkartini10"  type="radio" hidden name="jampost" class="radio" value="17:00-17:30"/>
                       <?php }?>
                   </span>
-                  <span class="button-radio mx-2">
-                    <?php 
-                    $ambiljamkota11 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('18:00-18:30','18.00-18.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('18:00-18:30','18.00-18.30') AND studio IN ('Bekasi-Kota');");
-                    $jamkota11 = mysqli_fetch_array($ambiljamkota11);
-                    if($jamkota11){?>
-                      <button id="btnkartini11" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>18:00-18:30</button>
-                      <input id="jamkartini11"  type="radio" hidden name="jampost" class="radio" value="18:00-18:30" disabled/>  
-                    <?php }else{?>
-                      <button id="btnkartini11" type="button" class="btn btn-outline-dark"  style="font-size:11px;">18:00-18:30</button>
-                      <input id="jamkartini11"  type="radio" hidden name="jampost" class="radio" value="18:00-18:30"/>
-                      <?php }?>
-                  </span>
-                  <span class="button-radio mx-2">
-                    <?php 
-                    $ambiljamkota12 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('19:00-19:30','19.00-19.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('19:00-19:30','19.00-19.30') AND studio IN ('Bekasi-Kota');");
-                    $jamkota12 = mysqli_fetch_array($ambiljamkota12);
-                    if($jamkota12){
-                    ?>
-                      <button id="btnkartini12" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>19:00-19:30</button>
-                      <input id="jamkartini12"  type="radio" hidden name="jampost" class="radio" value="19:00-19:30" disabled/>  
-                    <?php }else{?>
-                      <button id="btnkartini12" type="button" class="btn btn-outline-dark"  style="font-size:11px;">19:00-19:30</button>
-                      <input id="jamkartini12"  type="radio" hidden name="jampost" class="radio" value="19:00-19:30"/>
-                      <?php }?>
-                  </span>
-                </div>
-                <div class="d-flex justify-content-center text-center my-2">
-                  <span class="button-radio mx-2">
-                    <?php 
-                    $ambiljamkota13 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('20:00-20:30','20.00-20.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('20:00-20:30','20.00-20.30') AND studio IN ('Bekasi-Kota');");
-                    $jamkota13 = mysqli_fetch_array($ambiljamkota13);
-                    if($jamkota13){
-                    ?>
-                      <button id="btnkartini13" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>20:00-20:30</button>
-                      <input id="jamkartini13"  type="radio" hidden name="jampost" class="radio" value="20:00-20:30" disabled/>  
-                    <?php }else{?>
-                      <button id="btnkartini13" type="button" class="btn btn-outline-dark"  style="font-size:11px;">20:00-20:30</button>
-                      <input id="jamkartini13"  type="radio" hidden name="jampost" class="radio" value="20:00-20:30"/>
-                      <?php }?>
-                  </span>
+
                 </div>
                 <input type="text" name="uniqid" hidden class="radio" value="<?php $random = random_bytes(3); $uniqid = (bin2hex($random));echo $uniqid;?>"/>
                 <div class="text-center">
@@ -485,7 +366,7 @@ require "../function.php";
                 </div>
                 </div> 
                 <div class="text-center">
-                    <button id="btnsubmitkartini" type="submit" name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
+                    <button id="btnkartinisubmit" type="submit" disabled name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
                   </div>                       
             </div>
           <?php          
@@ -493,10 +374,6 @@ require "../function.php";
           ?>
           <div class="elem-group mx-auto inlined ms-2 me-2 mt-2 mb-2">
                 <div class="d-flex justify-content-center text-center my-2">
-                  <span class="button-radio mx-2">
-                      <button id="btnkartini1" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">08:00-08:30</button>
-                      <input id="jamkartini1"  type="radio" hidden name="jampost" class="radio" value="08:00-08:30" />
-                  </span>
                   <span class="button-radio mx-2">
                     <button id="btnkartini2" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">09:30-10:30</button>
                     <input id="jamkartini2"  type="radio" hidden name="jampost" class="radio" value="09:30-10:30"/>
@@ -537,20 +414,7 @@ require "../function.php";
                       <button id="btnkartini10" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">17.00-17.30</button>
                       <input id="jamkartini10"  type="radio" hidden name="jampost" class="radio" value="17.00-17.30"/>
                   </span>
-                  <span class="button-radio mx-2">
-                      <button id="btnkartini11" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">18.00-18.30</button>
-                      <input id="jamkartini11"  type="radio" hidden name="jampost" class="radio" value="18.00-18.30"/>
-                  </span>
-                  <span class="button-radio mx-2">
-                      <button id="btnkartini12" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">19.00-19.30</button>
-                      <input id="jamkartini12"  type="radio" hidden name="jampost" class="radio" value="19.00-19.30"/>
-                  </span>
-                </div>
-                <div class="d-flex justify-content-center text-center my-2">
-                  <span class="button-radio mx-2">
-                      <button id="btnkartini13" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">20.00-20.30</button>
-                      <input id="jamkartini13"  type="radio" hidden name="jampost" class="radio" value="20.00-20.30"/>
-                  </span>
+
                 </div>
                 <input type="text" name="uniqid" hidden class="radio" value="<?php $random = random_bytes(3); $uniqid = (bin2hex($random));echo $uniqid;?>"/>
                 <div class="text-center">
@@ -558,7 +422,7 @@ require "../function.php";
                 </div>
                 </div> 
                 <div class="text-center">
-                    <button id="btnkartinisubmit" type="submit" name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
+                    <button id="btnkartinisubmit" type="submit" disabled name="submit" class="btn btn-dark my-auto mt-3" style="width:fit-content;border-radius:0px;font-size:14px"> Oke lanjut > </button>
                   </div>                       
             </div>
           <?php
@@ -575,18 +439,20 @@ require "../function.php";
   <script>
     // $('.bekasi-kabupaten').show();
     // $('.bekasi-kota').hide();
-    $("#btnsubmit").prop('disabled',true);
-    $("#btnkartinisubmit").prop('disabled',true);
+    function updateScheduleSubmitButtons() {
+      var kabupatenDipilih = $('#btpform input[name="jampost"]:checked').length > 0;
+      var kotaDipilih = $('#kartiniform input[name="jampost"]:checked').length > 0;
+
+      $("#btnsubmit").prop('disabled', !kabupatenDipilih);
+      $("#btnkartinisubmit").prop('disabled', !kotaDipilih);
+    }
+
+    updateScheduleSubmitButtons();
+
     $('.btn-outline-dark').click(function() {
-      $("#btnsubmit").prop('disabled',false);
-      $("#btnkartinisubmit").prop('disabled',false);
-      // if( $('input.radio').is(':checked') ){
-          
-      // }
-      // else{
-      //     $("#btnsubmit").prop('disabled',true);
-      // }
-    }); 
+      // Jalankan setelah handler tombol jam selesai mengubah radio checked.
+      setTimeout(updateScheduleSubmitButtons, 0);
+    });
     
 
       $('#btn1').click(function() {

@@ -42,7 +42,13 @@
         padding-left: 15px;
         padding-right: 15px;
       }
-      
+      /* Fix carousel images to have consistent size */
+      #carouselExampleIndicators .carousel-item img {
+        height: 400px;
+        object-fit: contain;
+        width: 100%;
+        background-color: #fff;
+      }
       
       </style>
     <!-- awal konten foto, harga, benefit -->
@@ -67,13 +73,13 @@
         </div>
             <div class="carousel-inner">
               <div class="carousel-item active">
-               <img class="gallery-item d-block w-100" src="../img/foto55.png" alt="slide" > 
+               <img class="gallery-item d-block w-100" src="../img/ZAL_3x4_2.jpg.jpeg" alt="slide" > 
               </div>
               <div class="carousel-item">
-                <img class="gallery-item d-block w-100" src="../img/foto38.png" alt="slide" >
+                <img class="gallery-item d-block w-100" src="../img/ZAL_5562 copy.jpg.jpeg" alt="slide" >
             </div>
             <div class="carousel-item">
-                <img class="gallery-item d-block w-100" src="../img/foto39.png" alt="slide" >
+                <img class="gallery-item d-block w-100" src="../img/ZAL_7522 copy.jpg.jpeg" alt="slide" >
             </div>
         </div>
           <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
@@ -92,7 +98,7 @@
 
       <div class="col-md-2 mx-auto">
       
-        <p class="harga-diskon mt-4 fw-bold">BASIC (Pas Foto / CV / Comcard)</p>  
+        <p class="harga-diskon mt-4 fw-bold">BASIC (Pas Foto / CV / Visa)</p>  
       <div class="d-flex flex-sm-row flex-md-row"> 
         <p class="harga-diskon mt-2 fs-4">40k</p>
       </div>
@@ -112,7 +118,7 @@
     
     <div class="col-md-2 mx-auto">
       
-        <p class="harga-diskon mt-4 fw-bold">NIKAH FORMAL</p>  
+        <p class="harga-diskon mt-4 fw-bold">PAS FOTO NIKAH FORMAL</p>  
       <div class="d-flex flex-sm-row flex-md-row"> 
         <p class="harga-diskon mt-2 fs-4">100k</p>
       </div>
@@ -133,20 +139,26 @@
 
     <div class="col-md-2 mx-auto">
       
-        <p class="harga-diskon mt-4 fw-bold">NIKAH GAYA BEBAS</p>  
+        <p class="harga-diskon mt-4 fw-bold">PAS FOTO NIKAH FORMAL + GAYA BEBAS</p>  
       <div class="d-flex flex-sm-row flex-md-row"> 
-        <p class="harga-diskon mt-2 fs-4">80k</p>
+        <p class="harga-diskon mt-2 fs-4">180k</p>
       </div>
 
       <p class="benefit mt-3 mb-4 fs-5">Benefit</p>
       
      
     <div style="font-size: 15px;">
-        <p>Self Photo 10 menit</p>
+        <p>2 person</p>
+        <p><b>Sesi Formal:</b></p>
+        <p>Photographer</p>
+        <p>3 - 4 kali take foto / person</p>
+        <p>2 file edit</p>
+        <p>Cetakan 2x3, 3x4, 4x6 (@6 lmbr)</p>
+        <p><b>Sesi Gaya Bebas:</b></p>
+        <p>Self Photo 10 menit (Tanpa Photographer)</p>
         <p>Unlimited Photo</p>
         <p>10 Photo Edit tone warna</p>
-        <p>All Softcopy on Google drive</p>
-        <p>Max 2 Person</p>
+        <p>All file on G-Drive<b><br> (berlaku 2 Minggu)</b></p>
     </div>  
 
     </div>
@@ -344,7 +356,7 @@
                         </a><br>
                       </span>
                       <div class="text-center">
-                        <span >Jam operasional <br> 08.00 - 21.00 </span>
+                        <span >Jam operasional <br> 09.00 - 18.00 </span>
                       </div>
                     </div>
                     <div class="row mx-auto mt-2" >
@@ -385,7 +397,7 @@
                         </a><br>
                       </span>
                      <div class="text-center">
-                        <span >Jam operasional <br> 08.00 - 21.00 </span>
+                        <span >Jam operasional <br> 09.00 - 18.00 </span>
                       </div>
                     </div>
                     <div class="row mx-auto mt-2" >
@@ -1104,5 +1116,15 @@
       }
       
   </script>
-  </body>
+  
+    <script>
+      $(document).on('submit', '#btpform, #kartiniform', function(event) {
+        if ($(this).find('input[name="jampost"]:checked').length === 0) {
+          event.preventDefault();
+          alert('Silakan pilih jadwal terlebih dahulu.');
+          return false;
+        }
+      });
+    </script>
+</body>
   </html>

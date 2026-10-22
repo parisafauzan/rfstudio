@@ -148,7 +148,7 @@ function kategoriJadwalPhotoshoot($package){
               <th style="width: 10%;">Studio</th>
               <th style="width: 15%;">Package</th> 
               <th style="width: 15%;">Jumlah Orang</th>
-              <th style="width: 15%;">Izin Publikasi</th> 
+              <th style="width: 15%;">Tambah Cetak</th>
               <th style="width: 15%;">Catatan</th> 
             </tr>
           </thead>
@@ -161,11 +161,11 @@ function kategoriJadwalPhotoshoot($package){
             $previous = $halaman - 1;
             $next = $halaman + 1;
 
-            $data = mysqli_query($koneksi, "SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' ORDER BY tanggal,jam ASC");
+            $data = mysqli_query($koneksi, "SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,tambah_cetak,catatan FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,tambah_cetak,catatan FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' ORDER BY tanggal,jam ASC");
             $jumlah_data = mysqli_num_rows($data);
             $total_halaman = ceil($jumlah_data / $batas);
 
-            $data_konfirmasi = mysqli_query($koneksi,"SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' ORDER BY tanggal,jam ASC LIMIT $halaman_awal, $batas");
+            $data_konfirmasi = mysqli_query($koneksi,"SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,tambah_cetak,catatan FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,tambah_cetak,catatan FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kabupaten' OR studio='' ORDER BY tanggal,jam ASC LIMIT $halaman_awal, $batas");
             $nomor = $halaman_awal+1;
             while($d = mysqli_fetch_array($data_konfirmasi)){
               $kategoriJadwal = kategoriJadwalPhotoshoot($d["package"]);
@@ -199,12 +199,12 @@ function kategoriJadwalPhotoshoot($package){
                 <td><?php
                   echo $d["jmlhorgdws"]; echo " "; echo $d["jmlhorgank"];
                 ?></td>
-                <td>
-                  <?php $izinJadwal = bookingPublicationConsentStoredValue($d); ?>
-                  <span class="badge <?php echo bookingPublicationConsentBadgeClass($izinJadwal); ?>">
-                    <?php echo bookingPublicationConsentLabel($izinJadwal); ?>
-                  </span>
-                </td>
+                <td style="min-width: 180px;"><?php
+                  $tambahCetak = isset($d["tambah_cetak"]) ? trim((string)$d["tambah_cetak"]) : '';
+                  echo ($tambahCetak === '' || $tambahCetak === '0')
+                    ? '--'
+                    : nl2br(htmlspecialchars($tambahCetak, ENT_QUOTES, 'UTF-8'));
+                ?></td>
                 <td><?php
                   echo $d["catatan"]; 
                 ?></td>
@@ -257,7 +257,7 @@ function kategoriJadwalPhotoshoot($package){
               <th style="width: 10%;">Studio</th>
               <th style="width: 15%;">Package</th> 
               <th style="width: 15%;">Jumlah Orang</th>
-              <th style="width: 15%;">Izin Publikasi</th>
+              <th style="width: 15%;">Tambah Cetak</th>
               <th style="width: 15%;">Catatan</th>
             </tr>
           </thead>
@@ -270,11 +270,11 @@ function kategoriJadwalPhotoshoot($package){
             $previous = $halaman - 1;
             $next = $halaman + 1;
 
-            $data = mysqli_query($koneksi, "SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' ORDER BY tanggal,jam ASC");
+            $data = mysqli_query($koneksi, "SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,tambah_cetak,catatan FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,tambah_cetak,catatan FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' ORDER BY tanggal,jam ASC");
             $jumlah_data = mysqli_num_rows($data);
             $total_halaman = ceil($jumlah_data / $batas);
 
-            $data_konfirmasi = mysqli_query($koneksi,"SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,catatan,izin_publikasi FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' ORDER BY tanggal,jam ASC LIMIT $halaman_awal, $batas");
+            $data_konfirmasi = mysqli_query($koneksi,"SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,tambah_cetak,catatan FROM data_booking_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' UNION SELECT nama,tanggal,jam,studio,jmlhorgdws,jmlhorgank,package,tipe_package,tambah_cetak,catatan FROM data_konfirmasi_cobahampirfinishjuga WHERE studio ='Bekasi-Kota' ORDER BY tanggal,jam ASC LIMIT $halaman_awal, $batas");
             $nomor = $halaman_awal+1;
             while($d = mysqli_fetch_array($data_konfirmasi)){
               $kategoriJadwal = kategoriJadwalPhotoshoot($d["package"]);
@@ -308,12 +308,12 @@ function kategoriJadwalPhotoshoot($package){
                 <td><?php
                   echo $d["jmlhorgdws"]; echo " "; echo $d["jmlhorgank"];
                 ?></td>
-                <td>
-                  <?php $izinJadwal = bookingPublicationConsentStoredValue($d); ?>
-                  <span class="badge <?php echo bookingPublicationConsentBadgeClass($izinJadwal); ?>">
-                    <?php echo bookingPublicationConsentLabel($izinJadwal); ?>
-                  </span>
-                </td>
+                <td style="min-width: 180px;"><?php
+                  $tambahCetak = isset($d["tambah_cetak"]) ? trim((string)$d["tambah_cetak"]) : '';
+                  echo ($tambahCetak === '' || $tambahCetak === '0')
+                    ? '--'
+                    : nl2br(htmlspecialchars($tambahCetak, ENT_QUOTES, 'UTF-8'));
+                ?></td>
                 <td><?php
                   echo $d["catatan"]; 
                 ?></td>

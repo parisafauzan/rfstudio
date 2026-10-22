@@ -3,9 +3,9 @@ require 'vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
-$koneksi = mysqli_connect("localhost","rfstu853_rfsadmin","Rfstudio2022","rfstu853_rfstudio");
+// $koneksi = mysqli_connect("localhost","rfstu853_rfsadmin","Rfstudio2022","rfstu853_rfstudio");
 // $koneksi = mysqli_connect("localhost","rfstu853_rfsadmin","Rfstudio2022","rfstu853_testdb");
-// $koneksi = mysqli_connect("localhost","root","","rfstudio");
+$koneksi = mysqli_connect("localhost","root","","rfstudio");
 
 // Samakan perilaku error mysqli dengan produksi (PHP <= 8.0) agar tidak fatal di PHP 8.1+
 mysqli_report(MYSQLI_REPORT_OFF);
@@ -20,10 +20,10 @@ function query($query){
     return $rows;
 }
 
-// Izin harus dipilih secara eksplisit pada form booking. Nilai selain "1"
-// disimpan sebagai tidak diizinkan agar aman untuk data dari form lama.
+// Pertanyaan izin publikasi sudah tidak digunakan pada booking baru.
+// Fungsi dipertahankan agar file lama yang masih memanggilnya tidak error.
 function bookingPublicationConsent($data){
-    return (isset($data['izin_publikasi']) && $data['izin_publikasi'] === '1') ? '1' : '0';
+    return null;
 }
 
 function bookingPublicationConsentStoredValue($data){
@@ -91,21 +91,8 @@ function bookingAdditionalSummary($data){
 }
 
 function bookingPublicationConsentField(){
-    return '
-      <div class="m-4">
-        <fieldset>
-          <legend class="form-label fw-bold mb-2" style="font-size:16px;">Izin publikasi konten<span class="text-danger">*</span></legend>
-          <p class="text-black-50 mb-2" style="font-size:13px;">Apakah RF Studio diizinkan menggunakan foto atau video saat sesi pemotretan sebagai konten Story atau posting media sosial?</p>
-          <div class="form-check mb-1">
-            <input class="form-check-input" type="radio" name="izin_publikasi" id="izin-publikasi-ya" value="1" required>
-            <label class="form-check-label" for="izin-publikasi-ya">Ya, saya mengizinkan.</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="izin_publikasi" id="izin-publikasi-tidak" value="0">
-            <label class="form-check-label" for="izin-publikasi-tidak">Tidak, saya tidak mengizinkan.</label>
-          </div>
-        </fieldset>
-      </div>';
+    // Dipertahankan untuk kompatibilitas; form tidak lagi menanyakan izin publikasi.
+    return '';
 }
 
 function detailLokasiStudio($studio){
@@ -167,7 +154,6 @@ $olddate =htmlspecialchars ($data["tanggal"]);
 $date = date('Y-m-d', strtotime($olddate));
 $uniqid =htmlspecialchars ($data["uniqid"]);
 $studio =htmlspecialchars ($data["studio"]);
-$izinPublikasi = bookingPublicationConsent($data);
 
 //
 $jam =htmlspecialchars ($data["jam"]);
@@ -358,7 +344,7 @@ if(!$bukti_transfer){
                  '$cetakfoto6$jumlahcetak6'
                  '$cetakfoto7$jumlahcetak7'
                  '$cetakfoto8$jumlahcetak8'
-                 '$cetakfoto9$jumlahcetak9','$nambahhairdo','$nambahmakeup', '$waktuinput','$uniqid','$catatan','$jumlahorangdewasa','$jumlahoranganak','$studio','$izinPublikasi')";
+                 '$cetakfoto9$jumlahcetak9','$nambahhairdo','$nambahmakeup', '$waktuinput','$uniqid','$catatan','$jumlahorangdewasa','$jumlahoranganak','$studio',NULL)";
     
 mysqli_query($koneksi, $query);
 
@@ -542,9 +528,6 @@ $mail = new PHPMailer();
             <td class="value">'.namaLokasiStudio($studio).'</td></tr>
         '.emailLokasiStudio($studio).'
 
-        <tr><td class="label">Izin Publikasi Konten</td>
-            <td class="value">'.bookingPublicationConsentLabel($izinPublikasi).'</td></tr>
-
         <tr><td class="label">Package</td>
             <td class="value">'.$package.' '.$jumlah.'</td></tr>
 
@@ -612,7 +595,6 @@ $olddate =htmlspecialchars ($data["tanggal"]);
 $date = date('Y-m-d', strtotime($olddate));
 $uniqid =htmlspecialchars ($data["uniqid"]);
 $studio =htmlspecialchars ($data["studio"]);
-$izinPublikasi = bookingPublicationConsent($data);
 //
 $jam =htmlspecialchars ($data["jam"]);
 $jamemail =htmlspecialchars ($data["jamemail"]);
@@ -792,7 +774,7 @@ if(!$bukti_transfer){
                  '$cetakfoto6$jumlahcetak6'
                  '$cetakfoto7$jumlahcetak7'
                  '$cetakfoto8$jumlahcetak8'
-                 '$cetakfoto9$jumlahcetak9','0','0', '$waktuinput','$uniqid','$catatan','$jumlahorangdewasa','$jumlahoranganak','$studio','$izinPublikasi')";
+                 '$cetakfoto9$jumlahcetak9','0','0', '$waktuinput','$uniqid','$catatan','$jumlahorangdewasa','$jumlahoranganak','$studio',NULL)";
     
 mysqli_query($koneksi, $query);
 
@@ -974,9 +956,6 @@ $mail = new PHPMailer(true);
             <td class="value">'.namaLokasiStudio($studio).'</td></tr>
         '.emailLokasiStudio($studio).'
 
-        <tr><td class="label">Izin Publikasi Konten</td>
-            <td class="value">'.bookingPublicationConsentLabel($izinPublikasi).'</td></tr>
-
         <tr><td class="label">Package</td>
             <td class="value">'.$package.' '.$jumlah.'</td></tr>
 
@@ -1043,7 +1022,6 @@ $olddate =htmlspecialchars ($data["tanggal"]);
 $date = date('Y-m-d', strtotime($olddate));
 $uniqid =htmlspecialchars ($data["uniqid"]);
 $studio =htmlspecialchars ($data["studio"]);
-$izinPublikasi = bookingPublicationConsent($data);
 
 //
 $jam =htmlspecialchars ($data["jam"]);
@@ -1206,7 +1184,7 @@ if($bukti_transfer===false){
                  '$cetakfoto6$jumlahcetak6'
                  '$cetakfoto7$jumlahcetak7'
                  '$cetakfoto8$jumlahcetak8'
-                 '$cetakfoto9$jumlahcetak9','0','0', '$waktuinput','$uniqid','$catatan','$jumlahorangdewasa','$jumlahoranganak','$studio','$izinPublikasi' )";
+                 '$cetakfoto9$jumlahcetak9','0','0', '$waktuinput','$uniqid','$catatan','$jumlahorangdewasa','$jumlahoranganak','$studio',NULL )";
                 
 mysqli_query($koneksi, $query);
 
@@ -1380,9 +1358,6 @@ $mail = new PHPMailer(true);
             <td class="value">'.namaLokasiStudio($studio).'</td></tr>
         '.emailLokasiStudio($studio).'
 
-        <tr><td class="label">Izin Publikasi Konten</td>
-            <td class="value">'.bookingPublicationConsentLabel($izinPublikasi).'</td></tr>
-
         <tr><td class="label">Package</td>
             <td class="value">'.$package.' '.$jumlah.'</td></tr>
 
@@ -1444,7 +1419,6 @@ $olddate =htmlspecialchars ($data["tanggal"]);
 $date = date('Y-m-d', strtotime($olddate));
 $uniqid =htmlspecialchars ($data["uniqid"]);
 $studio =htmlspecialchars ($data["studio"]);
-$izinPublikasi = bookingPublicationConsent($data);
 
 //
 $jam =htmlspecialchars ($data["jam"]);
@@ -1609,7 +1583,7 @@ if($bukti_transfer===false){
                  '$cetakfoto6$jumlahcetak6'
                  '$cetakfoto7$jumlahcetak7'
                  '$cetakfoto8$jumlahcetak8'
-                 '$cetakfoto9$jumlahcetak9','0','0', '$waktuinput','$uniqid','$catatan','$jumlahorangdewasa','$jumlahoranganak','$studio','$izinPublikasi' )";
+                 '$cetakfoto9$jumlahcetak9','0','0', '$waktuinput','$uniqid','$catatan','$jumlahorangdewasa','$jumlahoranganak','$studio',NULL )";
                 
 mysqli_query($koneksi, $query);
 
@@ -1783,9 +1757,6 @@ $mail = new PHPMailer(true);
             <td class="value">'.namaLokasiStudio($studio).'</td></tr>
         '.emailLokasiStudio($studio).'
 
-        <tr><td class="label">Izin Publikasi Konten</td>
-            <td class="value">'.bookingPublicationConsentLabel($izinPublikasi).'</td></tr>
-
         <tr><td class="label">Package</td>
             <td class="value">'.$package.' '.$jumlah.'</td></tr>
 
@@ -1841,7 +1812,6 @@ $notelp = htmlspecialchars($data["notelp"]);
 $email = htmlspecialchars($data["email"]);
 $package = htmlspecialchars($data["package"]);
 $harga = htmlspecialchars($data["harga"]);
-$izinPublikasi = bookingPublicationConsent($data);
 //
 // $date =htmlspecialchars ($data["tanggal"]);
 // $uniqid =htmlspecialchars ($data["uniqid"]);
@@ -1958,7 +1928,7 @@ if(!$bukti_transfer){
                  '$cetakfoto6$jumlahcetak6'
                  '$cetakfoto7$jumlahcetak7'
                  '$cetakfoto8$jumlahcetak8'
-                 '$cetakfoto9$jumlahcetak9','0','0', '$waktuinput','$uniqid','$catatan','$jumlahorangdewasa','$jumlahoranganak','','$izinPublikasi' )";
+                 '$cetakfoto9$jumlahcetak9','0','0', '$waktuinput','$uniqid','$catatan','$jumlahorangdewasa','$jumlahoranganak','',NULL )";
                 
 mysqli_query($koneksi, $query);
 mysqli_query($koneksi, "INSERT INTO data_tambahcetak VALUES(
@@ -2131,9 +2101,6 @@ $mail = new PHPMailer(true);
             <td class="value">'.namaLokasiStudio($studio).'</td></tr>
         '.emailLokasiStudio($studio).'
 
-        <tr><td class="label">Izin Publikasi Konten</td>
-            <td class="value">'.bookingPublicationConsentLabel($izinPublikasi).'</td></tr>
-
         <tr><td class="label">Package</td>
             <td class="value">'.$package.' '.$jumlah.'</td></tr>
 
@@ -2198,7 +2165,6 @@ $olddate =htmlspecialchars ($data["tanggal"]);
 $date = date('Y-m-d', strtotime($olddate));
 $uniqid =htmlspecialchars ($data["uniqid"]);
 $studio =htmlspecialchars ($data["studio"]);
-$izinPublikasi = bookingPublicationConsent($data);
 $nambahmakeup =htmlspecialchars ($data["nambahmakeup"]);
 $nambahhairdo = htmlspecialchars ($data["nambahhairdo"]);
 
@@ -2355,7 +2321,7 @@ if(!$bukti_transfer){
                  '$cetakfoto6$jumlahcetak6'
                  '$cetakfoto7$jumlahcetak7'
                  '$cetakfoto8$jumlahcetak8'
-                 '$cetakfoto9$jumlahcetak9','$nambahhairdo','$nambahmakeup','$waktuinput','$uniqid','$catatan','$jumlahorangdewasa','$jumlahoranganak','$studio','$izinPublikasi')";
+                 '$cetakfoto9$jumlahcetak9','$nambahhairdo','$nambahmakeup','$waktuinput','$uniqid','$catatan','$jumlahorangdewasa','$jumlahoranganak','$studio',NULL)";
 
 mysqli_query($koneksi, $query);
 // if (!mysqli_query($koneksi, $query)) {
@@ -2516,9 +2482,6 @@ $mail = new PHPMailer(true);
         <tr><td class="label">Lokasi Studio</td>
             <td class="value">'.namaLokasiStudio($studio).'</td></tr>
         '.emailLokasiStudio($studio).'
-
-        <tr><td class="label">Izin Publikasi Konten</td>
-            <td class="value">'.bookingPublicationConsentLabel($izinPublikasi).'</td></tr>
 
         <tr><td class="label">Package</td>
             <td class="value">'.$package.' '.$jumlah.'</td></tr>

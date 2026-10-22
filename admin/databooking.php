@@ -118,7 +118,6 @@ th{
               <th class="align-middle">Nama</th>
               <th class="align-middle">Jam</th>              
               <th class="align-middle">Package</th> 
-                            <th class="align-middle">Izin Publikasi</th>
               <th class="align-middle">Tambahan</th>
               <th class="align-middle">Catatan</th>
 <th class="align-middle">Bukti Transfer</th>
@@ -188,10 +187,6 @@ th{
                 }else{
                     echo "Studio : Bekasi-Kota";
                 }?> </td>
-              <td>
-                <?php $izinAdmin = bookingPublicationConsentStoredValue($d); ?>
-                <span class="badge <?php echo bookingPublicationConsentBadgeClass($izinAdmin); ?>"><?php echo bookingPublicationConsentLabel($izinAdmin); ?></span>
-              </td>
               <td style="min-width: 210px; font-size: 13px;"><?php echo bookingAdditionalSummary($d); ?></td>
               <td style="min-width: 180px; font-size: 13px;"><?php echo empty($d["catatan"]) ? '--' : nl2br(htmlspecialchars($d["catatan"], ENT_QUOTES, 'UTF-8')); ?></td>
               <td hidden><?php 

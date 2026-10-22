@@ -140,10 +140,6 @@ footer {
             <label class="ms-2 "><?= namaLokasiStudio($ambildata["studio"])?></label>
           </div>
           <div class="jarak">
-            <label class="m-1 fw-bold">Izin Publikasi Konten</label></br>
-            <label class="ms-2 "><?= bookingPublicationConsentLabel(bookingPublicationConsentStoredValue($ambildata))?></label>
-          </div>
-          <div class="jarak">
             <label class="m-1 fw-bold">Anak-anak</label></br>
             <label class="ms-2 "><?=$ambildata["jmlhorgank"]?></label>
           </div>

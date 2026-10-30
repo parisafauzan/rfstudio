@@ -3,12 +3,13 @@ require 'vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
+// Pada PHP 8.1+ mode default mysqli dapat melempar exception. Atur sebelum
+// koneksi dibuat supaya kode lama tetap berperilaku sama di PHP 7.4 dan 8.2.
+mysqli_report(MYSQLI_REPORT_OFF);
 // $koneksi = mysqli_connect("localhost","rfstu853_rfsadmin","Rfstudio2022","rfstu853_rfstudio");
 // $koneksi = mysqli_connect("localhost","rfstu853_rfsadmin","Rfstudio2022","rfstu853_testdb");
-$koneksi = mysqli_connect("localhost","root","","rfstudio");
+$koneksi = @mysqli_connect("localhost","root","","rfstudio");
 
-// Samakan perilaku error mysqli dengan produksi (PHP <= 8.0) agar tidak fatal di PHP 8.1+
-mysqli_report(MYSQLI_REPORT_OFF);
 
 function query($query){
     global $koneksi;

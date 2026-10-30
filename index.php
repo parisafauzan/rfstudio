@@ -267,6 +267,15 @@
               <button type="button" class="btn btn-dark m-1" >View Price List </button>
             </a>
           </div>
+          <div class="col-sm-5 p-3">
+            <div class="inner bg-dark d-flex align-items-center justify-content-center" style="min-height: 230px;">
+              <i class="fa-solid fa-file-invoice-dollar text-white" style="font-size: 72px;"></i>
+            </div>
+            <h5 class="span m-4">Pelunasan Booking</p>
+            <a href="pelunasan.php">
+              <button type="button" class="btn btn-dark m-1">Lanjut Pelunasan</button>
+            </a>
+          </div>
         </div>
       </div>
     </div>

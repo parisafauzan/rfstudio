@@ -2,6 +2,7 @@
 *.zip
 error_log
 *.sql
+!migration-pelunasan-email.sql
 
 # Hosting/SSL-specific
 .well-known/
@@ -12,6 +13,9 @@ vendor/
 # Data unggahan customer (privasi)
 uploads/*
 !uploads/.gitkeep
+!uploads/payment-proofs/
+!uploads/payment-proofs/.htaccess
+!uploads/payment-proofs/.gitkeep
 assets/img/data_konfirmasi/*
 !assets/img/data_konfirmasi/.gitkeep
 assets/img/data_cetakonly/*

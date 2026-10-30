@@ -68,6 +68,10 @@ require '../session.php';
                             <i class="fa-solid fa-circle-check m-2"></i> <span class="ms-1 d-none d-sm-inline">Data Pelunasan</span> </a>
                     </li>
                     <li>
+                        <a href="../pelunasan-admin.php" class="nav-link px-0 align-middle text-white fs-5">
+                            <i class="fa-solid fa-file-invoice-dollar m-2"></i> <span class="ms-1 d-none d-sm-inline">Pengajuan Pelunasan</span> </a>
+                    </li>
+                    <li>
                         <a href="datahistory.php" class="nav-link px-0 align-middle text-white fs-5">
                             <i class="fa-solid fa-book m-2"></i> <span class="ms-1 d-none d-sm-inline">Data History</span> </a>
                     </li>

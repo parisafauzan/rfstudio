@@ -129,6 +129,143 @@ function emailLokasiStudio($studio){
         . '</td></tr>'
         . '<tr><td class="label">Link Maps</td><td class="value"><a href="' . $lokasi['maps'] . '" target="_blank" rel="noopener noreferrer">' . $lokasi['maps'] . '</a></td></tr>';
 }
+/**
+ * Normalisasi format jam yang benar-benar valid untuk Self Photo dan Pas Foto.
+ * Tidak memetakan jam lain (termasuk 09:30-10:30) ke slot 09:00-09:30:
+ * booking paket/ruangan lain tidak boleh menutup slot bersama secara keliru.
+ */
+function rfstudioNormalizeSharedRoomSlot($slot){
+    $slot = trim((string)$slot);
+    $slot = str_replace('.', ':', $slot);
+    $slot = preg_replace('/\s+/', '', $slot);
+
+    $allowedSlots = array(
+        '09:00-09:30',
+        '10:00-10:30',
+        '11:00-11:30',
+        '12:00-12:30',
+        '13:00-13:30',
+        '14:00-14:30',
+        '15:00-15:30',
+        '16:00-16:30',
+        '17:00-17:30'
+    );
+
+    return in_array($slot, $allowedSlots, true) ? $slot : false;
+}
+
+/**
+ * Normalisasi nama studio untuk pengecekan konflik.
+ * Nilai studio kosong diperlakukan sebagai Bekasi-Kabupaten karena kompatibilitas
+ * dengan data historis dan logika lama website.
+ */
+function rfstudioNormalizeSharedRoomStudio($studio){
+    $studio = trim((string)$studio);
+    if ($studio === '' || $studio === 'Bekasi-Kabupaten') {
+        return 'Bekasi-Kabupaten';
+    }
+    if ($studio === 'Bekasi-Kota') {
+        return 'Bekasi-Kota';
+    }
+    return false;
+}
+
+/**
+ * Mengunci satu tanggal + slot + lokasi selama pengecekan dan penyimpanan booking.
+ * Self Photo dan Pas Foto menggunakan nama lock yang sama, sehingga dua request
+ * yang berjalan bersamaan tidak bisa sama-sama lolos pengecekan slot yang sama.
+ */
+function rfstudioAcquireSharedRoomSlotLock($date, $slot, $studio){
+    global $koneksi;
+
+    $studioKey = rfstudioNormalizeSharedRoomStudio($studio);
+    $slotKey = rfstudioNormalizeSharedRoomSlot($slot);
+    if ($studioKey === false || $slotKey === false || !preg_match('/^\d{4}-\d{2}-\d{2}$/', (string)$date)) {
+        return false;
+    }
+
+    $dateParts = explode('-', (string)$date);
+    if (count($dateParts) !== 3 || !checkdate((int)$dateParts[1], (int)$dateParts[2], (int)$dateParts[0])) {
+        return false;
+    }
+
+    $lockName = 'rfs_slot_' . substr(hash('sha256', $studioKey . '|' . $date . '|' . $slotKey), 0, 48);
+    $lockEsc = mysqli_real_escape_string($koneksi, $lockName);
+    $result = mysqli_query($koneksi, "SELECT GET_LOCK('$lockEsc', 10) AS lock_acquired");
+    if (!$result) {
+        return false;
+    }
+
+    $row = mysqli_fetch_assoc($result);
+    return ($row && isset($row['lock_acquired']) && (int)$row['lock_acquired'] === 1) ? $lockName : false;
+}
+
+/**
+ * Memeriksa slot yang sama hanya untuk paket yang berbagi ruang:
+ * Self Photo dan Pas Foto. Paket/ruangan lain seperti Graduation tidak ikut
+ * memblokir slot ini. Format titik dua/titik dinormalisasi, tetapi jam berbeda
+ * tidak pernah dipetakan satu sama lain. Data historis dibiarkan apa adanya.
+ */
+function rfstudioSharedRoomSlotIsOccupied($date, $slot, $studio){
+    global $koneksi;
+
+    $studioKey = rfstudioNormalizeSharedRoomStudio($studio);
+    $slotKey = rfstudioNormalizeSharedRoomSlot($slot);
+    if ($studioKey === false || $slotKey === false || !preg_match('/^\d{4}-\d{2}-\d{2}$/', (string)$date)) {
+        return true; // gagal validasi: blokir untuk mencegah booking dengan data tidak valid
+    }
+
+    $dateParts = explode('-', (string)$date);
+    if (count($dateParts) !== 3 || !checkdate((int)$dateParts[1], (int)$dateParts[2], (int)$dateParts[0])) {
+        return true;
+    }
+
+    $dateEsc = mysqli_real_escape_string($koneksi, (string)$date);
+    $slotEsc = mysqli_real_escape_string($koneksi, $slotKey);
+    if ($studioKey === 'Bekasi-Kabupaten') {
+        $studioCondition = "studio IN ('Bekasi-Kabupaten','')";
+    } else {
+        $studioCondition = "studio = 'Bekasi-Kota'";
+    }
+
+    $normalizedJamSql = "REPLACE(REPLACE(TRIM(jam),'.',':'),' ','')";
+    $jamCondition = "$normalizedJamSql = '$slotEsc'";
+    $packageCondition = "(LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%')";
+
+    $tables = array(
+        'data_konfirmasi_cobahampirfinishjuga',
+        'data_booking_cobahampirfinishjuga'
+    );
+
+    foreach ($tables as $table) {
+        $sql = "SELECT 1 AS occupied FROM $table
+                WHERE tanggal = '$dateEsc'
+                  AND $packageCondition
+                  AND $studioCondition
+                  AND ($jamCondition)
+                LIMIT 1";
+        $result = mysqli_query($koneksi, $sql);
+        // Jika query bermasalah, pilih perilaku aman: jangan izinkan booking.
+        if (!$result) {
+            return true;
+        }
+        if (mysqli_fetch_assoc($result)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function rfstudioReleaseSharedRoomSlotLock($lockName){
+    global $koneksi;
+    if (!is_string($lockName) || $lockName === '') {
+        return;
+    }
+    $lockEsc = mysqli_real_escape_string($koneksi, $lockName);
+    mysqli_query($koneksi, "SELECT RELEASE_LOCK('$lockEsc')");
+}
+
 function jadwal($data){
     global $koneksi;
     $ambiljam = htmlspecialchars($data['jampost']);
@@ -1024,7 +1161,7 @@ $uniqid =htmlspecialchars ($data["uniqid"]);
 $studio =htmlspecialchars ($data["studio"]);
 
 //
-$jam =htmlspecialchars ($data["jam"]);
+$jam = rfstudioNormalizeSharedRoomSlot($data["jam"]);
 $bukti_lunas =htmlspecialchars ($data["buktilunas"]);
 $jumlah =htmlspecialchars ($data["jumlah"]);
 $cetakfoto =htmlspecialchars ($data["cetak"]);
@@ -1122,42 +1259,27 @@ $gambar5 = htmlspecialchars ($data["gambar5"]);
 //SELF FOTO
 
 
-if($studio == 'Bekasi-Kabupaten'||$studio == ''){
-    $jamjadwal = mysqli_query($koneksi, "SELECT tanggal,jam FROM data_konfirmasi_cobahampirfinishjuga WHERE tanggal='$date' AND jam='$jam' AND studio IN ('Bekasi-Kabupaten','')");
-    $jamjadwal1 = mysqli_query($koneksi, "SELECT tanggal,jam FROM data_booking_cobahampirfinishjuga WHERE tanggal='$date' AND jam='$jam' AND studio IN ('Bekasi-Kabupaten','')");
-    if (mysqli_fetch_assoc($jamjadwal)){  
-        echo '<script language="javascript">';
-        echo 'alert("Mohon maaf, jam yang anda pilih sudah dipesan");';
-        echo 'window.location = "bookingbsc.php";';
-        echo '</script>';
-        return false;
-    }else if(mysqli_fetch_assoc($jamjadwal1)){
-        echo '<script language="javascript">';
-        echo 'alert("Mohon maaf, jam yang anda pilih sudah dipesan");';
-        echo 'window.location = "bookingbsc.php";';
-        echo '</script>';
-        return false;
-    } 
-}else{
-    $jamjadwal = mysqli_query($koneksi, "SELECT tanggal,jam FROM data_konfirmasi_cobahampirfinishjuga WHERE tanggal='$date' AND jam='$jam' AND studio IN ('Bekasi-Kota')");
-    $jamjadwal1 = mysqli_query($koneksi, "SELECT tanggal,jam FROM data_booking_cobahampirfinishjuga WHERE tanggal='$date' AND jam='$jam' AND studio IN ('Bekasi-Kota')");
-    if (mysqli_fetch_assoc($jamjadwal)){  
-        echo '<script language="javascript">';
-        echo 'alert("Mohon maaf, jam yang anda pilih sudah dipesan");';
-        echo 'window.location = "bookingbsc.php";';
-        echo '</script>';
-        return false;
-    }else if(mysqli_fetch_assoc($jamjadwal1)){
-        echo '<script language="javascript">';
-        echo 'alert("Mohon maaf, jam yang anda pilih sudah dipesan");';
-        echo 'window.location = "bookingbsc.php";';
-        echo '</script>';
-        return false;
-    } 
+// Self Photo dan Pas Foto berbagi satu ruangan per lokasi.
+if ($jam === false) {
+    echo '<script language="javascript">alert("Jadwal yang dipilih tidak valid. Silakan pilih ulang.");window.location = "bookingbsc.php";</script>';
+    return false;
+}
+
+$slotLock = rfstudioAcquireSharedRoomSlotLock($date, $jam, $studio);
+if ($slotLock === false) {
+    echo '<script language="javascript">alert("Jadwal sedang diproses. Silakan coba lagi.");window.location = "bookingbsc.php";</script>';
+    return false;
+}
+
+if (rfstudioSharedRoomSlotIsOccupied($date, $jam, $studio)) {
+    rfstudioReleaseSharedRoomSlotLock($slotLock);
+    echo '<script language="javascript">alert("Mohon maaf, jam yang anda pilih sudah dipesan. Silakan pilih jam lain.");window.location = "bookingbsc.php";</script>';
+    return false;
 }
 //upload gambar
 $bukti_transfer = uploadDpTfOptional();
 if($bukti_transfer===false){
+    rfstudioReleaseSharedRoomSlotLock($slotLock);
     return false;
 }
     
@@ -1186,7 +1308,9 @@ if($bukti_transfer===false){
                  '$cetakfoto8$jumlahcetak8'
                  '$cetakfoto9$jumlahcetak9','0','0', '$waktuinput','$uniqid','$catatan','$jumlahorangdewasa','$jumlahoranganak','$studio',NULL )";
                 
-mysqli_query($koneksi, $query);
+$hasilInsertBooking = mysqli_query($koneksi, $query);
+$jumlahBookingTersimpan = mysqli_affected_rows($koneksi);
+rfstudioReleaseSharedRoomSlotLock($slotLock);
 
 mysqli_query($koneksi, "INSERT INTO data_tambahcetak VALUES(
                 '',
@@ -1402,7 +1526,7 @@ $mail = new PHPMailer(true);
     // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
    try { $mail->send(); } catch (\Throwable $e) { /* kirim email gagal: diabaikan agar proses tetap lanjut & tidak halaman putih */ }
 
-return mysqli_affected_rows($koneksi);
+return ($hasilInsertBooking && $jumlahBookingTersimpan > 0) ? $jumlahBookingTersimpan : 0;
 }
 
 function tambahpasfoto($data){
@@ -1421,7 +1545,7 @@ $uniqid =htmlspecialchars ($data["uniqid"]);
 $studio =htmlspecialchars ($data["studio"]);
 
 //
-$jam =htmlspecialchars ($data["jam"]);
+$jam = rfstudioNormalizeSharedRoomSlot($data["jam"]);
 $bukti_lunas =htmlspecialchars ($data["buktilunas"]);
 $jumlah =htmlspecialchars ($data["jumlah"]);
 $cetakfoto =htmlspecialchars ($data["cetak"]);
@@ -1521,42 +1645,27 @@ $gambar5 = htmlspecialchars ($data["gambar5"]);
 //SELF FOTO
 
 
-if($studio == 'Bekasi-Kabupaten'||$studio == ''){
-    $jamjadwal = mysqli_query($koneksi, "SELECT tanggal,jam FROM data_konfirmasi_cobahampirfinishjuga WHERE tanggal='$date' AND jam='$jam' AND studio IN ('Bekasi-Kabupaten','')");
-    $jamjadwal1 = mysqli_query($koneksi, "SELECT tanggal,jam FROM data_booking_cobahampirfinishjuga WHERE tanggal='$date' AND jam='$jam' AND studio IN ('Bekasi-Kabupaten','')");
-    if (mysqli_fetch_assoc($jamjadwal)){  
-        echo '<script language="javascript">';
-        echo 'alert("Mohon maaf, jam yang anda pilih sudah dipesan");';
-        echo 'window.location = "booking-pasfoto.php";';
-        echo '</script>';
-        return false;
-    }else if(mysqli_fetch_assoc($jamjadwal1)){
-        echo '<script language="javascript">';
-        echo 'alert("Mohon maaf, jam yang anda pilih sudah dipesan");';
-        echo 'window.location = "booking-pasfoto.php";';
-        echo '</script>';
-        return false;
-    } 
-}else{
-    $jamjadwal = mysqli_query($koneksi, "SELECT tanggal,jam FROM data_konfirmasi_cobahampirfinishjuga WHERE tanggal='$date' AND jam='$jam' AND studio IN ('Bekasi-Kota')");
-    $jamjadwal1 = mysqli_query($koneksi, "SELECT tanggal,jam FROM data_booking_cobahampirfinishjuga WHERE tanggal='$date' AND jam='$jam' AND studio IN ('Bekasi-Kota')");
-    if (mysqli_fetch_assoc($jamjadwal)){  
-        echo '<script language="javascript">';
-        echo 'alert("Mohon maaf, jam yang anda pilih sudah dipesan");';
-        echo 'window.location = "booking-pasfoto.php";';
-        echo '</script>';
-        return false;
-    }else if(mysqli_fetch_assoc($jamjadwal1)){
-        echo '<script language="javascript">';
-        echo 'alert("Mohon maaf, jam yang anda pilih sudah dipesan");';
-        echo 'window.location = "booking-pasfoto.php";';
-        echo '</script>';
-        return false;
-    } 
+// Self Photo dan Pas Foto berbagi satu ruangan per lokasi.
+if ($jam === false) {
+    echo '<script language="javascript">alert("Jadwal yang dipilih tidak valid. Silakan pilih ulang.");window.location = "booking-pasfoto.php";</script>';
+    return false;
+}
+
+$slotLock = rfstudioAcquireSharedRoomSlotLock($date, $jam, $studio);
+if ($slotLock === false) {
+    echo '<script language="javascript">alert("Jadwal sedang diproses. Silakan coba lagi.");window.location = "booking-pasfoto.php";</script>';
+    return false;
+}
+
+if (rfstudioSharedRoomSlotIsOccupied($date, $jam, $studio)) {
+    rfstudioReleaseSharedRoomSlotLock($slotLock);
+    echo '<script language="javascript">alert("Mohon maaf, jam yang anda pilih sudah dipesan. Silakan pilih jam lain.");window.location = "booking-pasfoto.php";</script>';
+    return false;
 }
 //upload gambar
 $bukti_transfer = uploadDpTfOptional();
 if($bukti_transfer===false){
+    rfstudioReleaseSharedRoomSlotLock($slotLock);
     return false;
 }
     
@@ -1585,7 +1694,9 @@ if($bukti_transfer===false){
                  '$cetakfoto8$jumlahcetak8'
                  '$cetakfoto9$jumlahcetak9','0','0', '$waktuinput','$uniqid','$catatan','$jumlahorangdewasa','$jumlahoranganak','$studio',NULL )";
                 
-mysqli_query($koneksi, $query);
+$hasilInsertBooking = mysqli_query($koneksi, $query);
+$jumlahBookingTersimpan = mysqli_affected_rows($koneksi);
+rfstudioReleaseSharedRoomSlotLock($slotLock);
 
 mysqli_query($koneksi, "INSERT INTO data_tambahcetak VALUES(
                 '',
@@ -1801,7 +1912,7 @@ $mail = new PHPMailer(true);
     // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
    try { $mail->send(); } catch (\Throwable $e) { /* kirim email gagal: diabaikan agar proses tetap lanjut & tidak halaman putih */ }
 
-return mysqli_affected_rows($koneksi);
+return ($hasilInsertBooking && $jumlahBookingTersimpan > 0) ? $jumlahBookingTersimpan : 0;
 }
 function tambahcetakfoto($data){
     

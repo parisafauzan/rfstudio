@@ -6,7 +6,9 @@ error_reporting(0);
 $uniqid = $_GET["uniqid"];
 $ambiljadwal = mysqli_query($koneksi,"SELECT * FROM data_jamtanggal WHERE uniqid = '$uniqid'");
 $jadwal = mysqli_fetch_array($ambiljadwal);
-$hapusjamsementara = $jadwal['id'];
+// Jadwal sementara dipertahankan persis seperti yang dipilih.
+// Tidak ada pemetaan otomatis 09:30-10:30 menjadi 09:00-09:30.
+$hapusjamsementara = $jadwal ? $jadwal['id'] : 0;
   if(isset($_POST["submit"])){
     // var_dump($_POST);
   if(tambahpasfoto($_POST)>0){

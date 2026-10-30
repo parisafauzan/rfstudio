@@ -50,6 +50,11 @@ require '../session.php';
                     <span class="fs-5 d-none d-sm-inline mt-4 fs-3"><?php echo $_SESSION['fusername']; ?> </span>
                 </a>
                 <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                    <li class="mt-1">
+                        <a href="../drive-gallery/index.php?from=kabupaten" class="nav-link px-0 align-middle text-white fs-5">
+                            <i class="fa-solid fa-images m-2"></i> <span class="ms-1 d-none d-sm-inline">Galeri Foto Google Drive</span>
+                        </a>
+                    </li>
                     <li>
                         <a href="datakonfirmasidp.php"  class="nav-link px-0 align-middle text-white fs-5">
                         <i class="fa-solid fa-list-check m-2 "></i> <span class="ms-1 d-none d-sm-inline">Data Konfirmasi</span> </a>

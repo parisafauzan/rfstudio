@@ -320,10 +320,25 @@ $mail = new PHPMailer(true);
     // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
     $send = $mail->send();
 if($send && konfirmasi($id)>0){
+        // Buat atau gunakan kembali folder Drive setelah booking berhasil dikonfirmasi.
+        // Jika Drive bermasalah, status booking tetap terkonfirmasi dan admin dapat membuat folder manual.
+        $galleryFolderNotice = 'Folder galeri belum dibuat.';
+        try {
+            require_once __DIR__ . '/../drive-gallery/booking-folder-hook.php';
+            $galleryFolderResult = rfg_booking_folder_after_confirmation($dataemail);
+            $galleryFolderNotice = 'Folder galeri dibuat: ' . (isset($galleryFolderResult['path']) ? $galleryFolderResult['path'] : 'siap digunakan');
+            if (isset($galleryFolderResult['db_cache_ok']) && !$galleryFolderResult['db_cache_ok']) {
+                $galleryFolderNotice .= ' (folder Drive ada, tetapi mapping cache MySQL perlu diperiksa).';
+            }
+        } catch (Throwable $galleryFolderError) {
+            error_log('RF Studio gallery folder failed for booking ' . $id . ': ' . $galleryFolderError->getMessage());
+            $galleryFolderNotice = 'Booking terkonfirmasi, tetapi folder galeri belum dibuat. Periksa koneksi Google Drive atau log galeri.';
+        }
+
         
         echo 'Message has been sent';
         echo '<script language="javascript">';
-        echo 'alert("Data Berhasil di Konfirmasi");';
+        echo 'alert(' . json_encode("Data berhasil dikonfirmasi.\n" . $galleryFolderNotice) . ');';
         echo 'function myFunction() {';
         echo 'document.getElementById("myForm").reset();};';
         echo 'window.location = "datakonfirmasidp.php"';

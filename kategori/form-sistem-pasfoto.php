@@ -6,9 +6,9 @@ require "../function.php";
     $tanggalkartini = $_POST["tanggalkartini"];
     $ambiljadwalliburkab = mysqli_query($koneksi,"SELECT * FROM jadwal_libur_kab WHERE jadwal LIKE '%$tanggal%'" );
     $ambiljadwalliburkota = mysqli_query($koneksi,"SELECT * FROM jadwal_libur_kota WHERE jadwal LIKE '%$tanggalkartini%'" );
-    $ambildatastudioKab = mysqli_query($koneksi,"SELECT * FROM data_konfirmasi_cobahampirfinishjuga WHERE tanggal LIKE '%$tanggal%' OR studio = 'Bekasi-Kabupaten' AND studio = '' 
-                                                  UNION 
-                                                  SELECT * FROM data_booking_cobahampirfinishjuga WHERE tanggal LIKE '%$tanggal%' OR studio = 'Bekasi-Kabupaten' AND studio = '';");
+    $ambildatastudioKab = mysqli_query($koneksi,"SELECT * FROM data_konfirmasi_cobahampirfinishjuga WHERE tanggal = '$tanggal' AND studio IN ('Bekasi-Kabupaten','')
+                                                  UNION
+                                                  SELECT * FROM data_booking_cobahampirfinishjuga WHERE tanggal = '$tanggal' AND studio IN ('Bekasi-Kabupaten','')");
     $dataKab = mysqli_fetch_array($ambildatastudioKab);
     $ambildatastudioKot = mysqli_query($koneksi,"SELECT * FROM data_konfirmasi_cobahampirfinishjuga WHERE studio = 'Bekasi-Kota' AND tanggal LIKE '%$tanggalkartini%' 
                                                   UNION 
@@ -29,7 +29,7 @@ require "../function.php";
                 <div class="d-flex justify-content-center text-center my-2">
                   <span class="button-radio mx-2">
                     <?php
-                    $ambiljamkab2 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('09:00-09:30','09.00-09.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('09:00-09:30','09.00-09.30') AND studio IN ('Bekasi-Kabupaten','');");
+                    $ambiljamkab2 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('09:00-09:30','09.00-09.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('09:00-09:30','09.00-09.30') AND studio IN ('Bekasi-Kabupaten','');");
                     $jamkab2 = mysqli_fetch_array($ambiljamkab2);
                     if($jamkab2){
                       ?>
@@ -44,7 +44,7 @@ require "../function.php";
                   </span>
                   <span class="button-radio mx-2">
                     <?php
-                    $ambiljamkab3 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('10:00-10:30','10.00-10.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('10:00-10:30','10.00-10.30') AND studio IN ('Bekasi-Kabupaten','');");
+                    $ambiljamkab3 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('10:00-10:30','10.00-10.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('10:00-10:30','10.00-10.30') AND studio IN ('Bekasi-Kabupaten','');");
                     $jamkab3 = mysqli_fetch_array($ambiljamkab3);
                     if($jamkab3){
                       ?>
@@ -59,7 +59,7 @@ require "../function.php";
                   </span>
                   <span class="button-radio mx-2">
                     <?php
-                    $ambiljamkab4 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('11:00-11:30','11.00-11.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('11:00-11:30','11.00-11.30') AND studio IN ('Bekasi-Kabupaten','');");
+                    $ambiljamkab4 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('11:00-11:30','11.00-11.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('11:00-11:30','11.00-11.30') AND studio IN ('Bekasi-Kabupaten','');");
                     $jamkab4 = mysqli_fetch_array($ambiljamkab4);
                     if($jamkab4){
                       ?>
@@ -76,7 +76,7 @@ require "../function.php";
                 <div class="d-flex justify-content-center text-center my-2">
                   <span class="button-radio mx-2">
                     <?php 
-                    $ambiljamkab5 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('12:00-12:30','12.00-12.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('12:00-12:30','12.00-12.30') AND studio IN ('Bekasi-Kabupaten','');");
+                    $ambiljamkab5 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('12:00-12:30','12.00-12.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('12:00-12:30','12.00-12.30') AND studio IN ('Bekasi-Kabupaten','');");
                     $jamkab5 = mysqli_fetch_array($ambiljamkab5);
                     if($jamkab5){
                       ?>
@@ -90,7 +90,7 @@ require "../function.php";
                   </span>
                   <span class="button-radio mx-2">
                     <?php 
-                    $ambiljamkab6 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('13:00-13:30','13.00-13.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('13:00-13:30','13.00-13.30') AND studio IN ('Bekasi-Kabupaten','');");
+                    $ambiljamkab6 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('13:00-13:30','13.00-13.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('13:00-13:30','13.00-13.30') AND studio IN ('Bekasi-Kabupaten','');");
                     $jamkab6 = mysqli_fetch_array($ambiljamkab6);
                     if($jamkab6){?>
                       <button id="btn6" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>13:00-13:30</button>
@@ -102,7 +102,7 @@ require "../function.php";
                   </span>
                   <span class="button-radio mx-2" >
                     <?php
-                    $ambiljamkab7 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('14:00-14:30','14.00-14.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('14:00-14:30','14.00-14.30') AND studio IN ('Bekasi-Kabupaten','');");
+                    $ambiljamkab7 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('14:00-14:30','14.00-14.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('14:00-14:30','14.00-14.30') AND studio IN ('Bekasi-Kabupaten','');");
                     $jamkab7 = mysqli_fetch_array($ambiljamkab7);
                     if($jamkab7){?>
                       <button id="btn7" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>14:00-14:30</button>
@@ -114,7 +114,7 @@ require "../function.php";
                   </span>
                   <span class="button-radio mx-2">
                     <?php 
-                    $ambiljamkab8 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('15:00-15:30','15.00-15.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('15:00-15:30','15.00-15.30') AND studio IN ('Bekasi-Kabupaten','');");
+                    $ambiljamkab8 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('15:00-15:30','15.00-15.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('15:00-15:30','15.00-15.30') AND studio IN ('Bekasi-Kabupaten','');");
                     $jamkab8 = mysqli_fetch_array($ambiljamkab8);
                     if($jamkab8){?>
                       <button id="btn8" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>15:00-15:30</button>
@@ -128,7 +128,7 @@ require "../function.php";
                 <div class="d-flex justify-content-center text-center my-2"> 
                   <span class="button-radio mx-2">
                     <?php 
-                    $ambiljamkab9 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('16:00-16:30','16.00-16.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('16:00-16:30','16.00-16.30') AND studio IN ('Bekasi-Kabupaten','');");
+                    $ambiljamkab9 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('16:00-16:30','16.00-16.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('16:00-16:30','16.00-16.30') AND studio IN ('Bekasi-Kabupaten','');");
                     $jamkab9 = mysqli_fetch_array($ambiljamkab9);
                     if($jamkab9){?>
                       <button id="btn9" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>16:00-16:30</button>
@@ -140,7 +140,7 @@ require "../function.php";
                   </span>
                   <span class="button-radio mx-2">
                     <?php 
-                    $ambiljamkab10 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('17:00-17:30','17.00-17.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND jam IN ('17:00-17:30','17.00-17.30') AND studio IN ('Bekasi-Kabupaten','');");
+                    $ambiljamkab10 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('17:00-17:30','17.00-17.30') AND studio IN ('Bekasi-Kabupaten','') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggal' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('17:00-17:30','17.00-17.30') AND studio IN ('Bekasi-Kabupaten','');");
                     $jamkab10 = mysqli_fetch_array($ambiljamkab10);
                     if($jamkab10){?>
                       <button id="btn10" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>17:00-17:30</button>
@@ -168,44 +168,44 @@ require "../function.php";
                 <div class="d-flex justify-content-center text-center my-2">
                   <span class="button-radio mx-2">
                     <button id="btn2" type="button" class="btn btn-outline-dark"  style="font-size:11px;">09:00-09:30</button>
-                    <input id="jam2"  type="radio" hidden name="jampost" class="radio" value="09:30-10:30"/>
+                    <input id="jam2"  type="radio" hidden name="jampost" class="radio" value="09:00-09:30"/>
                   </span>
                   <span class="button-radio mx-2">
-                    <button id="btn3" type="button" class="btn btn-outline-dark"  style="font-size:11px;">10.00-10.30</button>
-                    <input id="jam3"  type="radio" hidden name="jampost" class="radio" value="10.00-10.30"/> 
+                    <button id="btn3" type="button" class="btn btn-outline-dark"  style="font-size:11px;">10:00-10:30</button>
+                    <input id="jam3"  type="radio" hidden name="jampost" class="radio" value="10:00-10:30"/> 
                   </span>
                   <span class="button-radio mx-2">
-                    <button id="btn4" type="button" class="btn btn-outline-dark"  style="font-size:11px;">11.00-11.30</button>
-                    <input id="jam4"  type="radio" hidden name="jampost" class="radio" value="11.00-11.30"/>
+                    <button id="btn4" type="button" class="btn btn-outline-dark"  style="font-size:11px;">11:00-11:30</button>
+                    <input id="jam4"  type="radio" hidden name="jampost" class="radio" value="11:00-11:30"/>
                   </span>
                 </div>
                   
                 <div class="d-flex justify-content-center text-center my-2">
                   <span class="button-radio mx-2">
-                    <button id="btn5" type="button" class="btn btn-outline-dark"  style="font-size:11px;">12.00-12.30</button>
-                    <input id="jam5"  type="radio" hidden name="jampost" class="radio" value="12.00-12.30"/>
+                    <button id="btn5" type="button" class="btn btn-outline-dark"  style="font-size:11px;">12:00-12:30</button>
+                    <input id="jam5"  type="radio" hidden name="jampost" class="radio" value="12:00-12:30"/>
                   </span>
                   <span class="button-radio mx-2">
-                    <button id="btn6" type="button" class="btn btn-outline-dark"  style="font-size:11px;">13.00-13.30</button>
-                    <input id="jam6"  type="radio" hidden name="jampost" class="radio" value="13.00-13.30"/>
+                    <button id="btn6" type="button" class="btn btn-outline-dark"  style="font-size:11px;">13:00-13:30</button>
+                    <input id="jam6"  type="radio" hidden name="jampost" class="radio" value="13:00-13:30"/>
                   </span>
                   <span class="button-radio mx-2" >
-                      <button id="btn7" type="button" class="btn btn-outline-dark"  style="font-size:11px;">14.00-14.30</button>
-                      <input id="jam7"  type="radio" hidden name="jampost" class="radio" value="14.00-14.30"/>     
+                      <button id="btn7" type="button" class="btn btn-outline-dark"  style="font-size:11px;">14:00-14:30</button>
+                      <input id="jam7"  type="radio" hidden name="jampost" class="radio" value="14:00-14:30"/>     
                   </span>
                   <span class="button-radio mx-2">
-                      <button id="btn8" type="button" class="btn btn-outline-dark"  style="font-size:11px;">15.00-15.30</button>
-                      <input id="jam8"  type="radio" hidden name="jampost" class="radio" value="15.00-15.30"/>                   
+                      <button id="btn8" type="button" class="btn btn-outline-dark"  style="font-size:11px;">15:00-15:30</button>
+                      <input id="jam8"  type="radio" hidden name="jampost" class="radio" value="15:00-15:30"/>                   
                   </span>
                 </div>
                 <div class="d-flex justify-content-center text-center my-2">
                   <span class="button-radio mx-2">
-                      <button id="btn9" type="button" class="btn btn-outline-dark"  style="font-size:11px;">16.00-16.30</button>
-                      <input id="jam9"  type="radio" hidden name="jampost" class="radio" value="16.00-16.30"/>
+                      <button id="btn9" type="button" class="btn btn-outline-dark"  style="font-size:11px;">16:00-16:30</button>
+                      <input id="jam9"  type="radio" hidden name="jampost" class="radio" value="16:00-16:30"/>
                   </span>
                   <span class="button-radio mx-2">
-                      <button id="btn10" type="button" class="btn btn-outline-dark"  style="font-size:11px;">17.00-17.30</button>
-                      <input id="jam10"  type="radio" hidden name="jampost" class="radio" value="17.00-17.30"/>
+                      <button id="btn10" type="button" class="btn btn-outline-dark"  style="font-size:11px;">17:00-17:30</button>
+                      <input id="jam10"  type="radio" hidden name="jampost" class="radio" value="17:00-17:30"/>
                   </span>
 
                 </div>
@@ -237,7 +237,7 @@ require "../function.php";
                 <div class="d-flex justify-content-center text-center my-2">
                   <span class="button-radio mx-2">
                     <?php
-                    $ambiljamkab2 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('09:00-09:30','09.00-09.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('09:00-09:30','09.00-09.30') AND studio IN ('Bekasi-Kota');");
+                    $ambiljamkab2 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('09:00-09:30','09.00-09.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('09:00-09:30','09.00-09.30') AND studio IN ('Bekasi-Kota');");
                     $jamkab2 = mysqli_fetch_array($ambiljamkab2);
                     if($jamkab2){
                       ?>
@@ -252,7 +252,7 @@ require "../function.php";
                   </span>
                   <span class="button-radio mx-2">
                     <?php
-                    $ambiljamkab3 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('10:00-10:30','10.00-10.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('10:00-10:30','10.00-10.30') AND studio IN ('Bekasi-Kota');");
+                    $ambiljamkab3 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('10:00-10:30','10.00-10.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('10:00-10:30','10.00-10.30') AND studio IN ('Bekasi-Kota');");
                     $jamkab3 = mysqli_fetch_array($ambiljamkab3);
                     if($jamkab3){
                       ?>
@@ -267,7 +267,7 @@ require "../function.php";
                   </span>
                   <span class="button-radio mx-2">
                     <?php
-                    $ambiljamkab4 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('11:00-11:30','11.00-11.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('11:00-11:30','11.00-11.30') AND studio IN ('Bekasi-Kota');");
+                    $ambiljamkab4 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('11:00-11:30','11.00-11.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('11:00-11:30','11.00-11.30') AND studio IN ('Bekasi-Kota');");
                     $jamkab4 = mysqli_fetch_array($ambiljamkab4);
                     if($jamkab4){
                       ?>
@@ -284,7 +284,7 @@ require "../function.php";
                 <div class="d-flex justify-content-center text-center my-2">
                   <span class="button-radio mx-2">
                     <?php 
-                    $ambiljamkab5 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('12:00-12:30','12.00-12.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('12:00-12:30','12.00-12.30') AND studio IN ('Bekasi-Kota');");
+                    $ambiljamkab5 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('12:00-12:30','12.00-12.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('12:00-12:30','12.00-12.30') AND studio IN ('Bekasi-Kota');");
                     $jamkab5 = mysqli_fetch_array($ambiljamkab5);
                     if($jamkab5){
                       ?>
@@ -298,7 +298,7 @@ require "../function.php";
                   </span>
                   <span class="button-radio mx-2">
                     <?php 
-                    $ambiljamkab6 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('13:00-13:30','13.00-13.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('13:00-13:30','13.00-13.30') AND studio IN ('Bekasi-Kota');");
+                    $ambiljamkab6 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('13:00-13:30','13.00-13.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('13:00-13:30','13.00-13.30') AND studio IN ('Bekasi-Kota');");
                     $jamkab6 = mysqli_fetch_array($ambiljamkab6);
                     if($jamkab6){?>
                       <button id="btnkartini6" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>13:00-13:30</button>
@@ -310,7 +310,7 @@ require "../function.php";
                   </span>
                   <span class="button-radio mx-2" >
                     <?php
-                    $ambiljamkab7 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('14:00-14:30','14.00-14.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('14:00-14:30','14.00-14.30') AND studio IN ('Bekasi-Kota');");
+                    $ambiljamkab7 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('14:00-14:30','14.00-14.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('14:00-14:30','14.00-14.30') AND studio IN ('Bekasi-Kota');");
                     $jamkab7 = mysqli_fetch_array($ambiljamkab7);
                     if($jamkab7){?>
                       <button id="btnkartini7" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>14:00-14:30</button>
@@ -322,7 +322,7 @@ require "../function.php";
                   </span>
                   <span class="button-radio mx-2">
                     <?php 
-                    $ambiljamkab8 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('15:00-15:30','15.00-15.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('15:00-15:30','15.00-15.30') AND studio IN ('Bekasi-Kota');");
+                    $ambiljamkab8 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('15:00-15:30','15.00-15.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('15:00-15:30','15.00-15.30') AND studio IN ('Bekasi-Kota');");
                     $jamkab8 = mysqli_fetch_array($ambiljamkab8);
                     if($jamkab8){?>
                       <button id="btnkartini8" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>15:00-15:30</button>
@@ -336,7 +336,7 @@ require "../function.php";
                 <div class="d-flex justify-content-center text-center my-2"> 
                   <span class="button-radio mx-2">
                     <?php 
-                    $ambiljamkab9 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('16:00-16:30','16.00-16.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('16:00-16:30','16.00-16.30') AND studio IN ('Bekasi-Kota');");
+                    $ambiljamkab9 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('16:00-16:30','16.00-16.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('16:00-16:30','16.00-16.30') AND studio IN ('Bekasi-Kota');");
                     $jamkab9 = mysqli_fetch_array($ambiljamkab9);
                     if($jamkab9){?>
                       <button id="btnkartini9" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>16:00-16:30</button>
@@ -348,7 +348,7 @@ require "../function.php";
                   </span>
                   <span class="button-radio mx-2">
                     <?php 
-                    $ambiljamkab10 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('17:00-17:30','17.00-17.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND jam IN ('17:00-17:30','17.00-17.30') AND studio IN ('Bekasi-Kota');");
+                    $ambiljamkab10 = mysqli_query($koneksi,"SELECT * FROM `data_konfirmasi_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('17:00-17:30','17.00-17.30') AND studio IN ('Bekasi-Kota') UNION SELECT * FROM `data_booking_cobahampirfinishjuga` WHERE tanggal = '$tanggalkartini' AND (LOWER(TRIM(package)) LIKE '%self photo%' OR LOWER(TRIM(package)) LIKE '%pas foto%') AND jam IN ('17:00-17:30','17.00-17.30') AND studio IN ('Bekasi-Kota');");
                     $jamkab10 = mysqli_fetch_array($ambiljamkab10);
                     if($jamkab10){?>
                       <button id="btnkartini10" type="button" class="btn btn-outline-dark"  style="font-size:11px;" disabled>17:00-17:30</button>
@@ -375,44 +375,44 @@ require "../function.php";
           <div class="elem-group mx-auto inlined ms-2 me-2 mt-2 mb-2">
                 <div class="d-flex justify-content-center text-center my-2">
                   <span class="button-radio mx-2">
-                    <button id="btnkartini2" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">09:30-10:30</button>
-                    <input id="jamkartini2"  type="radio" hidden name="jampost" class="radio" value="09:30-10:30"/>
+                    <button id="btnkartini2" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">09:00-09:30</button>
+                    <input id="jamkartini2"  type="radio" hidden name="jampost" class="radio" value="09:00-09:30"/>
                   </span>
                   <span class="button-radio mx-2">
-                    <button id="btnkartini3" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">10.00-10.30</button>
-                    <input id="jamkartini3"  type="radio" hidden name="jampost" class="radio" value="10.00-10.30"/> 
+                    <button id="btnkartini3" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">10:00-10:30</button>
+                    <input id="jamkartini3"  type="radio" hidden name="jampost" class="radio" value="10:00-10:30"/> 
                   </span>
                   <span class="button-radio mx-2">
-                    <button id="btnkartini4" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">11.00-11.30</button>
-                    <input id="jamkartini4"  type="radio" hidden name="jampost" class="radio" value="11.00-11.30"/>
+                    <button id="btnkartini4" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">11:00-11:30</button>
+                    <input id="jamkartini4"  type="radio" hidden name="jampost" class="radio" value="11:00-11:30"/>
                   </span>
                 </div>
                 <div class="d-flex justify-content-center text-center my-2">
                   <span class="button-radio mx-2">
-                    <button id="btnkartini5" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">12.00-12.30</button>
-                    <input id="jamkartini5"  type="radio" hidden name="jampost" class="radio" value="12.00-12.30"/>
+                    <button id="btnkartini5" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">12:00-12:30</button>
+                    <input id="jamkartini5"  type="radio" hidden name="jampost" class="radio" value="12:00-12:30"/>
                   </span>
                   <span class="button-radio mx-2">
-                    <button id="btnkartini6" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">13.00-13.30</button>
-                    <input id="jamkartini6"  type="radio" hidden name="jampost" class="radio" value="13.00-13.30"/>
+                    <button id="btnkartini6" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">13:00-13:30</button>
+                    <input id="jamkartini6"  type="radio" hidden name="jampost" class="radio" value="13:00-13:30"/>
                   </span>
                   <span class="button-radio mx-2" >
-                      <button id="btnkartini7" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">14.00-14.30</button>
-                      <input id="jamkartini7"  type="radio" hidden name="jampost" class="radio" value="14.00-14.30"/>     
+                      <button id="btnkartini7" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">14:00-14:30</button>
+                      <input id="jamkartini7"  type="radio" hidden name="jampost" class="radio" value="14:00-14:30"/>     
                   </span>
                   <span class="button-radio mx-2">
-                      <button id="btnkartini8" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">15.00-15.30</button>
-                      <input id="jamkartini8"  type="radio" hidden name="jampost" class="radio" value="15.00-15.30"/>                   
+                      <button id="btnkartini8" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">15:00-15:30</button>
+                      <input id="jamkartini8"  type="radio" hidden name="jampost" class="radio" value="15:00-15:30"/>                   
                   </span>
                 </div>
                 <div class="d-flex justify-content-center text-center my-2">
                   <span class="button-radio mx-2">
-                      <button id="btnkartini9" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">16.00-16.30</button>
-                      <input id="jamkartini9"  type="radio" hidden name="jampost" class="radio" value="16.00-16.30"/>
+                      <button id="btnkartini9" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">16:00-16:30</button>
+                      <input id="jamkartini9"  type="radio" hidden name="jampost" class="radio" value="16:00-16:30"/>
                   </span>
                   <span class="button-radio mx-2">
-                      <button id="btnkartini10" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">17.00-17.30</button>
-                      <input id="jamkartini10"  type="radio" hidden name="jampost" class="radio" value="17.00-17.30"/>
+                      <button id="btnkartini10" type="button" class="btn btn-outline-dark kartini"  style="font-size:11px;">17:00-17:30</button>
+                      <input id="jamkartini10"  type="radio" hidden name="jampost" class="radio" value="17:00-17:30"/>
                   </span>
 
                 </div>

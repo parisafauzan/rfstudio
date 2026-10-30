@@ -1,0 +1,9 @@
+1. kalo pada drive ada foto yg dihapus apakah akan jadi masalaah di tabel gallery_photo
+2.max 1 foto itu 20mb
+
+
+
+
+poormpt untuk modul pelunasasn 
+
+nah oke kalau begitu kita mulai dari modul pembayaran ini , nah karena client saya ini tidak ingin ada login karena itu akan repot katanya , nah tapi karena memang diperlukan untuk modul pembayaran dan informasi terkait booking dan lainnya jadi pakai email saja , yg dimana nanti di halaman pelunasaan itu akan ada sebuah form untuk masukkan email , nah nanti akan ada daftar booking dari email tersebut , nah nanti pelanaggan tidanggal mencocokan talnggal , paket dan lain lain atau dengan status nya juga memang adaa dan tersedia didatabase , nanti dari siti pelanggan tinggal klik daftar boking yg benar lalu masukkan tambahan jika ada , dan uplooad bukti pelunasan , maka akan langsung generate sebuah pdf invoice yg bisa didownload yg sesuai dengan booking dan tambahan yg dipesan , berikut saya kirimkan full dari file filenya 

@@ -3,6 +3,7 @@
 error_log
 *.sql
 !migration-pelunasan-email.sql
+!migration-pelunasan-sinkronisasi.sql
 
 # Hosting/SSL-specific
 .well-known/

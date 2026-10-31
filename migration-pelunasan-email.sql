@@ -5,7 +5,8 @@
 CREATE TABLE IF NOT EXISTS booking_payment_submissions (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     booking_uniqid VARCHAR(64) NOT NULL,
-    -- Booking dapat masih menunggu konfirmasi admin atau sudah menjadi booking aktif.
+    -- Nilai konfirmasi dipertahankan untuk kompatibilitas data lama. Pengajuan baru
+    -- hanya boleh dibuat dari booking aktif setelah DP dikonfirmasi admin.
     legacy_source ENUM('konfirmasi', 'booking', 'pelunasan') NOT NULL,
     customer_name VARCHAR(150) NOT NULL,
     customer_email VARCHAR(191) NOT NULL,
@@ -15,6 +16,8 @@ CREATE TABLE IF NOT EXISTS booking_payment_submissions (
     package_type VARCHAR(150) NOT NULL DEFAULT '',
     booking_date VARCHAR(30) NOT NULL DEFAULT '',
     booking_time VARCHAR(150) NOT NULL DEFAULT '',
+    package_total DECIMAL(12,2) NOT NULL DEFAULT 0,
+    deposit_paid DECIMAL(12,2) NOT NULL DEFAULT 0,
     base_due DECIMAL(12,2) NOT NULL DEFAULT 0,
     addons_total DECIMAL(12,2) NOT NULL DEFAULT 0,
     total_due DECIMAL(12,2) NOT NULL DEFAULT 0,
@@ -39,8 +42,7 @@ CREATE TABLE IF NOT EXISTS booking_payment_submissions (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Jalankan juga bila tabel di atas SUDAH pernah dibuat dengan versi migration lama.
--- Nilai lama tetap aman; nilai `konfirmasi` diperlukan agar booking baru dapat
--- mengajukan pelunasan tanpa menunggu konfirmasi admin.
+-- Nilai `konfirmasi` dipertahankan agar invoice lama tetap dapat dibaca.
 ALTER TABLE booking_payment_submissions
     MODIFY legacy_source ENUM('konfirmasi', 'booking', 'pelunasan') NOT NULL;
 

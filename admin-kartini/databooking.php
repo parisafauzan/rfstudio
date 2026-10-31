@@ -2,6 +2,10 @@
 // koneksi database
 require '../function.php';
 require '../session-kartini.php';
+require '../pelunasan-lib.php';
+$paymentAdminName = isset($_SESSION['fusername']) ? $_SESSION['fusername'] : 'Admin Bekasi Kota';
+$paymentReviewError = rfp_handle_admin_payment_review('Bekasi-Kota', $paymentAdminName, 'databooking');
+$paymentReviewFlash = rfp_take_flash();
 // ambil data dari database
 
 // $data = mysqli_fetch_row($result) ;
@@ -116,6 +120,8 @@ th{
 					<h2>Jadwal<b>Photoshoot - Kartini </b></h2>
 				</div>
 			</div>
+      <?php if ($paymentReviewFlash) { ?><div class="alert alert-<?php echo rfp_h($paymentReviewFlash['type']); ?>"><?php echo rfp_h($paymentReviewFlash['message']); ?></div><?php } ?>
+      <?php if ($paymentReviewError !== '') { ?><div class="alert alert-danger"><?php echo rfp_h($paymentReviewError); ?></div><?php } ?>
       <table class="table table-hover ">
 				<thead class="align-middle head">
 					<tr >
@@ -125,7 +131,8 @@ th{
               <th class="align-middle">Package</th> 
               <th class="align-middle">Tambahan</th>
               <th class="align-middle">Catatan</th>
-<th class="align-middle">Bukti Transfer</th>
+              <th class="align-middle">Bukti DP</th>
+              <th class="align-middle">Pelunasan</th>
               <th class="align-middle">Pilihan</th>
 
                         
@@ -150,6 +157,9 @@ th{
 					$data_konfirmasi = mysqli_query($koneksi,"SELECT * FROM data_booking_cobahampirfinishjuga WHERE studio = 'Bekasi-Kota'  ORDER BY tanggal,jam ASC LIMIT $halaman_awal, $batas");
 					$nomor = $halaman_awal+1;
 					while($d = mysqli_fetch_array($data_konfirmasi)){
+						$paymentBookingIdentity = $d;
+						$paymentBookingIdentity['legacy_source'] = 'booking';
+						$payment = rfp_payment_state($d['uniqid'], $paymentBookingIdentity);
 						?>
 			<tr style="font-size: 15px;">
      
@@ -282,24 +292,24 @@ th{
               <td hidden><?php echo $d["time_stamp"];  ?></td>
               <td hidden><?php echo $d["catatan"];  ?></td>
               <td>
-                <?php 
-                if($d["bukti_lunas"]=="0"||$d["bukti_lunas"]=" "){
-                ?>
-                    <img class="gallery-item" aria-label="bukti" src= "../assets/img/data_konfirmasi/<?= $d["bukti_transfer"];?>" width="80" height="80"><br>  
-                <?php
-                }else{
-                ?>
-                    <img class="gallery-item" aria-label="bukti" src= "../assets/img/data_konfirmasi/<?= $d["bukti_transfer"];?>" width="80" height="80"><br>
-                    <img class="gallery-item mt-2" aria-label="bukti" src= "../assets/img/data_overtime/<?= $d["bukti_lunas"];?>" width="80" height="80">
-                <?php
-                } 
-                ?>
-                </td>
+                <?php if (!empty($d['bukti_transfer']) && $d['bukti_transfer'] !== '-') { ?>
+                  <img class="gallery-item" aria-label="Bukti DP" src="../assets/img/data_konfirmasi/<?php echo rawurlencode(basename($d['bukti_transfer'])); ?>" width="80" height="80"><br>
+                <?php } else { ?><span class="badge bg-light text-dark border">Tanpa DP</span><?php } ?>
+              </td>
+              <td style="min-width:190px;font-size:13px;">
+                <?php $adminPaymentFormAction = 'databooking'; require '../pelunasan-admin-dialog.php'; ?>
+              </td>
               
                 <td>
               
-                    <a href="lunas.php?uniqid=<?= $d["uniqid"];  ?>"  style="font-size: 13px;" class="btn btn-primary ms-2  text-white" name="tombol_konF" onclick="return confirm('Anda yakin client sudah melakukan photoshoot ?')">
-                        Konfirmasi</a>
+                    <?php if ($payment && $payment['status'] === 'approved') { ?>
+                    <a href="lunas.php?uniqid=<?= $d["uniqid"];  ?>"  style="font-size: 13px;" class="btn btn-primary ms-2 text-white" name="tombol_konF" onclick="return confirm('Selesaikan photoshoot dan pindahkan booking ke history?')">
+                        Selesaikan Photoshoot</a>
+                    <?php } elseif ($payment && $payment['status'] === 'pending') { ?>
+                    <button type="button" style="font-size:13px;" class="btn btn-outline-success ms-2" data-bs-toggle="modal" data-bs-target="#payment-review-<?php echo (int)$payment['id']; ?>">Verifikasi Pelunasan</button>
+                    <?php } else { ?>
+                    <button type="button" style="font-size:13px;" class="btn btn-outline-secondary ms-2" disabled>Belum Lunas</button>
+                    <?php } ?>
                     <a href="kirimpesan.php?id=<?= $d["id"]; ?>"  style="font-size: 13px;" class="btn btn-info ms-2 mt-1 " name="tombol_konF" >
                         Pesan</a>
                     <button type="button" style="font-size: 13px;" class="btn btn-success viewdata ms-2 mt-1" id="viewdata" >

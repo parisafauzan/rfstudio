@@ -4,6 +4,8 @@ error_log
 *.sql
 !migration-pelunasan-email.sql
 !migration-pelunasan-sinkronisasi.sql
+!migration-gallery-cache.sql
+!migration-gallery-customer.sql
 
 # Hosting/SSL-specific
 .well-known/

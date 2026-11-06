@@ -2,7 +2,7 @@
 require_once __DIR__ . '/bootstrap.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    rfg_redirect('index.php');
+    rfg_redirect('index');
 }
 if (!rfg_check_csrf()) {
     http_response_code(403);

@@ -68,6 +68,6 @@ try {
     if ($isAjax) rfg_create_folder_response(array('success' => false, 'message' => $e->getMessage()), 422);
     $_SESSION['rfgallery_flash'] = array('type' => 'danger', 'text' => $e->getMessage());
 }
-$redirect = 'index.php' . ($parentId !== '' ? '?folderId=' . rawurlencode($parentId) : '');
+$redirect = 'index' . ($parentId !== '' ? '?folderId=' . rawurlencode($parentId) : '');
 header('Location: ' . $redirect);
 exit;

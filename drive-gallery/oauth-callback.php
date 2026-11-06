@@ -37,7 +37,7 @@ try {
     $token['expires_at'] = time() + (isset($token['expires_in']) ? (int) $token['expires_in'] : 3600);
     rfg_save_token($token);
     rfg_folder_id(); // Buat/pastikan folder khusus galeri di Google Drive.
-    rfg_redirect('index.php?connected=1');
+    rfg_redirect('index?connected=1');
 } catch (Exception $e) {
     http_response_code(500);
     echo '<!doctype html><html lang="id"><meta charset="utf-8"><title>Koneksi gagal</title><body style="font-family:Arial,sans-serif;padding:32px"><h2>Koneksi Google Drive gagal</h2><p>' . rfg_h($e->getMessage()) . '</p><p><a href="index.php">Kembali ke galeri</a></p></body></html>';

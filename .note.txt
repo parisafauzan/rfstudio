@@ -31,6 +31,47 @@ admin/admin.php
 admin/booking.php
 adminkartini/booking.php
 index.php
+File utama yang perlu diunggah
+- [index.php (line 283)](C:/xampp/htdocs/rfstudio/index.php:283)
+- [gallery.php (line 1)](C:/xampp/htdocs/rfstudio/gallery.php:1)
+- [gallery-customer-lib.php (line 1)](C:/xampp/htdocs/rfstudio/gallery-customer-lib.php:1)
+- [gallery-submit.php (line 1)](C:/xampp/htdocs/rfstudio/gallery-submit.php:1)
+- [gallery-media.php (line 1)](C:/xampp/htdocs/rfstudio/gallery-media.php:1)
+- [drive-gallery/index.php (line 1)](C:/xampp/htdocs/rfstudio/drive-gallery/index.php:1)
+- [drive-gallery/gallery-db.php (line 364)](C:/xampp/htdocs/rfstudio/drive-gallery/gallery-db.php:364)
+- [drive-gallery/gallery.css (line 183)](C:/xampp/htdocs/rfstudio/drive-gallery/gallery.css:183)
+- [drive-gallery/edit-request-review.php (line 1)](C:/xampp/htdocs/rfstudio/drive-gallery/edit-request-review.php:1)
+- [drive-gallery/bootstrap.php (line 1)](C:/xampp/htdocs/rfstudio/drive-gallery/bootstrap.php:1)
+File route galeri yang juga diperbaiki agar POST tidak hilang karena redirect .php:
+- [create-folder.php (line 1)](C:/xampp/htdocs/rfstudio/drive-gallery/create-folder.php:1)
+- [download-selected.php (line 1)](C:/xampp/htdocs/rfstudio/drive-gallery/download-selected.php:1)
+- [disconnect.php (line 1)](C:/xampp/htdocs/rfstudio/drive-gallery/disconnect.php:1)
+- [oauth-callback.php (line 1)](C:/xampp/htdocs/rfstudio/drive-gallery/oauth-callback.php:1)
+- [upload.php (line 1)](C:/xampp/htdocs/rfstudio/drive-gallery/upload.php:1)
+
+admin/databooking.php
+admin/datakonfirmasidp.php
+admin-kartini/databooking.php
+admin-kartini/datakonfirmasidp.php
+drive-gallery/booking-lookup.php
+drive-gallery/bootstrap.php
+drive-gallery/create-booking-folder.php
+drive-gallery/drive-api.php
+drive-gallery/gallery-db.php
+drive-gallery/gallery-render.php
+drive-gallery/gallery.css
+drive-gallery/index.php
+drive-gallery/oauth.php
+drive-gallery/photos-page.php
+gallery-customer-lib.php
+gallery-download-zip.php
+gallery-photos.php
+gallery.php
+[drive-gallery/index.php](/C:/xampp/htdocs/rfstudio/drive-gallery/index.php)
+[drive-gallery/gallery-db.php](/C:/xampp/htdocs/rfstudio/drive-gallery/gallery-db.php)
+[drive-gallery/gallery.css](/C:/xampp/htdocs/rfstudio/drive-gallery/gallery.css)
+
+==========================================================
 
 jalankan migrationdatabase
 
@@ -55,3 +96,36 @@ SET
         0
     )
 WHERE p.package_total = 0;
+
+
+CREATE TABLE IF NOT EXISTS gallery_edit_requests (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  gallery_session_id BIGINT UNSIGNED NOT NULL,
+  customer_email VARCHAR(190) NOT NULL,
+  status ENUM('submitted','editing','completed','rejected') NOT NULL DEFAULT 'submitted',
+  customer_note VARCHAR(500) NOT NULL DEFAULT '',
+  admin_note VARCHAR(500) NOT NULL DEFAULT '',
+  submitted_at DATETIME NULL,
+  reviewed_at DATETIME NULL,
+  completed_at DATETIME NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_gallery_edit_request_session (gallery_session_id),
+  KEY idx_gallery_edit_request_status (status, submitted_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS gallery_edit_request_items (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  request_id BIGINT UNSIGNED NOT NULL,
+  gallery_photo_id BIGINT UNSIGNED NOT NULL,
+  drive_file_id VARCHAR(190) NOT NULL,
+  filename VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_gallery_request_file (request_id, drive_file_id),
+  KEY idx_gallery_request_items_request (request_id),
+  KEY idx_gallery_request_items_photo (gallery_photo_id),
+  CONSTRAINT fk_gallery_request_items_request FOREIGN KEY (request_id) REFERENCES gallery_edit_requests (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

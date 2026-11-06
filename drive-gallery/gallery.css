@@ -178,6 +178,15 @@
 .create-old-folder>summary::-webkit-details-marker{display:none}
 .create-old-folder>summary>span:nth-child(2){display:flex;flex:1;flex-direction:column;gap:3px;min-width:0}
 .create-old-folder>summary strong{font-size:12px}
+
+/* Permintaan pilihan foto customer. */
+.customer-edit-request{margin:0 0 12px;padding:14px;border-left:4px solid #2563eb}
+.customer-edit-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.customer-edit-heading h3{margin:3px 0 0;font-size:15px}.customer-edit-meta{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:10px;font-size:11px;color:#64748b}.customer-edit-note{margin:10px 0 0;padding:9px 10px;border-radius:8px;background:#f8fafc;font-size:11px;line-height:1.5}
+.edit-status{display:inline-flex;align-items:center;border-radius:99px;padding:5px 9px;font-size:10px;font-weight:800}.edit-status-submitted{background:#fef3c7;color:#92400e}.edit-status-editing{background:#dbeafe;color:#1d4ed8}.edit-status-completed{background:#dcfce7;color:#166534}.edit-status-rejected{background:#fee2e2;color:#991b1b}
+.selected-file-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}.selected-file-list span{max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:5px 8px;border:1px solid #dbe4f0;border-radius:7px;background:#fff;font-size:10px}
+.edit-review-form{display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:10px;align-items:end;margin-top:12px}.edit-review-form label{font-size:10px;font-weight:750}.edit-review-form textarea{display:block;width:100%;margin-top:5px;padding:8px;border:1px solid #d8e0eb;border-radius:8px;font:inherit;font-size:11px;resize:vertical}.edit-review-actions{display:flex;flex-wrap:wrap;gap:6px}.edit-review-actions .button{font-size:10px;min-height:35px}
+.photo-card.is-customer-selected{border:2px solid #2563eb;box-shadow:0 0 0 3px #dbeafe}.customer-selected-badge{position:absolute;z-index:4;top:8px;right:8px;padding:5px 7px;border-radius:7px;background:#2563eb;color:#fff;font-size:9px;font-weight:850;box-shadow:0 2px 7px rgba(0,0,0,.16)}
+@media(max-width:700px){.edit-review-form{grid-template-columns:1fr}.edit-review-actions .button{flex:1}.customer-edit-heading{flex-direction:column}}
 .create-old-folder>summary small{font-size:10px;color:var(--muted);line-height:1.4}
 .create-booking-icon{width:32px;height:32px;flex:0 0 32px;display:grid;place-items:center;background:#edf3ff;color:#225bd4;border-radius:9px;font-size:17px}
 .create-old-folder>p{margin:0;padding:0 13px 10px;font-size:10px;line-height:1.55}
@@ -515,3 +524,137 @@
 
 .photo-preview-hint{flex:0 0 auto;color:#aab8cb;font-size:10px;white-space:nowrap}
 @media(max-width:620px){.photo-preview-hint{font-size:9px;white-space:normal;text-align:right;max-width:125px}}
+
+/* Layout revision: wider desktop canvas and balanced three-column workspace. */
+@media(min-width:1181px){
+  .topbar{padding-left:max(24px,calc((100% - 1540px)/2));padding-right:max(24px,calc((100% - 1540px)/2))}
+  .container{max-width:1540px}
+  .drive-layout{grid-template-columns:300px minmax(0,1fr) 300px;gap:16px}
+}
+
+/* Keep the whole upload footer reachable. The right rail owns the scrollbar;
+   the upload card must not shrink when the request card makes the center tall. */
+.right-rail{align-content:start;padding-bottom:18px}
+.right-rail>*{flex:0 0 auto}
+.upload-dropdown[open],
+.upload-dropdown[open].has-long-queue{
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  height:auto;
+  min-height:0;
+  max-height:none;
+  overflow:visible;
+}
+.upload-dropdown[open]>.upload-dropdown-content,
+.upload-dropdown[open].has-long-queue>.upload-dropdown-content{
+  flex:0 0 auto;
+  height:auto;
+  min-height:0;
+  max-height:none !important;
+  overflow:visible !important;
+  padding-bottom:14px;
+}
+.upload-dropdown[open] .upload-form,
+.upload-dropdown[open].has-long-queue .upload-form{
+  flex:0 0 auto;
+  height:auto;
+  min-height:0;
+  overflow:visible;
+}
+.upload-dropdown[open] .upload-previews,
+.upload-dropdown[open].has-long-queue .upload-previews{
+  flex:0 1 auto;
+  height:auto;
+  min-height:0;
+  max-height:220px !important;
+  overflow-y:auto;
+}
+.upload-dropdown[open] .upload-actions,
+.upload-dropdown[open].has-long-queue .upload-actions{
+  position:static !important;
+  flex:0 0 auto;
+  margin-top:10px;
+  padding:10px 0 2px;
+}
+.upload-dropdown[open] #upload-button{display:flex;width:100%;min-height:42px;flex:0 0 42px}
+
+/* Request review controls: one clean row with equal-size actions. */
+.edit-review-form{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:stretch}
+.edit-review-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%}
+.edit-review-actions .button{width:100%;min-height:42px;padding:9px 10px;text-align:center;white-space:normal}
+@media(max-width:720px){
+  .edit-review-actions{grid-template-columns:minmax(0,1fr)}
+  .upload-dropdown[open] .upload-previews,.upload-dropdown[open].has-long-queue .upload-previews{max-height:190px !important}
+}
+
+/* Safe Drive deletion controls. */
+.folder-card-shell{position:relative;min-width:0}
+.folder-card-shell>.folder-card{display:flex;width:100%;height:100%;margin:0;padding-right:38px}
+.folder-delete-form{position:absolute;z-index:4;top:7px;right:7px;margin:0}
+.folder-delete-form button{display:grid;place-items:center;width:25px;height:25px;padding:0;border:1px solid #fecaca;border-radius:7px;background:#fff;color:#b91c1c;font-size:17px;line-height:1;cursor:pointer}
+.folder-delete-form button:hover{background:#fee2e2;border-color:#fca5a5}
+.photo-delete-form{margin:10px 0 0;padding-top:10px;border-top:1px solid #fee2e2}
+.photo-delete-form .button-danger{width:100%;min-height:34px;padding:7px 9px;background:#fff;color:#b91c1c;border-color:#fecaca;font-size:10px}
+.photo-delete-form .button-danger:hover{background:#fee2e2;border-color:#fca5a5}
+.gallery-section[data-view="list"] .folder-card-shell{min-height:56px}
+
+/* Compact photo actions, incremental loading, and skeleton feedback. */
+.inline-scope-form{display:inline-flex;margin:8px 0 0 10px;vertical-align:middle}
+.manual-folder-form{grid-template-columns:repeat(3,minmax(0,1fr))}.booking-lookup-result{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:10px;border:1px solid #bfdbfe;border-radius:10px;background:#eff6ff}
+.booking-lookup-result[hidden]{display:none}
+.booking-lookup-result span{display:flex;flex-direction:column;gap:3px;min-width:0}.booking-lookup-result small{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#64748b}.booking-lookup-result strong{font-size:12px;overflow-wrap:anywhere;color:#1e3a8a}
+.customer-edit-empty{border-left-color:#94a3b8}.customer-edit-empty p{margin:8px 0 0}.edit-status-waiting{background:#f1f5f9;color:#475569}
+.photo-load-controls{display:flex;justify-content:center;align-items:center;gap:9px;flex-wrap:wrap;margin:16px 0 4px}
+.photo-card-media.is-loading::before,.preview-loading-skeleton{content:"";position:absolute;inset:0;z-index:3;background:linear-gradient(90deg,#e6ebf1 25%,#f8fafc 45%,#e6ebf1 65%);background-size:220% 100%;animation:rfg-skeleton 1.2s ease-in-out infinite;pointer-events:none}
+@keyframes rfg-skeleton{to{background-position:-220% 0}}
+.photo-card-media:not(.is-loading)::before{display:none}
+.photo-download-button{top:auto!important;right:8px!important;bottom:8px!important}
+.customer-selected-badge{top:8px;right:8px;max-width:calc(100% - 82px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.photo-compact-status{margin-top:9px;padding:5px 7px;border-radius:7px;font-size:9px;font-weight:750}.photo-compact-status.is-private{background:#f1f5f9;color:#475569}.photo-compact-status.is-shared{background:#ecfdf5;color:#047857}
+.photo-icon-actions{display:flex;align-items:center;gap:6px;margin-top:8px}.photo-icon-actions form{display:inline-flex;margin:0}.photo-icon-button{display:grid;place-items:center;width:32px;height:32px;padding:0;border:1px solid #dbe3ed;border-radius:8px;background:#fff;color:#334155;cursor:pointer}.photo-icon-button:hover{background:#eff6ff;border-color:#93b4f4;color:#1d4ed8}.photo-icon-button.is-danger{margin-left:auto;color:#b91c1c;border-color:#fecaca}.photo-icon-button.is-danger:hover{background:#fee2e2}.photo-icon-button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.photo-preview-dialog-stage{position:relative}.photo-preview-dialog-stage .preview-loading-skeleton{display:none}.photo-preview-dialog-stage.is-loading .preview-loading-skeleton{display:block}.photo-preview-dialog-stage.is-loading img{visibility:hidden}
+.gallery-section[data-view="list"] .photo-icon-actions,.gallery-section[data-view="list"] .photo-compact-status{display:none}.gallery-section[data-view="list"] .customer-selected-badge{top:2px;right:2px;max-width:95px;font-size:7px}.gallery-section[data-view="list"] .photo-download-button{top:auto!important;right:3px!important;bottom:3px!important}
+@media(max-width:900px){.manual-folder-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.manual-folder-form{grid-template-columns:1fr}.booking-lookup-result{grid-template-columns:1fr}.inline-scope-form{display:flex;margin:9px 0 0}.photo-icon-button{width:30px;height:30px}}
+
+/* Compact help/status controls and booking context. */
+.system-status-row{display:flex;justify-content:flex-end;margin:-4px 0 12px}
+.hover-info{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:help;outline:none}
+.hover-info>svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.hover-info-tooltip{position:absolute;z-index:80;right:0;top:calc(100% + 9px);width:280px;padding:10px 12px;border:1px solid #d9e2ee;border-radius:9px;background:#172033;color:#fff;font-size:11px;font-weight:500;line-height:1.5;box-shadow:0 10px 30px rgba(15,23,42,.18);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .14s ease,transform .14s ease,visibility .14s;pointer-events:none}
+.hover-info-tooltip::before{content:"";position:absolute;right:12px;bottom:100%;border:6px solid transparent;border-bottom-color:#172033}
+.hover-info:hover .hover-info-tooltip,.hover-info:focus .hover-info-tooltip,.hover-info:focus-within .hover-info-tooltip{opacity:1;visibility:visible;transform:translateY(0)}
+.cache-status{min-height:31px;padding:6px 10px;border:1px solid;border-radius:999px;font-size:10px;font-weight:800}
+.cache-status.is-ready{border-color:#bbf7d0;background:#f0fdf4;color:#15803d}
+.cache-status.is-warning{border-color:#fde68a;background:#fffbeb;color:#92400e}
+.cache-status .hover-info-tooltip{color:#fff}
+.create-old-folder{overflow:visible}
+.create-old-folder>summary{position:relative;border-radius:13px}
+.create-old-folder[open]>summary{border-radius:13px 13px 0 0}
+.summary-info{flex:0 0 28px;width:28px;height:28px;border:1px solid #dbe3ed;border-radius:8px;color:#64748b;background:#fff}
+.summary-info:hover,.summary-info:focus{color:#205bd4;border-color:#a8c1f7;background:#eff6ff}
+.summary-info .hover-info-tooltip{right:-4px;width:310px;text-align:left}
+
+.booking-context-card{display:grid;grid-template-columns:minmax(205px,1.15fr) minmax(0,3.2fr) 42px;align-items:center;gap:14px;margin:0 0 13px;padding:13px 14px;border:1px solid #dbe4ef;border-left:3px solid #205bd4;border-radius:13px;background:#fff;box-shadow:0 3px 14px rgba(22,34,51,.03)}
+.booking-context-customer{display:flex;min-width:0;flex-direction:column;gap:3px;padding-right:13px;border-right:1px solid #e8edf3}
+.booking-context-customer>strong{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.booking-package-name{color:#52647c;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.booking-customer-contact{display:flex;min-width:0;gap:6px;align-items:center;color:#64748b;font-size:9px;line-height:1.35}
+.booking-customer-contact b{flex:0 0 auto;color:#334155;font-weight:750}.booking-customer-contact em{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-style:normal}
+.booking-context-facts{display:grid;grid-template-columns:minmax(125px,1.1fr) minmax(100px,.8fr) minmax(145px,1.45fr) minmax(125px,1fr);gap:10px;min-width:0}
+.booking-context-facts>span{display:flex;min-width:0;flex-direction:column;gap:3px}
+.booking-context-facts small{color:#7b889b;font-size:8px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}
+.booking-context-facts strong{color:#27364a;font-size:10px;line-height:1.4;overflow-wrap:anywhere}
+.booking-context-facts em{color:#64748b;font-size:9px;font-style:normal;line-height:1.35;overflow-wrap:anywhere}
+.booking-additions strong{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.payment-state{display:inline-flex!important;align-self:flex-start;width:auto;padding:4px 7px;border-radius:999px;font-size:9px!important;white-space:nowrap}
+.payment-state-approved{background:#dcfce7;color:#166534!important}.payment-state-pending{background:#fef3c7;color:#92400e!important}.payment-state-rejected{background:#fee2e2;color:#991b1b!important}.payment-state-none{background:#f1f5f9;color:#475569!important}
+.whatsapp-contact-button{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:#22c55e;color:#fff;text-decoration:none;box-shadow:0 4px 12px rgba(34,197,94,.23);transition:transform .14s ease,background .14s ease}
+.whatsapp-contact-button:hover{background:#16a34a;transform:translateY(-1px)}
+.whatsapp-contact-button svg{width:20px;height:20px;fill:currentColor}
+.whatsapp-contact-button.is-disabled{background:#e2e8f0;color:#94a3b8;box-shadow:none;cursor:not-allowed}
+.whatsapp-contact-button.is-disabled svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+@media(max-width:1180px){.booking-context-card{grid-template-columns:minmax(190px,1fr) minmax(0,2.8fr) 40px}.booking-context-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.system-status-row{justify-content:flex-start}.booking-context-card{grid-template-columns:minmax(0,1fr) 38px;align-items:start}.booking-context-customer{border-right:0;padding-right:0}.booking-context-facts{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid #edf1f5;padding-top:10px}.whatsapp-contact-button{grid-column:2;grid-row:1}.summary-info .hover-info-tooltip{right:-36px;width:min(280px,calc(100vw - 48px))}}
+@media(max-width:460px){.booking-context-facts{grid-template-columns:minmax(0,1fr)}.booking-customer-contact{align-items:flex-start;flex-direction:column;gap:2px}.booking-customer-contact em{max-width:100%}.hover-info-tooltip{right:auto;left:0;width:min(280px,calc(100vw - 42px))}.hover-info-tooltip::before{right:auto;left:12px}}

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/bootstrap.php';
+require_once __DIR__ . '/gallery-render.php';
 
 $flash = isset($_SESSION['rfgallery_flash']) ? $_SESSION['rfgallery_flash'] : null;
 unset($_SESSION['rfgallery_flash']);
@@ -11,6 +12,7 @@ if (isset($_GET['from']) && $_GET['from'] === 'kota') {
 $returnUrl = isset($_SESSION['rfgallery_return_url']) ? $_SESSION['rfgallery_return_url'] : (!empty($_SESSION['adminkartini']) ? '../Admin-Kartini/datakonfirmasidp.php' : '../Admin/datakonfirmasidp.php');
 $configReady = rfg_config_ready();
 $connected = $configReady && rfg_is_connected();
+$fullDriveScope = $connected && rfg_has_full_drive_scope();
 $dbStatus = rfg_gallery_db_status();
 $usage = $connected ? rfg_usage_summary() : array('minute_units' => 0, 'minute_calls' => 0, 'today_units' => 0, 'today_egress_bytes' => 0, 'today_upload_bytes' => 0, 'today_uploads' => 0, 'monitoring_since' => null);
 $shareStates = $connected ? rfg_share_states_read() : array();
@@ -33,7 +35,17 @@ $cacheUsed = false;
 $cacheRefreshedNow = false;
 $cacheCategory = '';
 $cacheSession = null;
+$galleryContextSession = null;
+$galleryBookingDetail = null;
+$galleryPaymentDetail = array('status' => '', 'label' => 'Belum ada pengajuan', 'addons' => array());
+$galleryBookingAdditions = array();
+$galleryWhatsappUrl = '';
 $cacheTtlSeconds = 300;
+$photoTotal = 0;
+$editSchemaReady = !empty($dbStatus['ready']) && rfg_gallery_edit_schema_ready();
+$editRequest = null;
+$editRequestItems = array();
+$editSelectedDriveMap = array();
 
 // Lazy tree endpoint: reads only direct child folders when an admin expands a tree node.
 // It does not recursively enumerate the Drive and therefore keeps API use proportional to interaction.
@@ -76,24 +88,33 @@ if ($connected) {
         $isRootFolder = ($currentFolderId === $rootFolderId);
         $lowerCurrentName = strtolower((string) $currentFolderName);
         $isPhotoFolder = count($folderPath) >= 6 && in_array($lowerCurrentName, array('originals', 'edited'), true);
+        if (!empty($dbStatus['ready'])) {
+            try {
+                // Pada folder customer, drive_folder_id menunjuk tepat ke folder
+                // yang sedang dibuka. Pada Originals/Edited konteks diambil dari induk.
+                $galleryContextSession = rfg_gallery_session_find_by_folder($currentFolderId);
+            } catch (Throwable $contextError) {
+                rfg_log('GALLERY_CONTEXT_SESSION_FAILED folder=' . $currentFolderId . ' message=' . $contextError->getMessage());
+            }
+        }
         if ($isPhotoFolder && $dbStatus['ready']) {
             try {
                 $customerFolderId = $folderPath[count($folderPath) - 2]['id'];
                 $cacheSession = rfg_gallery_session_find_by_folder($customerFolderId);
                 if ($cacheSession) {
+                    $galleryContextSession = $cacheSession;
                     $cacheReadyForCurrentFolder = true;
                     $cacheCategory = $lowerCurrentName === 'originals' ? 'original' : 'edited';
-                    $forceCacheRefresh = isset($_GET['refresh']) && (string) $_GET['refresh'] === '1';
-                    $cacheFresh = !$forceCacheRefresh && rfg_gallery_session_cache_is_fresh((int) $cacheSession['id'], $cacheCategory, $cacheTtlSeconds);
-                    if (!$cacheFresh) {
-                        $drivePhotos = rfg_list_folder_images_all($currentFolderId);
-                        rfg_gallery_cache_sync_photos((int) $cacheSession['id'], $currentFolderId, $cacheCategory, $drivePhotos);
-                        $cacheRefreshedNow = true;
-                    }
+                    // Satu request metadata setiap folder dibuka memastikan upload
+                    // manual di Google Drive langsung masuk ke cache MySQL.
+                    $drivePhotos = rfg_list_folder_images_all($currentFolderId);
+                    rfg_gallery_cache_sync_photos((int) $cacheSession['id'], $currentFolderId, $cacheCategory, $drivePhotos);
+                    $cacheRefreshedNow = true;
                     $cacheOffset = 0;
                     if (strpos($pageToken, 'cache:') === 0) $cacheOffset = max(0, (int) substr($pageToken, 6));
-                    $result = rfg_gallery_cached_photo_list((int) $cacheSession['id'], $currentFolderId, $cacheCategory, $nameFilter, $cacheOffset, 50);
+                    $result = rfg_gallery_cached_photo_list((int) $cacheSession['id'], $currentFolderId, $cacheCategory, $nameFilter, $cacheOffset, 10);
                     $photos = isset($result['files']) && is_array($result['files']) ? $result['files'] : array();
+                    $photoTotal = isset($result['total']) ? (int) $result['total'] : count($photos);
                     $nextPageToken = isset($result['nextPageToken']) ? $result['nextPageToken'] : '';
                     $cacheUsed = true;
                 } else {
@@ -117,12 +138,41 @@ if ($connected) {
                 }
             }
             $nextPageToken = isset($result['nextPageToken']) ? $result['nextPageToken'] : '';
+            $photoTotal = count($photos);
         }
         usort($folders, function ($a, $b) { return strnatcasecmp(isset($a['name']) ? $a['name'] : '', isset($b['name']) ? $b['name'] : ''); });
     } catch (Throwable $e) {
         $listError = $e->getMessage();
     }
     $usage = rfg_usage_summary();
+}
+if ($galleryContextSession) {
+    try {
+        $galleryBookingDetail = rfg_gallery_booking_admin_detail($galleryContextSession);
+        if ($galleryBookingDetail) {
+            $galleryBookingAdditions = rfg_gallery_booking_addition_items($galleryBookingDetail);
+            $galleryPaymentDetail = rfg_gallery_payment_admin_detail($galleryBookingDetail);
+            $packageLabelForWhatsapp = trim((string) $galleryBookingDetail['package'] . ' ' . (string) $galleryBookingDetail['tipe_package']);
+            $galleryWhatsappUrl = rfg_gallery_whatsapp_url(
+                isset($galleryBookingDetail['no_telp']) ? $galleryBookingDetail['no_telp'] : '',
+                isset($galleryBookingDetail['nama']) ? $galleryBookingDetail['nama'] : '',
+                $packageLabelForWhatsapp
+            );
+        }
+    } catch (Throwable $bookingContextError) {
+        rfg_log('GALLERY_BOOKING_CONTEXT_FAILED booking=' . $galleryContextSession['booking_uniqid'] . ' message=' . $bookingContextError->getMessage());
+    }
+}
+if ($cacheSession && $editSchemaReady) {
+    try {
+        $editRequest = rfg_gallery_edit_request_for_session((int) $cacheSession['id']);
+        if ($editRequest) {
+            $editRequestItems = rfg_gallery_edit_request_items((int) $editRequest['id']);
+            foreach ($editRequestItems as $editItem) $editSelectedDriveMap[$editItem['drive_file_id']] = $editItem;
+        }
+    } catch (Throwable $editRequestError) {
+        $cacheNotice = 'Permintaan edit customer belum dapat dibaca: ' . $editRequestError->getMessage();
+    }
 }
 $treeBootstrap = array(
     'rootId' => $rootFolderId,
@@ -140,7 +190,7 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
     if ($folderId !== '') $params['folderId'] = $folderId;
     if ($q !== '') $params['q'] = $q;
     if ($pageToken !== '') $params['pageToken'] = $pageToken;
-    return 'index.php' . (!empty($params) ? '?' . http_build_query($params) : '');
+    return 'index' . (!empty($params) ? '?' . http_build_query($params) : '');
 }
 ?><!doctype html>
 <html lang="id">
@@ -157,7 +207,7 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
 </header>
 <main class="container">
   <section class="intro">
-    <div><p class="eyebrow">MEDIA MANAGEMENT</p><h1>Galeri Foto</h1><p class="lead">Jelajahi struktur folder langsung dari Google Drive. MySQL hanya menyimpan relasi booking-folder dan cache metadata foto untuk mengurangi request API; tidak digunakan untuk menyalin hierarki folder.</p></div>
+    <div><p class="eyebrow">MEDIA MANAGEMENT</p><h1>Galeri Foto</h1></div>
     <div class="status-pill <?php echo $connected ? 'is-connected' : 'is-disconnected'; ?>"><span class="status-dot"></span><?php echo $connected ? 'Google Drive terhubung' : 'Google Drive belum terhubung'; ?></div>
   </section>
   <?php if ($flash): ?><div class="alert alert-<?php echo rfg_h(isset($flash['type']) ? $flash['type'] : 'info'); ?>"><?php echo rfg_h(isset($flash['text']) ? $flash['text'] : ''); ?></div><?php endif; ?>
@@ -166,8 +216,9 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
   <?php if (!$configReady): ?>
     <section class="panel setup-panel"><div class="setup-icon">⚙</div><div><h2>Konfigurasi awal diperlukan</h2><p>Modul belum menemukan konfigurasi OAuth privat atau ekstensi cURL tidak aktif.</p><ol><li>Aktifkan Google Drive API dan buat OAuth Client ID tipe Web application.</li><li>Tambahkan redirect URI sesuai domain.</li><li>Isi config.php di direktori privat di luar public_html.</li><li>Pastikan ekstensi curl aktif.</li></ol><p class="small-note">Jangan pernah mengirim Client Secret atau token Google ke chat.</p></div></section>
   <?php elseif (!$connected): ?>
-    <section class="panel connect-panel"><div class="connect-symbol">☁</div><div class="connect-copy"><h2>Hubungkan akun Google One</h2><p>Gunakan akun Google pemilik penyimpanan galeri. Aplikasi akan membuat folder galeri utama dan mengelola folder turunan yang dibuat melalui modul.</p><p class="small-note">Scope saat ini: <code>drive.file</code>. Folder dan foto untuk galeri sebaiknya dibuat melalui aplikasi supaya tetap dapat diakses dengan scope ini.</p></div><a class="button button-primary" href="oauth.php">Hubungkan Google Drive</a></section>
+    <section class="panel connect-panel"><div class="connect-symbol">☁</div><div class="connect-copy"><h2>Hubungkan akun Google One</h2><p>Gunakan akun Google pemilik penyimpanan galeri. Aplikasi akan mengelola isi yang berada di dalam folder RF Studio Gallery.</p><p class="small-note">Izin Drive diperlukan agar foto yang diunggah langsung melalui Google Drive ikut terbaca oleh panel.</p></div><a class="button button-primary" href="oauth.php">Hubungkan Google Drive</a></section>
   <?php else: ?>
+    <?php if (!$fullDriveScope): ?><div class="alert alert-warning"><strong>Hubungkan ulang Google Drive satu kali.</strong> Token lama masih memakai izin <code>drive.file</code>, sehingga upload manual dari Google Drive tidak dapat terlihat. <form action="disconnect" method="post" class="inline-scope-form" onsubmit="return confirm('Putuskan token lama lalu hubungkan ulang Google Drive? File di Drive tidak akan dihapus.');"><?php echo rfg_csrf_field(); ?><button type="submit" class="button button-light">Putuskan token lama</button></form></div><?php endif; ?>
     <?php
       $minuteProjectPct = min(100, ($usage['minute_units'] / 1000000) * 100);
       $minuteUserPct = min(100, ($usage['minute_units'] / 325000) * 100);
@@ -191,10 +242,15 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
       <script type="application/json" id="tree-bootstrap-data"><?php echo json_encode($treeBootstrap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?></script>
       <div class="drive-main" id="drive-main">
     <section class="gallery-section">
-      <div class="section-heading"><div><h2>File Manager Google Drive</h2><p>Folder dibaca langsung dari Google Drive. Isi foto di Originals/Edited memakai cache metadata MySQL selama 5 menit dan dapat disegarkan kapan saja.</p></div><span class="count-pill"><?php echo count($folders); ?> folder · <?php echo count($photos); ?> foto</span></div>
-      <div class="alert <?php echo !empty($dbStatus['ready']) ? 'alert-success' : 'alert-info'; ?>"><strong><?php echo !empty($dbStatus['ready']) ? 'Cache MySQL aktif.' : 'Cache MySQL belum aktif.'; ?></strong> <?php echo rfg_h($dbStatus['message']); ?></div>
+      <div class="section-heading"><div><h2>File Manager Google Drive</h2></div><span class="count-pill"><?php echo count($folders); ?> folder · <?php echo $photoTotal; ?> foto</span></div>
+      <div class="system-status-row">
+        <span class="hover-info cache-status <?php echo !empty($dbStatus['ready']) ? 'is-ready' : 'is-warning'; ?>" tabindex="0" aria-label="Informasi cache MySQL">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6c0-1.66 3.58-3 8-3s8 1.34 8 3-3.58 3-8 3-8-1.34-8-3Zm0 0v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>
+          <span><?php echo !empty($dbStatus['ready']) ? 'Cache aktif' : 'Cache belum aktif'; ?></span>
+          <span class="hover-info-tooltip" role="tooltip"><?php echo rfg_h($dbStatus['message']); ?></span>
+        </span>
+      </div>
       <?php if ($cacheNotice !== ''): ?><div class="alert alert-info"><?php echo rfg_h($cacheNotice); ?></div><?php endif; ?>
-      <?php if ($cacheUsed): ?><div class="cache-toolbar"><span class="small-note"><strong><?php echo $cacheRefreshedNow ? 'Cache disinkronkan.' : 'Cache MySQL aktif.'; ?></strong> <?php echo $cacheRefreshedNow ? 'Metadata diperbarui dari Drive.' : 'Metadata foto dibaca dari cache.'; ?> Masa cache <?php echo $cacheTtlSeconds / 60; ?> menit.</span></div><?php endif; ?>
       <?php if ($listError !== ''): ?><div class="alert alert-danger">Tidak dapat membaca Google Drive: <?php echo rfg_h($listError); ?></div><?php endif; ?>
       <?php if (!empty($folderPath)): ?>
         <nav class="breadcrumbs" aria-label="Breadcrumb">
@@ -204,16 +260,74 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
           <?php endforeach; ?>
         </nav>
       <?php endif; ?>
+      <?php if ($galleryContextSession): ?>
+        <?php
+          $bookingName = $galleryBookingDetail && !empty($galleryBookingDetail['nama']) ? $galleryBookingDetail['nama'] : $galleryContextSession['nama_pelanggan'];
+          $bookingPackage = $galleryBookingDetail ? trim((string) $galleryBookingDetail['package'] . ' ' . (string) $galleryBookingDetail['tipe_package']) : 'Detail paket tidak ditemukan';
+          $bookingDate = $galleryBookingDetail && !empty($galleryBookingDetail['tanggal']) ? $galleryBookingDetail['tanggal'] : $galleryContextSession['tanggal_booking'];
+          $bookingDateTimestamp = strtotime((string) $bookingDate);
+          $bookingDateLabel = $bookingDateTimestamp === false ? $bookingDate : date('d-m-Y', $bookingDateTimestamp);
+          $bookingTime = $galleryBookingDetail && !empty($galleryBookingDetail['jam']) ? $galleryBookingDetail['jam'] : '—';
+          $bookingPhone = $galleryBookingDetail && !empty($galleryBookingDetail['no_telp']) ? $galleryBookingDetail['no_telp'] : '—';
+          $bookingEmail = $galleryBookingDetail && !empty($galleryBookingDetail['email']) ? $galleryBookingDetail['email'] : '—';
+          $bookingStudio = $galleryBookingDetail && !empty($galleryBookingDetail['studio']) ? $galleryBookingDetail['studio'] : $galleryContextSession['studio'];
+          $allAdditionItems = $galleryBookingAdditions;
+          foreach ($galleryPaymentDetail['addons'] as $paymentAddon) $allAdditionItems[] = $paymentAddon . ' (pelunasan)';
+          $allAdditionItems = array_values(array_unique($allAdditionItems));
+          $paymentStatusClass = in_array($galleryPaymentDetail['status'], array('pending', 'approved', 'rejected'), true) ? $galleryPaymentDetail['status'] : 'none';
+        ?>
+        <section class="booking-context-card" aria-label="Ringkasan booking customer">
+          <div class="booking-context-customer">
+            <span class="tree-panel-kicker">BOOKING CUSTOMER</span>
+            <strong><?php echo rfg_h($bookingName); ?></strong>
+            <span class="booking-package-name"><?php echo rfg_h($bookingPackage); ?></span>
+            <span class="booking-customer-contact"><b><?php echo rfg_h($bookingPhone); ?></b><em><?php echo rfg_h($bookingEmail); ?></em></span>
+          </div>
+          <div class="booking-context-facts">
+            <span><small>Jadwal</small><strong><?php echo rfg_h($bookingDateLabel); ?> · <?php echo rfg_h($bookingTime); ?></strong></span>
+            <span><small>Studio</small><strong><?php echo rfg_h($bookingStudio); ?></strong></span>
+            <span class="booking-additions"><small>Tambahan</small><strong><?php echo !empty($allAdditionItems) ? rfg_h(implode(' · ', $allAdditionItems)) : 'Tidak ada'; ?></strong></span>
+            <span><small>Pelunasan</small><strong class="payment-state payment-state-<?php echo rfg_h($paymentStatusClass); ?>"><?php echo rfg_h($galleryPaymentDetail['label']); ?></strong></span>
+          </div>
+          <?php if ($galleryWhatsappUrl !== ''): ?>
+            <a class="whatsapp-contact-button" href="<?php echo rfg_h($galleryWhatsappUrl); ?>" target="_blank" rel="noopener" title="Hubungi <?php echo rfg_h($bookingName); ?> melalui WhatsApp" aria-label="Hubungi <?php echo rfg_h($bookingName); ?> melalui WhatsApp">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11.7 11.7 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.1 1.6 5.9L.2 24l6.4-1.7c1.7.9 3.6 1.4 5.5 1.4 6.5 0 11.8-5.3 11.8-11.8 0-3.2-1.2-6.2-3.4-8.4Zm-8.4 18.2c-1.7 0-3.4-.5-4.9-1.3l-.4-.2-3.8 1 1-3.7-.2-.4a9.8 9.8 0 0 1-1.5-5.2c0-5.4 4.4-9.8 9.8-9.8 2.6 0 5.1 1 6.9 2.9a9.7 9.7 0 0 1 2.9 6.9c0 5.4-4.4 9.8-9.8 9.8Zm5.4-7.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.8.9-1 1.1-.2.2-.4.2-.7.1-1.8-.9-3-1.6-4.2-3.7-.3-.6.3-.5.9-1.7.1-.2 0-.5-.1-.7-.1-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.2 3.3 1.4 3.6c.2.2 2.4 3.7 5.9 5.2 2.2.9 3 .9 4.1.8.7-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3Z"/></svg>
+            </a>
+          <?php else: ?>
+            <span class="whatsapp-contact-button is-disabled" title="Nomor WhatsApp tidak tersedia" aria-label="Nomor WhatsApp tidak tersedia"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 8 8 8m0-8-8 8"/></svg></span>
+          <?php endif; ?>
+        </section>
+      <?php endif; ?>
+      <?php if ($cacheSession && !$editSchemaReady): ?><div class="alert alert-info"><strong>Permintaan edit customer belum aktif.</strong> Jalankan <code>migration-gallery-customer.sql</code> pada database.</div><?php endif; ?>
+      <?php if ($cacheSession && $editRequest): ?>
+        <?php $editStatusLabels = array('submitted' => 'Menunggu admin', 'editing' => 'Sedang diedit', 'completed' => 'Selesai', 'rejected' => 'Dikembalikan ke customer'); ?>
+        <section class="panel customer-edit-request">
+          <div class="customer-edit-heading"><div><span class="tree-panel-kicker">PERMINTAAN CUSTOMER</span><h3><?php echo count($editRequestItems); ?> foto dipilih untuk diedit</h3></div><span class="edit-status edit-status-<?php echo rfg_h($editRequest['status']); ?>"><?php echo rfg_h(isset($editStatusLabels[$editRequest['status']]) ? $editStatusLabels[$editRequest['status']] : $editRequest['status']); ?></span></div>
+          <div class="customer-edit-meta"><span><strong>Email:</strong> <?php echo rfg_h($editRequest['customer_email']); ?></span><span><strong>Dikirim:</strong> <?php echo rfg_h($editRequest['submitted_at']); ?></span></div>
+          <?php if ($editRequest['customer_note'] !== ''): ?><p class="customer-edit-note"><strong>Catatan customer:</strong> <?php echo rfg_h($editRequest['customer_note']); ?></p><?php endif; ?>
+          <div class="selected-file-list"><?php foreach ($editRequestItems as $editItem): ?><span><?php echo rfg_h($editItem['filename']); ?></span><?php endforeach; ?></div>
+          <form class="edit-review-form" method="post" action="edit-request-review">
+            <?php echo rfg_csrf_field(); ?><input type="hidden" name="request_id" value="<?php echo (int) $editRequest['id']; ?>"><input type="hidden" name="folder_id" value="<?php echo rfg_h($currentFolderId); ?>">
+            <label>Catatan admin (opsional)<textarea name="admin_note" maxlength="500" rows="2" placeholder="Informasi untuk customer"><?php echo rfg_h($editRequest['admin_note']); ?></textarea></label>
+            <div class="edit-review-actions"><button class="button button-primary" name="request_status" value="editing" type="submit">Mulai Edit</button><button class="button button-dark" name="request_status" value="completed" type="submit">Tandai Selesai</button><button class="button button-light" name="request_status" value="rejected" type="submit">Kembalikan ke Customer</button></div>
+          </form>
+        </section>
+      <?php elseif ($cacheSession && $editSchemaReady): ?>
+        <?php $originalCountForRequest = rfg_gallery_photo_count((int) $cacheSession['id'], 'original'); ?>
+        <section class="panel customer-edit-request customer-edit-empty">
+          <div class="customer-edit-heading"><div><span class="tree-panel-kicker">PERMINTAAN CUSTOMER</span><h3><?php echo $originalCountForRequest > 0 ? 'Customer belum memilih foto' : 'Foto original belum diunggah'; ?></h3></div><span class="edit-status edit-status-waiting">Belum ada pengajuan</span></div>
+          <p><?php echo $originalCountForRequest > 0 ? 'Foto sudah tersedia, tetapi customer belum mengirim pilihan foto yang ingin diedit.' : 'Upload foto ke folder Originals terlebih dahulu. Setelah foto tersedia, customer dapat memilih foto untuk diedit.'; ?></p>
+        </section>
+      <?php endif; ?>
       <details class="panel create-old-folder" id="create-old-booking-folder" open>
-          <summary><span class="create-booking-icon" aria-hidden="true">▦</span><span><strong>Buat folder galeri untuk booking lama</strong><small>Buat struktur pelanggan dan daftarkan relasinya ke gallery_sessions.</small></span><span class="create-folder-chevron" aria-hidden="true">⌄</span></summary>
-          <p class="small-note">Gunakan untuk booking lama yang belum memiliki folder galeri. Form ini boleh dibuka dari folder mana pun, tetapi struktur pelanggan selalu dibuat di root galeri: Studio → Tahun → Bulan → Pelanggan → Originals/Edited. Relasi booking disimpan ke <code>gallery_sessions</code>; <code>gallery_photos</code> akan terisi saat foto diunggah atau disinkronkan.</p>
+          <summary><span class="create-booking-icon" aria-hidden="true">▦</span><span><strong>Buat folder galeri untuk booking lama</strong></span><span class="hover-info summary-info" tabindex="0" aria-label="Petunjuk pembuatan folder booking"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10.5V17m0-10.3v.1"/></svg><span class="hover-info-tooltip" role="tooltip">Masukkan nama, kode booking, dan studio. Tanggal, paket, serta jam diambil langsung dari database berdasarkan booking yang cocok.</span></span><span class="create-folder-chevron" aria-hidden="true">⌄</span></summary>
           <form action="create-booking-folder" method="post" class="manual-folder-form" id="booking-folder-form">
             <?php echo rfg_csrf_field(); ?>
             <label>Nama pelanggan<input name="customer_name" type="text" maxlength="100" required placeholder="Contoh: Yuni Fahira"></label>
             <label>ID booking / uniqid<input name="booking_uniqid" type="text" maxlength="64" required placeholder="Contoh: e22017"></label>
             <label>Studio<select name="studio" required><option value="Bekasi-Kota">Bekasi-Kota</option><option value="Bekasi-Kabupaten">Bekasi-Kabupaten</option></select></label>
-            <label>Tanggal reservasi<input name="booking_date" type="date" required></label>
-            <div class="manual-folder-submit-row"><button class="button button-primary" type="submit" id="booking-folder-submit">Buat folder booking</button><span id="booking-folder-status" class="small-note" role="status" aria-live="polite">Folder akan dibuat di Google Drive dan mapping booking disimpan di gallery_sessions.</span></div>
+            <div class="booking-lookup-result" id="booking-lookup-result" hidden><span><small>Tanggal</small><strong data-booking-date>—</strong></span><span><small>Paket</small><strong data-booking-package>—</strong></span><span><small>Jam</small><strong data-booking-time>—</strong></span></div>
+            <div class="manual-folder-submit-row"><button class="button button-primary" type="submit" id="booking-folder-submit">Buat folder booking</button><span id="booking-folder-status" class="small-note" role="status" aria-live="polite">Data tanggal, paket, dan jam akan diverifikasi dari database.</span></div>
           </form>
       </details>
       <details class="create-folder-dropdown" id="create-folder-dropdown">
@@ -238,7 +352,10 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
           <div class="subsection-heading"><h3>Folder</h3><span><?php echo count($folders); ?> folder pada halaman ini</span></div>
           <div class="folder-grid" id="folder-grid">
             <?php foreach ($folders as $folder): ?>
-              <a class="folder-card" data-kind="folders" data-name="<?php echo rfg_h($folder['name']); ?>" data-size="0" data-created="" href="<?php echo rfg_h(rfg_gallery_url($folder['id'])); ?>"><span class="folder-icon" aria-hidden="true"><svg class="folder-icon-svg" viewBox="0 0 24 24"><path d="M3 6.75A1.75 1.75 0 0 1 4.75 5h4.1c.55 0 1.07.26 1.4.7l1 1.3h8A1.75 1.75 0 0 1 21 8.75v9.5A1.75 1.75 0 0 1 19.25 20H4.75A1.75 1.75 0 0 1 3 18.25z"/></svg></span><span class="folder-name"><?php echo rfg_h($folder['name']); ?></span><span class="folder-hint">Buka folder <span aria-hidden="true">→</span></span></a>
+              <article class="folder-card-shell" data-kind="folders" data-name="<?php echo rfg_h($folder['name']); ?>" data-size="0" data-created="">
+                <a class="folder-card" href="<?php echo rfg_h(rfg_gallery_url($folder['id'])); ?>"><span class="folder-icon" aria-hidden="true"><svg class="folder-icon-svg" viewBox="0 0 24 24"><path d="M3 6.75A1.75 1.75 0 0 1 4.75 5h4.1c.55 0 1.07.26 1.4.7l1 1.3h8A1.75 1.75 0 0 1 21 8.75v9.5A1.75 1.75 0 0 1 19.25 20H4.75A1.75 1.75 0 0 1 3 18.25z"/></svg></span><span class="folder-name"><?php echo rfg_h($folder['name']); ?></span><span class="folder-hint">Buka folder <span aria-hidden="true">→</span></span></a>
+                <form class="folder-delete-form" action="delete-item" method="post" onsubmit="return confirm('Pindahkan folder ini beserta seluruh isinya ke Trash Google Drive? Galeri customer yang terkait akan dinonaktifkan.');"><?php echo rfg_csrf_field(); ?><input type="hidden" name="item_type" value="folder"><input type="hidden" name="item_id" value="<?php echo rfg_h($folder['id']); ?>"><input type="hidden" name="parent_folder_id" value="<?php echo rfg_h($currentFolderId); ?>"><button type="submit" title="Hapus folder" aria-label="Hapus folder <?php echo rfg_h($folder['name']); ?>">×</button></form>
+              </article>
             <?php endforeach; ?>
           </div>
         </section>
@@ -246,41 +363,17 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
 
       <?php if (!empty($photos)): ?>
         <section class="content-group" id="photo-group" data-kind-group="photos">
-        <div class="subsection-heading"><h3>Foto</h3><span><?php echo count($photos); ?> foto pada halaman ini</span></div>
-        <form action="download-selected.php" method="post" id="selection-form">
+        <div class="subsection-heading"><h3>Foto</h3><span id="admin-photo-count"><?php echo count($photos); ?> dari <?php echo $photoTotal; ?> foto ditampilkan</span></div>
+        <form action="download-selected" method="post" id="selection-form">
           <?php echo rfg_csrf_field(); ?><input type="hidden" name="folder_id" value="<?php echo rfg_h($currentFolderId); ?>">
           <div class="selection-toolbar"><label class="select-all"><input type="checkbox" id="select-all"> Pilih semua foto di halaman ini</label><span id="selected-count">0 foto dipilih</span><button class="button button-dark" type="submit" id="download-selected-button" disabled>Download pilihan (.ZIP)</button></div>
         </form>
-        <div class="photo-grid">
+        <div class="photo-grid" id="admin-photo-grid" data-folder-id="<?php echo rfg_h($currentFolderId); ?>" data-name-filter="<?php echo rfg_h($nameFilter); ?>" data-loaded="<?php echo count($photos); ?>" data-total="<?php echo $photoTotal; ?>">
           <?php foreach ($photos as $file): ?>
-            <?php $shareState = isset($shareStates[$file['id']]) && !empty($shareStates[$file['id']]['enabled']); $shareUrl = $shareState && !empty($shareStates[$file['id']]['url']) ? $shareStates[$file['id']]['url'] : rfg_share_link($file['id']); $parentQuery = 'folderId=' . rawurlencode($currentFolderId); ?>
-            <article class="photo-card" data-kind="photos" data-name="<?php echo rfg_h($file['name']); ?>" data-size="<?php echo isset($file['size']) ? (int) $file['size'] : 0; ?>" data-created="<?php echo rfg_h(isset($file['createdTime']) ? $file['createdTime'] : ''); ?>">
-              <label class="photo-select" aria-label="Pilih foto <?php echo rfg_h($file['name']); ?>"><input type="checkbox" form="selection-form" class="photo-checkbox" name="selected_ids[]" value="<?php echo rfg_h($file['id']); ?>"><span>Pilih</span></label>
-              <div class="photo-card-media">
-                <button type="button" class="photo-preview" data-photo-preview data-preview-src="preview-original.php?id=<?php echo rawurlencode($file['id']); ?>&amp;folderId=<?php echo rawurlencode($currentFolderId); ?>" data-preview-title="<?php echo rfg_h($file['name']); ?>" aria-label="Preview <?php echo rfg_h($file['name']); ?>" title="Lihat preview foto">
-                  <img loading="lazy" src="thumbnail.php?id=<?php echo rawurlencode($file['id']); ?>&amp;folderId=<?php echo rawurlencode($currentFolderId); ?>" alt="Preview <?php echo rfg_h($file['name']); ?>" onerror="this.style.display='none';this.nextElementSibling.style.display='grid';">
-                  <span class="preview-fallback" style="display:none">Preview tidak tersedia</span>
-                </button>
-                <a class="photo-download-button" href="download.php?id=<?php echo rawurlencode($file['id']); ?>&amp;folderId=<?php echo rawurlencode($currentFolderId); ?>" title="Download foto" aria-label="Download <?php echo rfg_h($file['name']); ?>">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></svg>
-                </a>
-              </div>
-              <div class="photo-details"><strong title="<?php echo rfg_h($file['name']); ?>"><?php echo rfg_h($file['name']); ?></strong><div class="photo-meta"><span><?php echo isset($file['size']) ? number_format(((int) $file['size']) / 1048576, 2, ',', '.') . ' MB' : 'Ukuran tidak diketahui'; ?></span><span><?php echo !empty($file['createdTime']) ? rfg_h(date('d M Y', strtotime($file['createdTime']))) : ''; ?></span></div>
-                <div class="share-controls">
-                  <?php if ($shareState): ?>
-                    <span class="share-status is-shared">Link aktif — siapa pun yang punya link dapat melihat foto</span>
-                    <button type="button" class="button button-primary copy-share-link" data-link="<?php echo rfg_h($shareUrl); ?>">Salin link untuk WhatsApp</button>
-                    <a class="share-open-link" href="<?php echo rfg_h($shareUrl); ?>" target="_blank" rel="noopener">Buka link ↗</a>
-                    <form action="share.php" method="post" onsubmit="return confirm('Matikan akses publik untuk foto ini?');"><?php echo rfg_csrf_field(); ?><input type="hidden" name="file_id" value="<?php echo rfg_h($file['id']); ?>"><input type="hidden" name="folder_id" value="<?php echo rfg_h($currentFolderId); ?>"><input type="hidden" name="share_action" value="disable"><button type="submit" class="button button-light">Matikan link publik</button></form>
-                  <?php else: ?>
-                    <span class="share-status is-private">Privat — belum dibagikan lewat link</span>
-                    <form action="share.php" method="post" onsubmit="return confirm('Siapa pun yang menerima tautan dapat melihat foto ini, termasuk jika tautan diteruskan. Lanjutkan?');"><?php echo rfg_csrf_field(); ?><input type="hidden" name="file_id" value="<?php echo rfg_h($file['id']); ?>"><input type="hidden" name="folder_id" value="<?php echo rfg_h($currentFolderId); ?>"><input type="hidden" name="share_action" value="enable"><button type="submit" class="button button-light">Aktifkan link WhatsApp</button></form>
-                  <?php endif; ?>
-                </div>
-              </div>
-            </article>
+            <?php echo rfg_admin_photo_card_html($file, $currentFolderId, $shareStates, $editSelectedDriveMap); ?>
           <?php endforeach; ?>
         </div>
+        <?php if ($cacheUsed && $photoTotal > count($photos)): ?><div class="photo-load-controls" id="admin-photo-load-controls"><button type="button" class="button button-light" data-admin-load="more">Tampilkan 10 lagi</button><button type="button" class="button button-dark" data-admin-load="all">Tampilkan semua</button><span class="small-note" data-admin-load-status></span></div><?php endif; ?>
         </section>
       <?php elseif (empty($folders) && $listError === ''): ?>
         <div class="empty-state"><div class="empty-symbol">▧</div><h3>Folder ini belum berisi foto atau subfolder</h3><p>Upload ke folder saat ini atau kembali ke folder induk melalui breadcrumb.</p></div>
@@ -288,8 +381,8 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
         <div class="empty-state compact-empty"><h3>Belum ada foto langsung di folder ini</h3><p>Folder ini berisi subfolder. Buka salah satunya untuk melihat foto.</p></div>
       <?php endif; ?>
       <div id="client-no-results" class="empty-state compact-empty" hidden><h3>Tidak ada item yang cocok</h3><p>Ubah kata pencarian atau filter yang dipilih.</p></div>
-      <?php if ($pageToken !== ''): ?><a class="button button-light pager" href="<?php echo rfg_h(rfg_gallery_url($currentFolderId, $nameFilter)); ?>">← Halaman pertama</a><?php endif; ?>
-      <?php if ($nextPageToken !== ''): ?><a class="button button-light pager" href="<?php echo rfg_h(rfg_gallery_url($currentFolderId, $nameFilter, $nextPageToken)); ?>">Item berikutnya →</a><?php endif; ?>
+      <?php if (!$cacheUsed && $pageToken !== ''): ?><a class="button button-light pager" href="<?php echo rfg_h(rfg_gallery_url($currentFolderId, $nameFilter)); ?>">← Halaman pertama</a><?php endif; ?>
+      <?php if (!$cacheUsed && $nextPageToken !== ''): ?><a class="button button-light pager" href="<?php echo rfg_h(rfg_gallery_url($currentFolderId, $nameFilter, $nextPageToken)); ?>">Item berikutnya →</a><?php endif; ?>
     </section>
       </div><!-- /.drive-main -->
       <aside class="right-rail" aria-label="Usage dan upload">
@@ -305,7 +398,6 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
         <details class="upload-dropdown panel" id="upload-dropdown">
           <summary><span class="upload-summary-icon">↑</span><span class="upload-summary-copy"><strong>Upload foto</strong><small>Antrean foto · satu per satu</small></span><span class="upload-summary-chevron">⌄</span></summary>
           <div class="upload-dropdown-content">
-            <p class="small-note">Pilih hingga 200 foto atau seret file ke area di bawah. Setiap foto dikirim satu per satu; foto yang sudah sukses langsung tersimpan meskipun foto berikutnya gagal.</p>
             <form action="upload" method="post" enctype="multipart/form-data" class="upload-form" id="upload-form" novalidate>
               <?php echo rfg_csrf_field(); ?><input type="hidden" name="folder_id" id="upload-folder-id" value="<?php echo rfg_h($currentFolderId); ?>">
               <label class="dropzone" id="upload-dropzone" for="photos"><span class="drop-icon">＋</span><strong>Drop foto di sini</strong><span id="selected-files">Klik untuk pilih foto atau drag &amp; drop</span><input id="photos" class="visually-hidden-input" type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple></label>
@@ -321,19 +413,32 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
         </details>
       </aside>
     </div><!-- /.drive-layout -->
-    <section class="bottom-tools"><div><strong>Folder galeri</strong><p>Hierarki folder tetap bersumber dari Google Drive. MySQL hanya menyimpan relasi booking-folder dan cache metadata foto.</p></div><form action="disconnect.php" method="post" onsubmit="return confirm('Hapus token Google Drive yang tersimpan di server?')"><?php echo rfg_csrf_field(); ?><button class="button button-light" type="submit">Putuskan koneksi</button></form></section>
+    <section class="bottom-tools"><div><strong>Folder galeri</strong><p>Hierarki folder tetap bersumber dari Google Drive. MySQL hanya menyimpan relasi booking-folder dan cache metadata foto.</p></div><form action="disconnect" method="post" onsubmit="return confirm('Hapus token Google Drive yang tersimpan di server?')"><?php echo rfg_csrf_field(); ?><button class="button button-light" type="submit">Putuskan koneksi</button></form></section>
   <?php endif; ?>
   <footer>RF Studio · Galeri Google Drive · Akses admin</footer>
 </main>
 <dialog class="photo-preview-dialog" id="photo-preview-dialog" aria-label="Preview foto">
   <div class="photo-preview-dialog-inner">
     <div class="photo-preview-dialog-toolbar"><strong id="photo-preview-dialog-title">Preview foto</strong><span class="photo-preview-hint">Klik foto untuk zoom 1:1 · klik lagi untuk Fit</span><button type="button" id="photo-preview-dialog-close" class="photo-preview-dialog-close" aria-label="Tutup preview">×</button></div>
-    <div class="photo-preview-dialog-stage"><img id="photo-preview-dialog-image" alt="Preview foto"></div>
+    <div class="photo-preview-dialog-stage" id="photo-preview-dialog-stage"><span class="preview-loading-skeleton" aria-hidden="true"></span><img id="photo-preview-dialog-image" alt="Preview foto"></div>
   </div>
 </dialog>
 <script>
 (function () {
   'use strict';
+  Array.prototype.forEach.call(document.querySelectorAll('.summary-info'), function (info) {
+    info.addEventListener('click', function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      info.focus();
+    });
+    info.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    });
+  });
   var activeSeed = null;
   var treeNodes = Object.create(null);
   var treeChildren = Object.create(null);
@@ -619,6 +724,18 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
     var gallerySection = main.querySelector('.gallery-section');
     if (gallerySection) gallerySection.setAttribute('data-view', currentView);
   }
+  function updateAdminSelection() {
+    var main = document.getElementById('drive-main');
+    if (!main) return;
+    var checkboxes = Array.prototype.slice.call(main.querySelectorAll('.photo-checkbox'));
+    var selected = checkboxes.filter(function (box) { return box.checked; }).length;
+    var countLabel = main.querySelector('#selected-count');
+    var downloadButton = main.querySelector('#download-selected-button');
+    var selectAll = main.querySelector('#select-all');
+    if (countLabel) countLabel.textContent = selected + ' foto dipilih';
+    if (downloadButton) { downloadButton.disabled = selected < 1 || selected > 10; downloadButton.textContent = selected > 10 ? 'Maksimal 10 foto per ZIP' : 'Download pilihan (.ZIP)'; }
+    if (selectAll) selectAll.checked = checkboxes.length > 0 && selected === checkboxes.length;
+  }
   function initializeMainControls() {
     var main = document.getElementById('drive-main');
     if (!main) return;
@@ -630,22 +747,13 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
     });
     applyFileControls();
     var selectAll = main.querySelector('#select-all');
-    var checkboxes = Array.prototype.slice.call(main.querySelectorAll('.photo-checkbox'));
-    var countLabel = main.querySelector('#selected-count');
-    var downloadButton = main.querySelector('#download-selected-button');
-    function updateSelection() {
-      var count = checkboxes.filter(function (box) { return box.checked; }).length;
-      if (countLabel) countLabel.textContent = count + ' foto dipilih';
-      if (downloadButton) { downloadButton.disabled = count < 1 || count > 10; downloadButton.textContent = count > 10 ? 'Maksimal 10 foto per ZIP' : 'Download pilihan (.ZIP)'; }
-      if (selectAll) selectAll.checked = checkboxes.length > 0 && count === checkboxes.length;
-    }
-    if (selectAll) selectAll.addEventListener('change', function () { checkboxes.forEach(function (box) { box.checked = selectAll.checked; }); updateSelection(); });
-    checkboxes.forEach(function (box) { box.addEventListener('change', updateSelection); });
+    if (selectAll && !selectAll.getAttribute('data-bound')) { selectAll.setAttribute('data-bound', '1'); selectAll.addEventListener('change', function () { Array.prototype.slice.call(main.querySelectorAll('.photo-checkbox')).forEach(function (box) { box.checked = selectAll.checked; }); updateAdminSelection(); }); }
     var selectionForm = main.querySelector('#selection-form');
-    if (selectionForm) selectionForm.addEventListener('submit', function (event) {
-      var count = checkboxes.filter(function (box) { return box.checked; }).length;
+    if (selectionForm && !selectionForm.getAttribute('data-bound')) { selectionForm.setAttribute('data-bound', '1'); selectionForm.addEventListener('submit', function (event) {
+      var count = Array.prototype.slice.call(main.querySelectorAll('.photo-checkbox')).filter(function (box) { return box.checked; }).length;
       if (count < 1 || count > 10) { event.preventDefault(); alert('Pilih 1 sampai 10 foto untuk diunduh sebagai ZIP.'); }
-    });
+    }); }
+    updateAdminSelection();
   }
 
   // Dialog preview loads the original image bytes. Card thumbnails remain lightweight.
@@ -653,6 +761,7 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
   var photoPreviewImage = document.getElementById('photo-preview-dialog-image');
   var photoPreviewTitle = document.getElementById('photo-preview-dialog-title');
   var photoPreviewClose = document.getElementById('photo-preview-dialog-close');
+  var photoPreviewStage = document.getElementById('photo-preview-dialog-stage');
   function fitOriginalPreview() {
     if (!photoPreviewDialog || !photoPreviewImage || !photoPreviewImage.naturalWidth || photoPreviewImage.classList.contains('is-zoomed')) return;
     var maxWidth = Math.max(240, Math.floor(window.innerWidth * 0.96) - 36);
@@ -677,7 +786,7 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
     photoPreviewDialog.style.width = '';
   }
   if (photoPreviewImage) {
-    photoPreviewImage.addEventListener('load', fitOriginalPreview);
+    photoPreviewImage.addEventListener('load', function () { if (photoPreviewStage) photoPreviewStage.classList.remove('is-loading'); fitOriginalPreview(); });
     photoPreviewImage.addEventListener('click', function () {
       if (!photoPreviewImage.naturalWidth) return;
       var zoomed = photoPreviewImage.classList.toggle('is-zoomed');
@@ -692,6 +801,7 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
       }
     });
     photoPreviewImage.addEventListener('error', function () {
+      if (photoPreviewStage) photoPreviewStage.classList.remove('is-loading');
       if (photoPreviewTitle) photoPreviewTitle.textContent = 'Gagal memuat foto asli. Periksa koneksi Google Drive.';
     });
   }
@@ -704,6 +814,7 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
     photoPreviewImage.classList.remove('is-zoomed');
     photoPreviewImage.style.width = '';
     photoPreviewImage.style.height = '';
+    if (photoPreviewStage) photoPreviewStage.classList.add('is-loading');
     photoPreviewImage.src = previewButton.getAttribute('data-preview-src') || '';
     if (photoPreviewTitle) photoPreviewTitle.textContent = previewButton.getAttribute('data-preview-title') || 'Preview foto';
     if (typeof photoPreviewDialog.showModal === 'function') photoPreviewDialog.showModal();
@@ -760,6 +871,35 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
       refreshUrl.searchParams.delete('refresh');
       navigate(refreshUrl.toString(), { push: false, forceRefresh: true });
     }
+    var loadAdminButton = event.target.closest('[data-admin-load]');
+    if (loadAdminButton) {
+      event.preventDefault();
+      var adminGrid = document.getElementById('admin-photo-grid');
+      var loadControls = document.getElementById('admin-photo-load-controls');
+      if (!adminGrid || loadAdminButton.disabled) return;
+      var loaded = Number(adminGrid.getAttribute('data-loaded') || 0);
+      var total = Number(adminGrid.getAttribute('data-total') || 0);
+      var loadAll = loadAdminButton.getAttribute('data-admin-load') === 'all';
+      var loadStatus = loadControls ? loadControls.querySelector('[data-admin-load-status]') : null;
+      if (loaded >= total) { if (loadControls) loadControls.remove(); return; }
+      Array.prototype.slice.call(loadControls ? loadControls.querySelectorAll('button') : []).forEach(function (button) { button.disabled = true; });
+      if (loadStatus) loadStatus.textContent = 'Memuat foto...';
+      var pageUrl = 'photos-page?folderId=' + encodeURIComponent(adminGrid.getAttribute('data-folder-id') || '') + '&offset=' + loaded + '&q=' + encodeURIComponent(adminGrid.getAttribute('data-name-filter') || '') + (loadAll ? '&all=1' : '');
+      fetch(pageUrl, { credentials: 'same-origin', cache: 'no-store', headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } })
+        .then(function (response) { return response.json().then(function (payload) { if (!response.ok || !payload.success) throw new Error(payload.message || 'Foto gagal dimuat.'); return payload; }); })
+        .then(function (payload) {
+          adminGrid.insertAdjacentHTML('beforeend', payload.html || '');
+          adminGrid.setAttribute('data-loaded', String(payload.loaded || loaded));
+          adminGrid.setAttribute('data-total', String(payload.total || total));
+          var countNode = document.getElementById('admin-photo-count');
+          if (countNode) countNode.textContent = (payload.loaded || loaded) + ' dari ' + (payload.total || total) + ' foto ditampilkan';
+          if (!payload.has_more && loadControls) loadControls.remove();
+          else Array.prototype.slice.call(loadControls ? loadControls.querySelectorAll('button') : []).forEach(function (button) { button.disabled = false; });
+          applyFileControls(); updateAdminSelection();
+        })
+        .catch(function (error) { if (loadStatus) loadStatus.textContent = error.message || 'Foto gagal dimuat.'; Array.prototype.slice.call(loadControls ? loadControls.querySelectorAll('button') : []).forEach(function (button) { button.disabled = false; }); });
+      return;
+    }
     if (event.target.closest('#tree-refresh')) {
       event.preventDefault();
       try { Object.keys(sessionStorage).forEach(function (key) { if (key.indexOf('rfg-tree:' + location.pathname + ':') === 0) sessionStorage.removeItem(key); }); } catch (e) {}
@@ -784,10 +924,12 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
   });
   document.addEventListener('input', function (event) {
     if (event.target && event.target.id === 'gallery-search') applyFileControls();
+    if (event.target && event.target.classList && event.target.classList.contains('photo-checkbox')) updateAdminSelection();
   });
   document.addEventListener('change', function (event) {
     if (!event.target) return;
     if (event.target.id === 'filter-kind' || event.target.id === 'sort-items') applyFileControls();
+    if (event.target.classList && event.target.classList.contains('photo-checkbox')) updateAdminSelection();
   });
   document.addEventListener('click', function (event) {
     if (event.target && event.target.id === 'clear-gallery-search') {
@@ -1123,6 +1265,39 @@ function rfg_gallery_url($folderId, $q = '', $pageToken = '')
         if (status) { status.textContent = error.message || 'Folder gagal dibuat.'; status.classList.add('is-error'); }
       })
       .finally(function () { if (submit) { submit.disabled = false; submit.textContent = 'Buat folder'; } });
+  });
+
+  var bookingLookupTimer = null;
+  function lookupOldBooking(form, showErrors) {
+    if (!form) return Promise.resolve(null);
+    var name = form.querySelector('[name=customer_name]');
+    var uniqid = form.querySelector('[name=booking_uniqid]');
+    var studio = form.querySelector('[name=studio]');
+    var result = form.querySelector('#booking-lookup-result');
+    var status = form.querySelector('#booking-folder-status');
+    if (!name || !uniqid || !studio || !name.value.trim() || !uniqid.value.trim()) { if (result) result.hidden = true; return Promise.resolve(null); }
+    if (status) { status.textContent = 'Mencocokkan booking dengan database...'; status.classList.remove('is-error', 'is-success'); }
+    var url = 'booking-lookup?customer_name=' + encodeURIComponent(name.value.trim()) + '&booking_uniqid=' + encodeURIComponent(uniqid.value.trim()) + '&studio=' + encodeURIComponent(studio.value);
+    return fetch(url, { credentials: 'same-origin', cache: 'no-store', headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } })
+      .then(function (response) { return response.json().then(function (payload) { if (!response.ok || !payload.success) throw new Error(payload.message || 'Booking tidak ditemukan.'); return payload.booking; }); })
+      .then(function (booking) {
+        if (result) {
+          var date = result.querySelector('[data-booking-date]'), packageNode = result.querySelector('[data-booking-package]'), time = result.querySelector('[data-booking-time]');
+          if (date) date.textContent = booking.tanggal || '—'; if (packageNode) packageNode.textContent = booking.package_label || '—'; if (time) time.textContent = booking.jam || '—'; result.hidden = false;
+        }
+        if (status) { status.textContent = 'Booking ditemukan. Data folder akan memakai tanggal, paket, dan jam dari database.'; status.classList.add('is-success'); }
+        return booking;
+      })
+      .catch(function (error) { if (result) result.hidden = true; if (status && showErrors) { status.textContent = error.message || 'Booking tidak ditemukan.'; status.classList.add('is-error'); } return null; });
+  }
+  document.addEventListener('input', function (event) {
+    var form = event.target && event.target.closest ? event.target.closest('#booking-folder-form') : null;
+    if (!form || !event.target.matches('[name=customer_name],[name=booking_uniqid]')) return;
+    clearTimeout(bookingLookupTimer); bookingLookupTimer = setTimeout(function () { lookupOldBooking(form, true); }, 450);
+  });
+  document.addEventListener('change', function (event) {
+    var form = event.target && event.target.closest ? event.target.closest('#booking-folder-form') : null;
+    if (form && event.target.matches('[name=studio]')) lookupOldBooking(form, true);
   });
 
   // Register an old booking by creating its Drive hierarchy and gallery_sessions mapping.

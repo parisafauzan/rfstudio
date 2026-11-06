@@ -17,4 +17,4 @@ try {
 } catch (Exception $e) {
     $_SESSION['rfgallery_flash'] = array('type' => 'warning', 'text' => 'Token lokal tidak dapat diproses sepenuhnya: ' . $e->getMessage());
 }
-rfg_redirect('index.php');
+rfg_redirect('index');

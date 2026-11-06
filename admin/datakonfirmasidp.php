@@ -135,6 +135,7 @@ require '../session.php';
 					<tr >
               <th class="align-middle">Tanggal</th>
               <th class="align-middle">Nama</th>
+              <th class="align-middle">Kode Booking</th>
               <th class="align-middle">Jam</th>              
               <th class="align-middle">Package</th>  
               <th class="align-middle">Tambahan</th>
@@ -174,6 +175,7 @@ require '../session.php';
                         echo $tanggal1; 
                } ?></td>
               <td><?php echo $d["nama"];  ?></td>
+              <td><code><?php echo htmlspecialchars((string)$d["uniqid"], ENT_QUOTES, 'UTF-8'); ?></code></td>
               <td><?php
                if ($d["tipe_package"]== "prawedding"){
                 if($d["jam"]=="08:00-09:00 09:30-10:30"){

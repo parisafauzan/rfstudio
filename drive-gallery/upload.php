@@ -180,4 +180,4 @@ if ($isAjaxRequest) {
         'uploaded_files' => $uploadedFiles
     ), $isSuccess ? 200 : 422);
 }
-rfg_redirect('index.php' . (!empty($targetFolderId) ? '?folderId=' . rawurlencode($targetFolderId) : ''));
+rfg_redirect('index' . (!empty($targetFolderId) ? '?folderId=' . rawurlencode($targetFolderId) : ''));

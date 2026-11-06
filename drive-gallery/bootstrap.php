@@ -13,7 +13,7 @@ $rfgBootstrapAjax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower((str
     || (isset($_SERVER['HTTP_ACCEPT']) && stripos((string) $_SERVER['HTTP_ACCEPT'], 'application/json') !== false);
 if (empty($_SESSION['admin']) && empty($_SESSION['adminkartini'])) {
     $requestScript = isset($_SERVER['SCRIPT_NAME']) ? basename((string) $_SERVER['SCRIPT_NAME']) : '';
-    if ($rfgBootstrapAjax && in_array($requestScript, array('upload.php', 'upload', 'create-folder.php', 'create-folder', 'create-booking-folder.php', 'create-booking-folder'), true)) {
+    if ($rfgBootstrapAjax && in_array($requestScript, array('upload.php', 'upload', 'create-folder.php', 'create-folder', 'create-booking-folder.php', 'create-booking-folder', 'booking-lookup.php', 'booking-lookup', 'photos-page.php', 'photos-page'), true)) {
         http_response_code(401);
         header('Content-Type: application/json; charset=utf-8');
         header('Cache-Control: no-store');
@@ -21,7 +21,9 @@ if (empty($_SESSION['admin']) && empty($_SESSION['adminkartini'])) {
         exit;
     }
     $fromKota = isset($_GET['from']) && $_GET['from'] === 'kota';
-    $loginPath = $fromKota ? '../Admin-Kartini/adminlogin.php' : '../Admin/adminlogin.php';
+    // cPanel/Linux membedakan huruf besar-kecil; folder admin kanonis proyek
+    // ini adalah admin dan admin-kartini.
+    $loginPath = $fromKota ? '../admin-kartini/adminlogin.php' : '../admin/adminlogin.php';
     header('Location: ' . $loginPath);
     exit;
 }
@@ -40,7 +42,9 @@ if (!defined('RFG_PRIVATE_DIR')) {
         $publicHtmlPos = stripos($docRoot, '/public_html');
         if ($publicHtmlPos !== false) {
             $accountHome = rtrim(substr($docRoot, 0, $publicHtmlPos), '/');
-            $privateDir = $accountHome . '/rfstudio-drive-private-staging';
+            $productionDir = $accountHome . '/rfstudio-drive-private';
+            $legacyDir = $accountHome . '/rfstudio-drive-private-staging';
+            $privateDir = is_dir($productionDir) ? $productionDir : $legacyDir;
         } elseif (DIRECTORY_SEPARATOR === '\\' || stripos(PHP_OS, 'WIN') === 0) {
             $privateDir = 'C:/xampp/rfstudio-drive-private';
         } else {

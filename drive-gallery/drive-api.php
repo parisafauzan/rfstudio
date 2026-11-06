@@ -157,6 +157,14 @@ function rfg_is_connected()
     return is_array($token) && !empty($token['refresh_token']) && !empty($token['access_token']);
 }
 
+function rfg_has_full_drive_scope()
+{
+    $token = rfg_read_token();
+    if (!is_array($token) || empty($token['scope'])) return false;
+    $scopes = preg_split('/\s+/', trim((string) $token['scope']));
+    return in_array('https://www.googleapis.com/auth/drive', $scopes, true);
+}
+
 function rfg_api_request($method, $path, $query = array(), $jsonBody = null, $extraHeaders = array())
 {
     $accessToken = rfg_access_token();
@@ -357,8 +365,12 @@ function rfg_find_or_create_child_folder($name, $parentId)
     return $created['id'];
 }
 
-/** Create folder hierarchy on Drive and register only the booking/session reference in MySQL. */
-function rfg_ensure_booking_folder($studio, $bookingDate, $customerName, $bookingUniqId)
+/**
+ * Create folder hierarchy on Drive and register the booking/session reference in MySQL.
+ * Struktur: Studio / Tahun / Bulan / Tanggal / Customer - Paket - Jam / Originals|Edited.
+ * Dua parameter terakhir opsional agar pemanggil versi lama tetap kompatibel.
+ */
+function rfg_ensure_booking_folder($studio, $bookingDate, $customerName, $bookingUniqId, $packageName = '', $bookingTime = '')
 {
     rfg_require_ready();
     if (!rfg_is_connected()) throw new RuntimeException('Google Drive belum terhubung. Hubungkan dari halaman galeri terlebih dahulu.');
@@ -388,16 +400,31 @@ function rfg_ensure_booking_folder($studio, $bookingDate, $customerName, $bookin
     $name = preg_replace('/[^\\p{L}\\p{N} ._-]/u', '_', $name);
     $name = trim((string) $name, " ._-\t\n\r\0\x0B");
     if ($name === '') $name = 'Pelanggan';
-    if (function_exists('mb_substr')) $name = mb_substr($name, 0, 70, 'UTF-8'); else $name = substr($name, 0, 70);
+    if (function_exists('mb_substr')) $name = mb_substr($name, 0, 55, 'UTF-8'); else $name = substr($name, 0, 55);
+
+    $packageLabel = trim(preg_replace('/\s+/', ' ', (string) $packageName));
+    $packageLabel = preg_replace('/[^\p{L}\p{N} ._()-]/u', '_', $packageLabel);
+    $packageLabel = trim((string) $packageLabel, " ._-\t\n\r\0\x0B");
+    if ($packageLabel === '') $packageLabel = 'Paket belum diketahui';
+    if (function_exists('mb_substr')) $packageLabel = mb_substr($packageLabel, 0, 60, 'UTF-8'); else $packageLabel = substr($packageLabel, 0, 60);
+
+    $timeLabel = trim(preg_replace('/\s+/', ' ', (string) $bookingTime));
+    $timeLabel = str_replace(':', '.', $timeLabel);
+    $timeLabel = preg_replace('/[^\p{L}\p{N} ._-]/u', '-', $timeLabel);
+    $timeLabel = trim((string) $timeLabel, " ._-\t\n\r\0\x0B");
+    if ($timeLabel === '') $timeLabel = 'belum diketahui';
+    if (function_exists('mb_substr')) $timeLabel = mb_substr($timeLabel, 0, 35, 'UTF-8'); else $timeLabel = substr($timeLabel, 0, 35);
 
     $rootId = rfg_folder_id();
     $studioId = rfg_find_or_create_child_folder($studioName, $rootId);
     $yearName = date('Y', $timestamp);
     $monthName = date('m', $timestamp) . ' - ' . array('', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember')[(int) date('n', $timestamp)];
+    $dateName = date('d', $timestamp);
     $yearId = rfg_find_or_create_child_folder($yearName, $studioId);
     $monthId = rfg_find_or_create_child_folder($monthName, $yearId);
-    $customerFolderName = $name . ' - Booking ' . $uid;
-    $customerId = rfg_find_or_create_child_folder($customerFolderName, $monthId);
+    $dateId = rfg_find_or_create_child_folder($dateName, $monthId);
+    $customerFolderName = $name . ' - ' . $packageLabel . ' - Jam ' . $timeLabel . ' - Booking ' . $uid;
+    $customerId = rfg_find_or_create_child_folder($customerFolderName, $dateId);
     $originalsId = rfg_find_or_create_child_folder('Originals', $customerId);
     $editedId = rfg_find_or_create_child_folder('Edited', $customerId);
 
@@ -408,13 +435,16 @@ function rfg_ensure_booking_folder($studio, $bookingDate, $customerName, $bookin
         'studioFolderId' => $studioId,
         'yearFolderId' => $yearId,
         'monthFolderId' => $monthId,
+        'dateFolderId' => $dateId,
         'customerFolderId' => $customerId,
         'originalsFolderId' => $originalsId,
         'editedFolderId' => $editedId,
         'customerFolderName' => $customerFolderName,
+        'packageLabel' => $packageLabel,
+        'bookingTimeLabel' => $timeLabel,
         'studioName' => $studioName,
         'bookingDateSql' => date('Y-m-d', $timestamp),
-        'path' => $studioName . ' / ' . $yearName . ' / ' . $monthName . ' / ' . $customerFolderName,
+        'path' => $studioName . ' / ' . $yearName . ' / ' . $monthName . ' / ' . $dateName . ' / ' . $customerFolderName,
         'db_cache_ok' => false,
         'db_cache_error' => '',
     );
@@ -518,6 +548,39 @@ function rfg_file_metadata($fileId, $expectedParentId = '')
         throw new RuntimeException('File bukan gambar yang didukung oleh galeri.');
     }
     return $file;
+}
+
+/** Read generic Drive item metadata (folder or supported file) inside the gallery root. */
+function rfg_drive_item_metadata($itemId, $expectedParentId = '')
+{
+    $itemId = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $itemId);
+    $expectedParentId = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $expectedParentId);
+    if ($itemId === '') throw new RuntimeException('ID item Google Drive tidak valid.');
+    if ($itemId === rfg_folder_id()) throw new RuntimeException('Folder utama RF Studio Gallery tidak boleh dihapus.');
+    if ($expectedParentId !== '') rfg_assert_folder_in_gallery($expectedParentId);
+    $item = rfg_api_request('GET', 'files/' . rawurlencode($itemId), array('fields' => 'id,name,mimeType,parents,trashed'));
+    if (empty($item['id']) || !empty($item['trashed'])) throw new RuntimeException('Item tidak ditemukan atau sudah berada di Trash Google Drive.');
+    $parents = isset($item['parents']) && is_array($item['parents']) ? $item['parents'] : array();
+    if ($expectedParentId !== '' && !in_array($expectedParentId, $parents, true)) throw new RuntimeException('Item tidak berada di folder yang sedang dibuka. Muat ulang galeri.');
+    if ($expectedParentId === '') {
+        $belongs = false;
+        foreach ($parents as $parentId) {
+            try { rfg_assert_folder_in_gallery($parentId); $belongs = true; break; } catch (Throwable $ignored) {}
+        }
+        if (!$belongs) throw new RuntimeException('Item berada di luar RF Studio Gallery.');
+    }
+    return $item;
+}
+
+/** Move an item to Google Drive Trash. It can still be restored from Drive. */
+function rfg_trash_drive_item($itemId, $expectedParentId = '')
+{
+    $item = rfg_drive_item_metadata($itemId, $expectedParentId);
+    $updated = rfg_api_request('PATCH', 'files/' . rawurlencode($item['id']), array('fields' => 'id,name,mimeType,parents,trashed'), array('trashed' => true));
+    if (empty($updated['id']) || empty($updated['trashed'])) throw new RuntimeException('Google Drive tidak mengonfirmasi pemindahan item ke Trash.');
+    unset($_SESSION['rfgallery_folder_metadata_cache'][$item['id']]);
+    rfg_log('ITEM_TRASHED id=' . $item['id'] . ' name=' . (isset($item['name']) ? $item['name'] : '') . ' mime=' . (isset($item['mimeType']) ? $item['mimeType'] : ''));
+    return $item;
 }
 
 function rfg_upload_file($filePath, $name, $mimeType, $targetFolderId = '')

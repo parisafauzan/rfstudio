@@ -1,0 +1,608 @@
+RF STUDIO - TECHNICAL PROJECT HANDOVER
+Tanggal kondisi dokumen: 6 November 2026 (Asia/Jakarta)
+Format proyek: PHP native / MySQL / Google Drive API / cPanel Rumahweb
+Lokasi source kerja lokal: C:\xampp\htdocs\rfstudio
+
+====================================================================
+1. TUJUAN DOKUMEN
+====================================================================
+Dokumen ini adalah konteks teknis untuk developer/model berikutnya. Baca
+sebelum mengubah kode. Proyek adalah website reservasi studio foto RF Studio
+dengan dua studio (Bekasi-Kabupaten dan Bekasi-Kota), dua panel admin terpisah,
+modul pelunasan tanpa login, invoice PDF, serta galeri foto Google Drive untuk
+admin dan customer.
+
+JANGAN memasukkan password database, client secret OAuth, refresh token Google
+Drive, atau API key ke Git/source/public_html. Dokumen ini sengaja tidak
+menyimpan kredensial.
+
+====================================================================
+2. STATUS TERKINI
+====================================================================
+- Pengembangan fitur pas foto, izin publikasi, pelunasan, invoice, dan gallery
+  customer/admin sudah dilakukan pada branch/worktree ini.
+- Modul Google Drive Gallery berhasil berjalan pada subdomain testing setelah
+  konfigurasi database privat diperbaiki.
+- Database hosting testing terakhir yang diperiksa sudah memiliki tabel:
+  booking_payment_submissions, booking_payment_addons, gallery_sessions,
+  gallery_photos, gallery_edit_requests, gallery_edit_request_items.
+- Cache gallery diaktifkan hanya jika config.php privat berisi kredensial MySQL
+  yang benar dan tabel gallery tersedia.
+- Folder Google Drive bisa sudah terbentuk meskipun insert mapping MySQL gagal.
+  Dalam kondisi tersebut, gunakan form "Buat folder galeri untuk booking lama"
+  agar mapping gallery_sessions dibuat/di-upsert setelah koneksi DB pulih.
+- Fitur customer gallery: lookup email, pilih booking, lihat thumbnail/preview
+  asli/download, pilih foto untuk edit, download ZIP foto pilihan.
+- Fitur admin gallery: folder tree Drive, upload, sync/cache, form booking lama,
+  delete foto/folder dengan update status cache, review pilihan edit customer,
+  kartu ringkas customer dan tombol WhatsApp.
+- Fitur pelunasan: lookup email, booking aktif baru bisa dilunasi setelah DP
+  diverifikasi admin, upload bukti, invoice PDF, verifikasi/penolakan admin.
+- Masalah Chrome Android yang memblokir "data situs di perangkat" telah
+  diidentifikasi. Gallery media saat ini bergantung pada cookie session PHP.
+  Jika browser memblokir penyimpanan data/cookie first-party, daftar booking
+  dapat tampil tetapi thumbnail/preview/download gagal. Belum ada perubahan
+  signed URL/token di source saat handover ini.
+
+====================================================================
+3. TECH STACK DAN DEPENDENSI
+====================================================================
+Backend:
+- PHP native. Target hosting lama: PHP 7.4; lokal pernah diuji pada PHP 8.2.
+- mysqli (bukan PDO).
+- Sessions PHP.
+- cURL untuk Google Drive API.
+- ZipArchive untuk ZIP pilihan customer.
+- fileinfo untuk validasi upload.
+- Composer vendor/ dipakai oleh function.php (vendor/autoload.php).
+- PHPMailer tersedia di vendor/ dan assets/phpmailer/ untuk email lama.
+
+Frontend:
+- HTML/CSS/JavaScript vanilla.
+- Bootstrap 5 dari CDN pada halaman baru.
+- Font Awesome CDN.
+- Google Fonts (Josefin Sans) pada modul legacy/pelunasan.
+- AJAX/fetch dipakai untuk pagination gallery, bukan reload seluruh halaman.
+
+Integrasi:
+- Google Drive API v3 via OAuth 2.0. API key saja TIDAK cukup.
+- Google Maps links pada email booking/lokasi studio.
+- PDF invoice dibuat sendiri oleh pelunasan-lib.php; bukan Dompdf/mpdf.
+
+Ekstensi hosting minimum:
+- mysqli, curl, fileinfo, zip, json, openssl.
+
+====================================================================
+4. STRUKTUR DIREKTORI PENTING
+====================================================================
+Root public website:
+- index.php                         Home / card navigasi termasuk Pelunasan dan Gallery.
+- function.php                      Koneksi legacy MySQL dan fungsi reservasi utama.
+- kategori/                         Form dan halaman paket/reservasi.
+- reservasi/                        Proses/form reservasi legacy.
+- admin/                            Panel Bekasi-Kabupaten.
+- admin-kartini/                    Panel Bekasi-Kota.
+- assets/                           Asset, PHPMailer lama, direktori bukti transfer.
+- img/                              Logo (logo2.png dipakai invoice) dan gambar UI.
+- uploads/                          Upload legacy; data aktual tidak masuk Git.
+- vendor/                           Dependency Composer; upload bila hosting belum punya.
+
+Modul pelunasan root:
+- pelunasan.php                     UI customer: cari email, pilih booking, form pelunasan.
+- pelunasan-submit.php              Validasi POST/upload dan simpan pengajuan.
+- pelunasan-lib.php                 Semua helper/query/harga/status/invoice PDF.
+- pelunasan-invoice.php             Endpoint download PDF memakai public_token.
+- pelunasan-admin.php               Halaman admin review pengajuan.
+- pelunasan-admin-dialog.php        Endpoint/dialog review dari tabel admin legacy.
+- migration-pelunasan-email.sql     Migration utama pelunasan.
+- migration-pelunasan-sinkronisasi.sql
+                                    Migration tambahan hanya untuk tabel pembayaran versi lama.
+
+Modul customer gallery root:
+- gallery.php                       UI customer lookup email dan halaman foto.
+- gallery-customer-lib.php          Helper akses customer, Drive/cache, kartu foto.
+- gallery-photos.php                AJAX pagination 10 foto per tahap.
+- gallery-media.php                 Thumbnail, preview asli, dan download satu foto.
+- gallery-submit.php                Simpan pilihan foto untuk diedit.
+- gallery-download-zip.php          Bentuk ZIP server-side untuk foto yang dipilih.
+
+Modul admin gallery:
+- drive-gallery/index.php           UI admin utama/file manager.
+- drive-gallery/bootstrap.php       Login/config/private directory bootstrap.
+- drive-gallery/drive-api.php       OAuth, Drive v3, folder, file, upload, statistik API.
+- drive-gallery/gallery-db.php      Cache MySQL, session gallery, sync, request edit.
+- drive-gallery/gallery-render.php  Komponen/render UI gallery.
+- drive-gallery/gallery.css         Styling admin gallery.
+- drive-gallery/booking-lookup.php  Lookup booking legacy untuk form folder lama.
+- drive-gallery/create-booking-folder.php
+                                    Buat/reuse folder dan simpan gallery_sessions.
+- drive-gallery/booking-folder-hook.php
+                                    Hook otomatis setelah admin konfirmasi DP.
+- drive-gallery/create-folder.php   Tambah folder di Drive.
+- drive-gallery/upload.php          Upload foto ke Drive.
+- drive-gallery/photos-page.php     AJAX daftar foto admin.
+- drive-gallery/download-selected.php
+                                    ZIP/download pilihan admin.
+- drive-gallery/delete-item.php     Hapus file/folder Drive dan invalidasi cache DB.
+- drive-gallery/edit-request-review.php
+                                    Ubah status pilihan edit customer.
+- drive-gallery/oauth.php / oauth-callback.php
+                                    OAuth connect callback.
+- drive-gallery/disconnect.php      Lepas token Drive.
+- drive-gallery/diagnostic.php      Diagnostic, jangan dibuka publik bila tidak diperlukan.
+- drive-gallery/sampah/             Versi eksperimen/arsip; bukan source aktif.
+
+Migration gallery:
+- migration-gallery-cache.sql       gallery_sessions dan gallery_photos.
+- migration-gallery-customer.sql    gallery_edit_requests dan gallery_edit_request_items.
+
+Konfigurasi runtime:
+- .htaccess                         HTTPS + URL tanpa ekstensi PHP.
+- drive-gallery/.htaccess           Perlindungan/routing khusus gallery.
+- user.ini                          Batas upload/execution untuk cPanel.
+- .gitignore                        Mengabaikan ZIP, dump DB, credentials, uploads nyata.
+
+Arsip/legacy yang umumnya jangan diedit tanpa alasan:
+- sampah/, backup - 05/, perubahan/, file-testing/, scratch/, test-kode/.
+- Banyak file *v1.php, *v2.php, dst. Utamakan file tanpa suffix versi.
+- maintenance.rfstudio.id/ adalah salinan lama/maintenance, bukan target rutin.
+
+====================================================================
+5. KONFIGURASI DATABASE
+====================================================================
+Tabel lifecycle legacy AKTIF (jangan tertukar dengan tabel lama tidak terpakai):
+- data_konfirmasi_cobahampirfinishjuga
+  Booking baru dan bukti DP menunggu konfirmasi admin.
+- data_booking_cobahampirfinishjuga
+  Jadwal photoshoot aktif; DP telah dikonfirmasi; sumber utama pelunasan baru.
+- data_history
+  Riwayat setelah proses selesai.
+- data_jamtanggal
+  Data jadwal/tanggal legacy.
+- data_tracking_coba
+  Tracking progress legacy.
+
+Tabel pelunasan baru:
+- booking_payment_submissions
+  Snapshot booking, total paket, DP, sisa, bukti, invoice, status review.
+- booking_payment_addons
+  Item tambahan spesifik yang diajukan di pelunasan.
+
+Tabel gallery:
+- gallery_sessions
+  Mapping UNIQUE booking_uniqid -> Drive customer folder, status active/inactive.
+- gallery_photos
+  Cache metadata foto Drive; Drive tetap source of truth.
+- gallery_edit_requests
+  Satu permintaan edit per gallery session.
+- gallery_edit_request_items
+  Foto-foto yang dipilih customer untuk permintaan edit.
+
+PENTING:
+- Legacy banyak memakai INSERT INTO target SELECT * FROM source saat memindahkan
+  booking. Jangan menambah kolom pada hanya satu tabel lifecycle. Bila perlu
+  kolom baru di lifecycle, struktur data_konfirmasi..., data_booking...,
+  data_history_cobahampirfinishjuga, dan data_history harus konsisten.
+- booking uniqid dibuat legacy dan secara teori dapat bentrok; modul baru
+  memvalidasi nama/studio saat pembuatan folder gallery manual.
+- Semua nominal pelunasan yang disetujui berada di booking_payment_submissions;
+  belum ada modul pembukuan baru yang melakukan posting otomatis ke ledger lain.
+
+====================================================================
+6. KONEKSI DATABASE: LOKAL VS CPANEL
+====================================================================
+function.php adalah koneksi legacy global $koneksi.
+Contoh lokal XAMPP saat ini:
+  host localhost, user root, password kosong, database rfstudio.
+
+Contoh pola subdomain testing cPanel (jangan salin credential contoh):
+  mysqli_connect('localhost', '<CPANEL_DB_USER>', '<CPANEL_DB_PASSWORD>',
+                 '<CPANEL_TEST_DB>');
+
+PENTING: database gallery TIDAK memakai $koneksi dari function.php. Gallery
+membaca config.php PRIVATE melalui drive-gallery/bootstrap.php dan
+gallery-customer-lib.php.
+
+config.php di luar public_html HARUS memuat bagian:
+  'database' => array(
+      'host' => 'localhost',
+      'name' => '<CPANEL_TEST_DB>',
+      'user' => '<CPANEL_DB_USER>',
+      'password' => '<CPANEL_DB_PASSWORD>',
+      'port' => 3306,
+  ),
+
+Jika muncul error MySQL 1045 / "Cache belum aktif":
+1. Jangan gunakan literal USER_DATABASE_TEST atau PASSWORD_DATABASE_TEST.
+2. Pastikan user DB yang benar diberi ALL PRIVILEGES ke database target
+   lewat cPanel MySQL Databases.
+3. Pastikan config.php private dan function.php menunjuk database environment
+   yang sama (testing tidak boleh menggunakan DB produksi).
+4. Pastikan migration cache/customer sudah dijalankan pada DB tersebut.
+
+====================================================================
+7. KONFIGURASI RUMAHWEB / CPANEL
+====================================================================
+Topologi yang direkomendasikan:
+- Domain produksi dan subdomain testing memakai document root serta database
+  terpisah.
+- Kode subdomain boleh memiliki folder private berbeda dari produksi.
+- Private config JANGAN ditempatkan di public_html.
+
+Lokasi private yang dideteksi bootstrap:
+  /home/<CPANEL_USER>/rfstudio-drive-private/config.php
+Fallback compatibility:
+  /home/<CPANEL_USER>/rfstudio-drive-private-staging/config.php
+
+Isi minimum config.php privat (contoh tanpa secret):
+  <?php
+  return array(
+    'client_id' => '<GOOGLE_OAUTH_CLIENT_ID>',
+    'client_secret' => '<GOOGLE_OAUTH_CLIENT_SECRET>',
+    'redirect_uri' => 'https://<SUBDOMAIN>/drive-gallery/oauth-callback.php',
+    'folder_name' => 'RF Studio Gallery - staging',
+    'database' => array(...),
+    'max_upload_file_bytes' => 20 * 1024 * 1024,
+    'max_upload_total_bytes' => 100 * 1024 * 1024,
+    'max_upload_files' => 10,
+    'max_selected_files' => 10,
+    'max_selected_bytes' => 100 * 1024 * 1024,
+  );
+
+Catatan:
+- redirect_uri harus PERSIS sama dengan Authorized redirect URI di Google Cloud.
+- Buat root Drive berbeda untuk testing, misalnya "RF Studio Gallery - staging",
+  supaya file testing tidak bercampur produksi.
+- token OAuth disimpan privat (drive-token.json); folder root ID privat
+  (drive-folder-id.txt); statistik lokal privat (drive-gallery-usage.json).
+- Setelah konfigurasi/redirect URI benar, buka /drive-gallery/oauth untuk
+  menghubungkan akun Google Drive.
+- Apache/cPanel Linux case-sensitive: folder aktif adalah admin dan
+  admin-kartini (huruf kecil), bukan Admin/Admin-Kartini.
+- vendor/ harus diunggah bila hosting tidak menjalankan composer install.
+- Pastikan assets/img/data_pelunasan/ ada dan writable oleh PHP.
+- Pastikan folder private writable untuk token, ID folder, log/statistik Drive.
+
+user.ini aktif yang perlu diunggah bersama source:
+  upload_max_filesize = 25M
+  post_max_size = 32M
+  max_file_uploads = 220
+  max_execution_time = 240
+  max_input_time = 240
+  memory_limit = 256M
+  session.gc_maxlifetime = 7200
+
+Provider cPanel dapat menunda penerapan user.ini sekitar 5 menit.
+
+====================================================================
+8. ALUR BOOKING DAN DP (LEGACY)
+====================================================================
+1. Customer memilih paket/form pada kategori/ atau reservasi/.
+2. Reservasi masuk ke data_konfirmasi_cobahampirfinishjuga.
+3. Admin studio yang relevan membuka "Menunggu Konfirmasi" dan memeriksa DP.
+4. Saat admin mengonfirmasi DP:
+   - booking dipindah ke data_booking_cobahampirfinishjuga (Jadwal Photoshoot);
+   - hook gallery seharusnya membuat folder Drive dan upsert gallery_sessions;
+   - kegagalan Drive tidak boleh membatalkan konfirmasi booking legacy.
+5. Setelah sesi/operasi selesai, proses legacy dapat memindahkan data ke
+   data_history.
+
+Paket pas foto dan self photo tidak menggunakan DP menurut kebutuhan client.
+Namun pada modul pelunasan baru, booking baru hanya dapat diproses jika sudah
+berada di data_booking_cobahampirfinishjuga. Ini menjaga alur agar DP
+benar-benar telah diverifikasi untuk paket yang membutuhkan DP.
+
+Izin publikasi:
+- migration-izin-publikasi.sql pernah disiapkan untuk kolom izin_publikasi.
+- function.php masih menyimpan helper label/badge agar halaman lama tidak error.
+- Catatan source menyatakan pertanyaan izin publikasi tidak digunakan pada
+  booking baru saat ini. Jangan mengklaim fitur form consent aktif tanpa uji
+  ulang semua form paket.
+
+====================================================================
+9. ALUR PELUNASAN DAN INVOICE
+====================================================================
+Customer tidak membuat akun/login.
+
+1. Customer membuka pelunasan.php dan memasukkan email booking.
+2. rfp_find_bookings_by_email() mencari data pada lifecycle booking.
+3. Data dari data_konfirmasi... ditampilkan namun terkunci dengan badge
+   "DP belum dikonfirmasi admin"; tidak dapat dilunasi.
+4. Data dari data_booking... dapat dipilih dan diajukan untuk pelunasan.
+5. Sistem menghitung snapshot harga dari data legacy:
+   harga paket total, DP yang sudah dibayar, sisa paket, tambahan booking awal,
+   dan tambahan baru yang dipilih pada form pelunasan.
+6. Customer upload bukti transfer. Validasi: JPG/PNG/WEBP, maksimal 5 MB.
+   File disimpan ke assets/img/data_pelunasan/.
+7. rfp_create_submission() membuat baris pending di booking_payment_submissions,
+   menyimpan item tambahan di booking_payment_addons, membuat invoice number dan
+   public_token.
+8. Customer dapat mengunduh invoice PDF menggunakan token publik.
+9. Admin dari studio yang sesuai membuka pelunasan-admin.php atau dialog pada
+   tabel Jadwal Photoshoot untuk melihat bukti dan menyetujui/menolak.
+10. Approve -> status approved/LUNAS; reject -> rejected dan customer dapat
+    mengajukan ulang. Catatan penolakan wajib/default disimpan.
+
+Harga pas foto:
+- Tambah cetak pada booking awal disimpan legacy di kolom tambah_cetak.
+- Katalog pelunasan membaca paket dan tambahan tersebut agar invoice memiliki
+  rincian/snapshot. Jangan mengalikan nominal rupiah lagi (bug lama pernah
+  membuat Rp85.000 menjadi Rp8.500.000).
+- Tambahan pelunasan disimpan sebagai baris terpisah pada booking_payment_addons,
+  bukan ditulis balik ke kolom booking legacy.
+
+Invoice:
+- Logo: img/logo2.png.
+- Rincian: paket, DP, sisa paket, item tambahan, total pelunasan, lokasi/studio,
+  customer, jadwal, dan status pending/approved/rejected.
+- pelunasan-invoice.php menerima token, bukan ID incremental; tetap jangan
+  mengekspos token ke log publik.
+
+Migration pelunasan:
+- Database baru: jalankan migration-pelunasan-email.sql satu kali.
+- Database yang sudah punya booking_payment_submissions VERSI LAMA tanpa
+  package_total/deposit_paid: jalankan migration-pelunasan-sinkronisasi.sql
+  satu kali setelah backup.
+- Jangan menjalankan migration-pelunasan-sinkronisasi.sql berulang pada schema
+  yang sudah memiliki kedua kolom karena ALTER ADD COLUMN akan gagal.
+
+====================================================================
+10. ALUR GOOGLE DRIVE GALLERY
+====================================================================
+Source of truth untuk file/folder adalah Google Drive, bukan MySQL.
+MySQL hanya menyimpan mapping booking -> folder dan cache metadata.
+
+Struktur folder wajib:
+  Root Gallery
+    -> Studio (Bekasi-Kota / Bekasi-Kabupaten)
+      -> Tahun (YYYY)
+        -> Bulan (MM - NamaBulan)
+          -> Tanggal (DD)
+            -> Nama Customer - Paket - Jam - Booking <uniqid>
+              -> Originals
+              -> Edited
+
+Pembuatan folder:
+- Otomatis: booking-folder-hook.php setelah DP dikonfirmasi.
+- Manual: drive-gallery/create-booking-folder.php untuk booking lama/gagal cache.
+- Manual memerlukan nama customer + uniqid + studio; tanggal/paket/jam selalu
+  diambil ulang dari DB agar browser tidak bisa memalsukan data folder.
+
+Admin Gallery:
+- Folder tree dibaca langsung dari Drive secara bertahap/lazy.
+- Metadata foto cache MySQL berlaku 5 menit; tombol Refresh bypass cache.
+- Tampilkan 10 foto terlebih dahulu lalu "10 lagi" atau semua lewat AJAX.
+- Upload maksimal 10 foto per batch, maksimal 20 MB/file, 100 MB total.
+- Customer context card menampilkan nama, paket, tambahan, status pelunasan,
+  jadwal, studio, kontak, dan link WhatsApp.
+- Hapus foto: hapus Drive lalu menandai gallery_photos status missing,
+  membatalkan pilihan edit yang terkait bila perlu.
+- Hapus folder customer: folder Drive dihapus dan gallery_sessions dibuat
+  inactive; gallery_photos missing; request edit rejected. Customer lalu melihat
+  galeri sudah tidak tersedia, bukan error fatal.
+
+Customer Gallery:
+1. Customer input email di gallery.php, tanpa login/OTP.
+2. Sistem mencari booking dari tiga tabel lifecycle (booking aktif, history,
+   dan konfirmasi) lalu hanya menampilkan yang mempunyai gallery_sessions.
+3. Customer membuka session aktif; akses sementara disimpan dalam PHP session
+   selama 2 jam.
+4. Halaman membaca Originals/Edited; sync Drive ke cache jika stale/refresh.
+5. Customer dapat preview full resolution, download satu foto, memilih foto,
+   pilih semua, download ZIP pilihan, lalu mengirim pilihan edit dan catatan.
+6. Admin menandai request: submitted -> editing -> completed atau rejected.
+
+PENTING - keterbatasan cookie:
+- gallery-media.php memerlukan rfg_customer_access_email() dari session.
+- Pada Chrome Android yang memblokir "Mengizinkan situs menyimpan data di
+  perangkat Anda", PHPSESSID tidak tersedia sehingga media gagal walaupun foto
+  dan daftar booking ada. Ini bukan masalah permission akun Drive customer.
+- Workaround customer: izinkan site data/cookie first-party untuk domain gallery
+  lalu buka gallery kembali.
+- Perbaikan teknis masa depan: gunakan signed, short-lived media URL/token
+  untuk thumbnail/preview/download sebagai fallback, dan tampilkan error yang
+  membedakan 401 session, 404 file hilang, dan 5xx Drive. BELUM DIIMPLEMENTASI.
+
+====================================================================
+11. CACHE, HAPUS MANUAL DRIVE, DAN KUOTA API
+====================================================================
+Cache:
+- gallery_sessions: cache mapping booking-folder serta timestamp sync.
+- gallery_photos: cache metadata/thumbnail link; photo status active/missing.
+- Foto/folder yang diupload/hapus manual di Drive akan tercermin pada sync
+  berikutnya atau tombol Refresh; cache TTL normal 5 menit.
+- Bila folder Drive hilang ketika customer membuka gallery, sistem mencoba
+  menonaktifkan session di DB lalu memberi informasi gallery tidak tersedia.
+
+Google Drive API quota (per dokumentasi Google yang berlaku saat implementasi):
+- Per project per menit: 1.000.000 quota units.
+- Per OAuth user per project per menit: 325.000 quota units.
+- Egress per project per hari: 1 TB (aturan billing dapat berubah, pantau
+  Google Cloud Billing/Drive API documentation).
+- Read metadata: kira-kira 5 unit.
+- files.list: kira-kira 100 unit.
+- Download/preview file (alt=media): kira-kira 200 unit.
+- Edit/create/delete file: sekitar 50 unit pada model quota Google.
+- Jika rate limit terlewati, Google mengembalikan 403/429; perlu retry
+  exponential backoff bila traffic besar.
+
+Panel Usage API pada drive-gallery/index.php:
+- HANYA estimasi lokal, disimpan privat di drive-gallery-usage.json.
+- Tidak mencakup request dari aplikasi Google Drive/Cloud Console/link langsung.
+- Thumbnail saat ini dihitung konservatif sebagai download 200 unit.
+- Bukan meter tagihan resmi; Google Cloud Console adalah rujukan resmi.
+
+====================================================================
+12. LOKASI STUDIO DAN EMAIL
+====================================================================
+Lokasi harus dipilih/ditampilkan berdasarkan kolom studio booking:
+- Bekasi-Kabupaten:
+  Jl. Arjuna 4 No.1, Setiamekar, Bekasi Timur.
+  Maps: https://maps.app.goo.gl/PjiW8XqJuNAGboNV6?g_st=ic
+- Bekasi-Kota:
+  Villa Tmn Kartini Bekasi, Jl. Graha Juwita III Blok A2 No.3,
+  Margahayu, Bekasi Timur.
+  Maps: https://maps.app.goo.gl/cUriRYWeLPUQMMor5?g_st=ic
+
+Template email legacy ada di template-email-v1.html, v2, v3 dan helper pada
+function.php/assets. Jika mengubah email, uji pengiriman nyata dan pastikan
+lokasi dari studio, bukan hard-coded satu lokasi.
+
+====================================================================
+13. FILE YANG PALING SERING DIUBAH PADA ITERASI INI
+====================================================================
+Core / UI:
+- index.php
+- function.php
+- admin/datakonfirmasidp.php
+- admin/databooking.php
+- admin-kartini/datakonfirmasidp.php
+- admin-kartini/databooking.php
+
+Pelunasan:
+- pelunasan.php, pelunasan-submit.php, pelunasan-lib.php,
+  pelunasan-invoice.php, pelunasan-admin.php, pelunasan-admin-dialog.php
+- img/logo2.png
+- assets/img/data_pelunasan/ (folder writable, isi bersifat private/customer)
+
+Gallery:
+- seluruh drive-gallery/ KECUALI drive-gallery/sampah/ dan diagnostic.php
+  untuk deploy normal;
+- gallery.php, gallery-customer-lib.php, gallery-photos.php,
+  gallery-media.php, gallery-submit.php, gallery-download-zip.php;
+- migration-gallery-cache.sql, migration-gallery-customer.sql;
+- user.ini dan drive-gallery/.htaccess.
+
+Deploy ke server harus mempertahankan file yang sudah ada dan tidak menghapus
+folder customer/upload secara massal. Selalu backup DB + public_html sebelum
+menimpa source.
+
+====================================================================
+14. CHECKLIST DEPLOYMENT SUBDOMAIN TESTING
+====================================================================
+1. Backup database target dan file public_html subdomain.
+2. Pastikan function.php memakai database TESTING, bukan root lokal/produksi.
+3. Upload file modul baru yang disebut pada bagian 13 dan vendor/ jika diperlukan.
+4. Upload user.ini dan tunggu propagation provider bila perlu.
+5. Buat folder private di luar public_html dan config.php (OAuth + database).
+6. Pastikan user MySQL punya ALL PRIVILEGES pada DB testing.
+7. Jalankan hanya migration yang belum ada:
+   a. migration-pelunasan-email.sql
+   b. migration-gallery-cache.sql
+   c. migration-gallery-customer.sql
+   d. migration-izin-publikasi.sql hanya jika benar-benar mengaktifkan fitur
+      consent dan semua tabel lifecycle sudah disiapkan.
+8. Untuk schema pembayaran lama, gunakan migration-pelunasan-sinkronisasi.sql
+   hanya bila package_total/deposit_paid belum ada.
+9. Tambah Authorized redirect URI OAuth yang tepat; connect akun Drive dari
+   subdomain target.
+10. Uji end-to-end dengan booking test:
+   booking -> DP -> konfirmasi admin -> folder Drive -> upload originals ->
+   login gallery customer via email -> pilih/edit/download -> pelunasan ->
+   invoice -> approve/reject admin.
+11. Pastikan tidak ada 1045 DB error, "Cache belum aktif", atau route POST yang
+   berubah menjadi GET karena rewrite URL tanpa .php.
+
+====================================================================
+15. RIWAYAT MASALAH YANG SUDAH DITEMUKAN/DIPERBAIKI
+====================================================================
+- Pelunasan sempat hanya refresh setelah form submit. Diperbaiki dengan validasi
+  POST/error redirect yang eksplisit dan perbaikan field/form handler.
+- Pencarian pelunasan dulu terlalu mudah gagal ketika salah satu tabel legacy
+  gagal; sekarang pencarian dibatasi dan diprioritaskan lifecycle aktif.
+- Booking konfirmasi tidak boleh diproses pelunasan sebelum DP admin confirmed.
+  Hanya data_booking... payment_ready.
+- Perhitungan invoice pernah salah skala 100x pada tambahan pas foto; snapshot
+  financial di pelunasan-lib.php diperbaiki.
+- DP confirmation pernah tampak memicu pelunasan otomatis/acak; alur dipisah:
+  DP confirmation hanya memindahkan booking aktif, tidak membuat submission.
+- Reject pelunasan perlu mengizinkan submit ulang; status rejected tidak boleh
+  dianggap existing active submission.
+- Google Drive folder dapat dibuat saat config DB private salah, tetapi mapping
+  gallery_sessions gagal. Setelah DB fixed, form booking lama dipakai untuk
+  upsert mapping tanpa harus menghapus folder Drive.
+- Gallery cache sekarang dapat menandai photo missing / session inactive ketika
+  admin menghapus foto/folder dari panel atau ditemukan hilang pada sync.
+- Gallery manual upload di Drive tidak langsung muncul bila cache masih segar;
+  gunakan Refresh atau tunggu TTL 5 menit.
+- File route gallery menerima URL tanpa ekstensi karena .htaccess. Endpoint POST
+  disesuaikan agar tidak kehilangan method saat redirect .php.
+
+====================================================================
+16. KETERBATASAN, RISIKO, DAN PRIORITAS LANJUTAN
+====================================================================
+Prioritas tinggi:
+1. Implement signed short-lived token URL untuk gallery-media.php agar customer
+   yang memblokir storage/cookie situs tetap dapat preview/download. Jangan
+   membuat URL Drive publik permanen.
+2. Perbaiki pesan error gallery-media: jangan menyatakan file dihapus untuk
+   semua error; bedakan session expired, not found, DB/Drive error.
+3. Rotasi password database yang pernah terekspos pada percakapan/log dan
+   update function.php + config.php private secara konsisten.
+4. Audit/backup sebelum menghapus folder Drive; delete sekarang bersifat
+   material walau cache DB dapat ditandai missing/inactive.
+
+Prioritas menengah:
+5. Tambahkan retry exponential backoff untuk 403/429 Google Drive API.
+6. Audit keamanan source legacy (banyak query mysqli lama interpolasi string).
+   Jangan memperluas pola SQL legacy; gunakan prepared statements pada kode baru.
+7. Buat pembukuan/ledger eksplisit bila nilai pelunasan harus otomatis tercatat
+   sebagai laporan akuntansi. Saat ini approve mengubah status invoice saja.
+8. Rapikan source arsip/sampah setelah backup terpisah agar developer tidak
+   mengubah file versi lama tanpa sadar.
+9. Tambahkan test/regression checklist formal untuk dua studio dan paket-paket.
+
+Risiko desain saat ini:
+- Email-only lookup bukan autentikasi kuat. Orang yang mengetahui email customer
+  dapat melihat daftar booking/gallery. Ini adalah keputusan bisnis client
+  (tanpa login/OTP), bukan kontrol akses setara akun.
+- Token invoice adalah bearer token: siapapun yang mendapat URL dapat download
+  invoice. Hindari membagikan URL publik ke pihak yang tidak berhak.
+- Gallery mengalirkan file Drive via hosting. Bandwidth hosting dan egress Drive
+  perlu dipantau untuk foto resolusi tinggi/ZIP besar.
+- Banyak code legacy dan salinan versi; lakukan diff dan backup sebelum edit.
+
+====================================================================
+17. CARA DIAGNOSIS CEPAT
+====================================================================
+Gallery cache tidak aktif:
+- Periksa config.php private -> database -> host/name/user/password.
+- Lihat error 1045 berarti credential/grant DB salah.
+- Periksa tabel gallery_sessions dan gallery_photos.
+- Jika folder sudah ada, rerun form "Buat folder galeri untuk booking lama".
+
+Customer melihat booking tetapi semua foto gagal:
+- Periksa apakah browser mengizinkan site data/cookies untuk domain gallery.
+- Coba browser/perangkat lain.
+- Periksa token OAuth masih terhubung dan file ada di Originals/Edited.
+- Cek PHP error_log + log privat rfg bila tersedia.
+- Jangan langsung tandai file missing jika error sebenarnya session/cookie.
+
+Pengajuan pelunasan gagal:
+- Periksa post_max_size, upload_max_filesize, max_file_uploads dan ukuran file.
+- Periksa assets/img/data_pelunasan writable.
+- Periksa schema payment/enum legacy_source/package_total/deposit_paid.
+- Periksa booking berada di data_booking... dan email/uniqid benar.
+
+Folder gallery tidak otomatis terbentuk setelah DP confirm:
+- Periksa include/call booking-folder-hook.php pada admin/konfirmasi.php dan
+  admin-kartini/konfirmasi.php.
+- Periksa OAuth/Drive connection dan private directory.
+- Konfirmasi legacy tetap boleh sukses walau Drive gagal; lihat log dan gunakan
+  form booking lama untuk recovery.
+
+====================================================================
+18. ATURAN KERJA UNTUK PENERUS
+====================================================================
+- Jangan menghapus/rename tabel legacy hanya berdasarkan nama yang terlihat
+  duplikat. Verifikasi dulu query aktif.
+- Jangan mengubah UI jauh dari style yang ada tanpa permintaan client.
+- Beri daftar file yang diubah dan SQL migration yang perlu dijalankan setiap
+  selesai implementasi agar owner dapat upload ke cPanel dengan aman.
+- Gunakan file tanpa suffix v1/v2 sebagai source aktif kecuali terbukti lain.
+- Uji minimal di PHP 7.4 compatibility bila membuat syntax/fungsi baru.
+- Jangan mengirim credential dalam chat, commit, screenshot, atau handover.
+- Saat memperbarui migration, jadikan idempotent bila memungkinkan dan tulis
+  dengan jelas apakah aman dieksekusi ulang.
+
+END OF HANDOVER

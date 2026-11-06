@@ -10,7 +10,9 @@ try {
         'client_id' => $cfg['client_id'],
         'redirect_uri' => $cfg['redirect_uri'],
         'response_type' => 'code',
-        'scope' => 'https://www.googleapis.com/auth/drive.file',
+        // Scope penuh diperlukan supaya foto yang diunggah manual melalui UI
+        // Google Drive di dalam folder galeri ikut terlihat oleh aplikasi.
+        'scope' => 'https://www.googleapis.com/auth/drive',
         'access_type' => 'offline',
         'include_granted_scopes' => 'true',
         'prompt' => 'consent',

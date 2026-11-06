@@ -276,6 +276,15 @@
               <button type="button" class="btn btn-dark m-1">Lanjut Pelunasan</button>
             </a>
           </div>
+          <div class="col-sm-5 p-3">
+            <div class="inner bg-dark d-flex align-items-center justify-content-center" style="min-height: 230px;">
+              <i class="fa-regular fa-images text-white" style="font-size: 72px;"></i>
+            </div>
+            <h5 class="span m-4">Gallery Photo</h5>
+            <a href="gallery">
+              <button type="button" class="btn btn-dark m-1">Lihat Hasil Foto</button>
+            </a>
+          </div>
         </div>
       </div>
     </div>

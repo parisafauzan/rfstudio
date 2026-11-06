@@ -29,13 +29,15 @@ try {
     $name = isset($_POST['customer_name']) ? trim((string) $_POST['customer_name']) : '';
     $uniqid = isset($_POST['booking_uniqid']) ? trim((string) $_POST['booking_uniqid']) : '';
     $studio = isset($_POST['studio']) ? (string) $_POST['studio'] : '';
-    $date = isset($_POST['booking_date']) ? (string) $_POST['booking_date'] : '';
-    if ($name === '' || $uniqid === '' || $date === '') throw new RuntimeException('Nama pelanggan, ID booking, dan tanggal wajib diisi.');
+    if ($name === '' || $uniqid === '') throw new RuntimeException('Nama pelanggan dan kode booking wajib diisi.');
     if (!in_array($studio, array('Bekasi-Kota', 'Bekasi-Kabupaten'), true)) throw new RuntimeException('Pilih studio yang valid.');
     if (strlen($uniqid) > 64 || !preg_match('/^[A-Za-z0-9_-]+$/', $uniqid)) throw new RuntimeException('ID booking hanya boleh berisi huruf, angka, tanda hubung, atau underscore (maksimal 64 karakter).');
     if (function_exists('mb_strlen') ? mb_strlen($name, 'UTF-8') > 100 : strlen($name) > 100) throw new RuntimeException('Nama pelanggan maksimal 100 karakter.');
 
-    $result = rfg_ensure_booking_folder($studio, $date, $name, $uniqid);
+    // Tanggal, paket, jam, dan ejaan nama selalu berasal dari database. Field
+    // tersembunyi dari browser tidak dipercaya agar folder tidak salah booking.
+    $booking = rfg_gallery_booking_lookup($uniqid, $name, $studio);
+    $result = rfg_ensure_booking_folder($booking['studio'], $booking['tanggal'], $booking['nama'], $booking['uniqid'], $booking['package_label'], $booking['jam']);
     $message = 'Folder galeri berhasil disiapkan: ' . $result['path'] . '.';
     if (!empty($result['db_cache_ok'])) {
         $message .= ' Mapping booking tersimpan di gallery_sessions. gallery_photos akan terisi setelah foto diunggah atau cache disinkronkan.';
